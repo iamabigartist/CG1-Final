@@ -33,7 +33,9 @@ public class Fulid : MonoBehaviour
     float damping_rate = 0.995f;
     float timestep = 0.10f;
     float nowtime = 0.0f;
+
     #region YCHField
+
     HashSet<int>[,,] search_grids;
     float grid_side_length;
     //Side of the whole grid
@@ -41,9 +43,10 @@ public class Fulid : MonoBehaviour
     Vector3 diagonal_point;
     Vector3Int matrix_num;
     List<int>[] neighbors;
-    #endregion
-    Vector3 Tank_Center;
 
+    #endregion YCHField
+
+    Vector3 Tank_Center;
 
     void Start()
     {
@@ -66,21 +69,22 @@ public class Fulid : MonoBehaviour
                     velocity[i + particle_each_edge * (j + particle_each_edge * k)] = new Vector3(0, 0, 0);
                     accelerate[i + particle_each_edge * (j + particle_each_edge * k)] = new Vector3(0, 0, 0);
                 }
-                
             }
         }
         /*for(int i = 0; i < mesh_resolution; i++)
         {
             for(int j=0;j<mesh_resolution;j++) face_points[i, j] = new Vector3(0.0f, 0.0f, 0.0f);
         }*/
-        
+
         mass = (initial_density * 1000.0f) / n_particles;
         h3 = particle_radius * particle_radius * particle_radius;
         create_particles();
         particle_instance.active = false;
         Tank_Center = new Vector3(0.0f, 0.0f, 1.0f);
         //liquid_face = createMesh(mesh_resolution, mesh_resolution);
+
         #region YCHInit
+
         neighbors = new List<int>[n_particles];
         for (int i = 0; i < neighbors.Length; i++)
         {
@@ -98,10 +102,8 @@ public class Fulid : MonoBehaviour
         //print($"num:{matrix_num}");
         search_grids = new HashSet<int>[matrix_num.x, matrix_num.y, matrix_num.z];
         init_search_grids();
-        #endregion
 
-
-
+        #endregion YCHInit
     }
 
     // Update is called once per frame
@@ -122,7 +124,7 @@ public class Fulid : MonoBehaviour
             Transform particle_position = particles[i].GetComponent<Transform>();
             particle_position.position = position[i];
         }
-        Transform tank_position=Tank.GetComponent<Transform>();
+        Transform tank_position = Tank.GetComponent<Transform>();
         tank_position.position = Tank_Center;
     }
     void Update()
@@ -130,7 +132,7 @@ public class Fulid : MonoBehaviour
         search();
         calculate_force();
         State_Update();
-        
+
         draw_particles();
         //draw_edge();
         Shake_Tank();
@@ -199,8 +201,8 @@ public class Fulid : MonoBehaviour
         nowtime += dt * timestep;
     }
 
-
     #region YCHFuncs
+
     void init_search_grids()
     {
         for (int i = 0; i < matrix_num.x; i++)
@@ -258,7 +260,7 @@ public class Fulid : MonoBehaviour
             0 <= grid_pos.z && grid_pos.z < matrix_num.z;
     }
 
-    void get_neighbor(Vector3 pos,ref List<int> neighbor_index)
+    void get_neighbor(Vector3 pos, ref List<int> neighbor_index)
     {
         Vector3Int grid_pos = get_grid(pos);
         //iterate all the adjacent grid
@@ -268,7 +270,6 @@ public class Fulid : MonoBehaviour
             {
                 for (int k = -1; k <= 1; k++)
                 {
-
                     Vector3Int adjacent_grid = new Vector3Int(
                         i + grid_pos.x,
                         j + grid_pos.y,
@@ -276,7 +277,6 @@ public class Fulid : MonoBehaviour
 
                     if (grid_bound(adjacent_grid))
                     {
-
                         foreach (int index in search_grids[
                             adjacent_grid.x,
                             adjacent_grid.y,
@@ -288,7 +288,6 @@ public class Fulid : MonoBehaviour
                             }
                         }
                     }
-
                 }
             }
         }
@@ -304,7 +303,6 @@ public class Fulid : MonoBehaviour
             {
                 for (int k = -1; k <= 1; k++)
                 {
-
                     Vector3Int adjacent_grid = new Vector3Int(
                         i + t_g_pos.x,
                         j + t_g_pos.y,
@@ -312,7 +310,6 @@ public class Fulid : MonoBehaviour
 
                     if (grid_bound(adjacent_grid))
                     {
-
                         foreach (int index in search_grids[
                             adjacent_grid.x,
                             adjacent_grid.y,
@@ -324,7 +321,6 @@ public class Fulid : MonoBehaviour
                             }
                         }
                     }
-
                 }
             }
         }
@@ -333,9 +329,9 @@ public class Fulid : MonoBehaviour
         //Profiler.BeginSample("ToArray");
         //neighbor_index = _neighbor_index.ToList();
         //Profiler.EndSample();
-
     }
-    #endregion
+
+    #endregion YCHFuncs
 
     void boundary_force(int i)
     {
@@ -384,7 +380,7 @@ public class Fulid : MonoBehaviour
         temp_den *= (mass * 315) / (64 * PI * h9);
         return temp_den;
     }
-    private GameObject createMesh(int m,int n)
+    private GameObject createMesh(int m, int n)
     {
         float mstep = 2.0f / (float)(m - 1);
         float nstep = 2.0f / (float)(n - 1);
@@ -426,9 +422,9 @@ public class Fulid : MonoBehaviour
         }
         meshs.vertices = new Vector3[m * n];
         List<Vector3> verticesList = new List<Vector3>();
-        for(int i = 0; i < m; i++)
+        for (int i = 0; i < m; i++)
         {
-            for(int j=0;j<n;j++) verticesList.Add(face_points[i,j]);
+            for (int j = 0; j < n; j++) verticesList.Add(face_points[i, j]);
         }
         meshs.vertices = verticesList.ToArray();
         meshs.uv = uvList.ToArray();
@@ -438,12 +434,12 @@ public class Fulid : MonoBehaviour
     }
     void draw_edge()
     {
-        for(int i = 0; i < mesh_resolution; i++)
+        for (int i = 0; i < mesh_resolution; i++)
         {
-            for(int j = 0; j < mesh_resolution; j++)
+            for (int j = 0; j < mesh_resolution; j++)
             {
-                float x = -5.0f + ((5.0f + 5.0f) / (mesh_resolution - 1)) * i+Tank_Center.x;
-                float z = -5.0f + ((5.0f + 5.0f) / (mesh_resolution - 1)) * j+Tank_Center.z;
+                float x = -5.0f + ((5.0f + 5.0f) / (mesh_resolution - 1)) * i + Tank_Center.x;
+                float z = -5.0f + ((5.0f + 5.0f) / (mesh_resolution - 1)) * j + Tank_Center.z;
                 face_points[i, j] = new Vector3(x, find_point(x, z), z);
             }
         }
