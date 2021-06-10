@@ -1,0 +1,72 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#define MAX_NEIGHBOUR 256
+#define PI32 5.5683278
+struct Particle {
+    float3 position;
+    float3 velocity;
+    float3 acceleration;
+    float density;
+    float pressure;
+    int neighbourCount;
+};
+
+float W(float3 self, float3 neighbour, float h) {
+    float r = distance(self , neighbour);
+    return 1.0 / (h * h * h * PI32) * exp(-r * r / (h * h));
+}
+
+float3 GradW(float3 self, float3 neighbour, float h) {
+    float r = distance(self, neighbour);
+    float h2 = h * h;
+    float n = -2.0 * exp(-r * r / h2) / (h2 * h2 * h) / PI32;
+    return n * (neighbour - self);
+}
+
+RWStructuredBuffer<Particle> particles;
+RWStructuredBuffer<int> neighbours;
+//int particleCount;
+float particleRadius;
+float particleMass;
+float gamma;
+float karpa;
+
+#pragma kernel ComputePressure
+float particleRadius2;
+float densityMultiplier;
+float pressureConstant;
+float initialDensity;
+[numthreads(8,1,1)]
+void ComputePressure (uint3 id : SV_DispatchThreadID)
+{
+    float3 position = particles[id.x].position;
+    float density = 0.0;
+    for (int i = 0; i < particles[id.x].neighbourCount; i++) {
+        density += W(position, particles[neighbours[MAX_NEIGHBOUR * id.x + i]].position, particleRadius);
+    }
+    density *= particleMass;
+    particles[id.x].density = density;
+    particles[id.x].pressure = karpa * initialDensity / gamma * (pow(abs(density / initialDensity), gamma) - 1.0);
+}
+
+#pragma kernel ComputeForce
+float forceCoefficient;
+float viscosityCoefficient;
+float3 gravity;
+[numthreads(8,1,1)]
+void ComputeForce (uint3 id : SV_DispatchThreadID) 
+{
+    Particle self = particles[id.x];
+    float3 accPressure = {0.0, 0.0, 0.0};
+    //float3 accViscosity = {0.0, 0.0, 0.0};
+    for (int i = 0; i < self.neighbourCount; i++) {
+        Particle neighbour = particles[neighbours[MAX_NEIGHBOUR * id.x + i]];
+        //float3 deltaR = self.position - neighbour.position;
+        //float magDeltaR = length(deltaR) + 0.00001;
+        //float offset = particleRadius - magDeltaR;
+        accPressure += (self.pressure / (self.density * self.density) + neighbour.pressure / (neighbour.density * neighbour.density)) * GradW(self.position, neighbour.position, particleRadius);
+        //accViscosity -= offset / (self.density * neighbour.density) * (self.velocity - neighbour.velocity);
+    }
+    accPressure *= particleMass * particleMass;
+    //accViscosity *= forceCoefficient * viscosityCoefficient;
+    particles[id.x].acceleration = gravity + accPressure;
+}

@@ -1,0 +1,57 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#define MAX_NEIGHBOUR 1024
+struct Particle {
+    float3 position;
+    float3 velocity;
+    float3 acceleration;
+    float density;
+    float pressure;
+    int neighbourCount;
+};
+
+RWStructuredBuffer<Particle> particles;
+RWStructuredBuffer<int> neighbours;
+//int particleCount;
+float particleRadius;
+
+#pragma kernel ComputePressure
+float particleRadius2;
+float densityMultiplier;
+float pressureConstant;
+float initialDensity;
+[numthreads(64,1,1)]
+void ComputePressure (uint3 id : SV_DispatchThreadID)
+{
+    float3 position = particles[id.x].position;
+    float density = 0.0;
+    for (int i = 0; i < particles[id.x].neighbourCount; i++) {
+        float temp = particleRadius2 - distance(position, particles[neighbours[MAX_NEIGHBOUR * id.x + i]].position);
+        density += temp * temp * temp;
+    }
+    density *= densityMultiplier;
+    particles[id.x].density = density;
+    particles[id.x].pressure = pressureConstant * (density - initialDensity);
+}
+
+#pragma kernel ComputeForce
+float forceCoefficient;
+float viscosityCoefficient;
+float3 gravity;
+[numthreads(64,1,1)]
+void ComputeForce (uint3 id : SV_DispatchThreadID) 
+{
+    Particle self = particles[id.x];
+    float3 accPressure = {0.0, 0.0, 0.0};
+    float3 accViscosity = {0.0, 0.0, 0.0};
+    for (int i = 0; i < self.neighbourCount; i++) {
+        Particle neighbour = particles[neighbours[MAX_NEIGHBOUR * id.x + i]];
+        float3 deltaR = self.position - neighbour.position;
+        float magDeltaR = length(deltaR) + 0.00001;
+        float offset = particleRadius - magDeltaR;
+        accPressure += ((self.pressure + neighbour.pressure) * offset * offset) / (2.0 * self.density * neighbour.density * magDeltaR) * deltaR;
+        accViscosity -= offset / (self.density * neighbour.density) * (self.velocity - neighbour.velocity);
+    }
+    accPressure *= forceCoefficient;
+    accViscosity *= forceCoefficient * viscosityCoefficient;
+    particles[id.x].acceleration = gravity + accPressure + accViscosity;
+}
