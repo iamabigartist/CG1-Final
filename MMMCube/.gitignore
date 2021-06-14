@@ -32,6 +32,7 @@ ehthumbs.db
 sysinfo.txt
 *.stackdump
 
+
 # Self added
 # ==========
 .collabignore
