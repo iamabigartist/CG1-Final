@@ -1,6 +1,6 @@
 Using pre-set license
 Built from '2020.3/china_unity/release' branch; Version is '2020.3.11f1c1 (77449f27ef9b) revision 7816351'; Using compiler version '192528614'; Build Type 'Release'
-OS: 'Windows 10 Home China; OS build 19043.1052; Version 2009; 64bit' Language: 'zh' Physical Memory: 8035 MB
+OS: 'Windows 10 Pro; OS build 19042.985; Version 2009; 64bit' Language: 'zh' Physical Memory: 65363 MB
 BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
 
  COMMAND LINE ARGUMENTS:
@@ -11,191 +11,366 @@ C:\Program Files\Unity\Hub\Editor\2020.3.11f1c1\Editor\Unity.exe
 -name
 AssetImportWorker0
 -projectPath
-C:/Users/15480/Documents/CGProjects/CG1-Final/MMMCube
+C:/Users/DIV-4/Documents/GitHub/CG1-Final/MMMCube
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-13372
-Successfully changed project path to: C:/Users/15480/Documents/CGProjects/CG1-Final/MMMCube
-C:/Users/15480/Documents/CGProjects/CG1-Final/MMMCube
+62203
+Successfully changed project path to: C:/Users/DIV-4/Documents/GitHub/CG1-Final/MMMCube
+C:/Users/DIV-4/Documents/GitHub/CG1-Final/MMMCube
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 43.47 ms, found 2 plugins.
+Refreshing native plugins compatible for Editor in 33.99 ms, found 2 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.3.11f1c1 (77449f27ef9b)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.3.11f1c1/Editor/Data/Resources/UnitySubsystems
-[Subsystems] Discovering subsystems at path C:/Users/15480/Documents/CGProjects/CG1-Final/MMMCube/Assets
+[Subsystems] Discovering subsystems at path C:/Users/DIV-4/Documents/GitHub/CG1-Final/MMMCube/Assets
 GfxDevice: creating device client; threaded=0
 Direct3D:
     Version:  Direct3D 11.0 [level 11.1]
-    Renderer: NVIDIA GeForce GTX 1650 (ID=0x1f91)
+    Renderer: NVIDIA GeForce RTX 2080 Ti (ID=0x1e04)
     Vendor:   
-    VRAM:     3962 MB
-    Driver:   26.21.14.4223
+    VRAM:     11049 MB
+    Driver:   27.21.14.6172
 Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.3.11f1c1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.3.11f1c1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.3.11f1c1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56420
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56524
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.3.11f1c1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.008502 seconds.
+Registered in 0.009055 seconds.
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 27.13 ms, found 2 plugins.
+Refreshing native plugins compatible for Editor in 35.11 ms, found 2 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.945 seconds
+- Completed reload, in  1.097 seconds
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.013145 seconds.
+Registered in 0.009456 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.35 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.363 seconds
+Platform modules already initialized, skipping
+========================================================================
+Worker process is ready to serve import requests
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.11 seconds
+Refreshing native plugins compatible for Editor in 0.32 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1396 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.2 MB.
+System memory in use after: 65.2 MB.
+
+Unloading 18 unused Assets to reduce memory usage. Loaded Objects now: 1831.
+Total: 3.040500 ms (FindLiveObjects: 0.537000 ms CreateObjectMapping: 0.093600 ms MarkObjects: 2.306300 ms  DeleteObjects: 0.102700 ms)
+
+========================================================================
+Received Import Request.
+  path: Assets/MCube1/Scripts/MonoBehaviour/LittleMarchingCubeShowerInspector.cs
+  artifactKey: Guid(5f988d6dc49be974c97b6f64aca81744) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/MonoBehaviour/LittleMarchingCubeShowerInspector.cs using Guid(5f988d6dc49be974c97b6f64aca81744) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2e417c4c5c3747cbe6e3f506c0e4ed19') in 0.035866 seconds
+  Import took 0.038952 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000491 seconds.
+  path: Assets/MCube1/Scripts/MonoBehaviour
+  artifactKey: Guid(53e7ca75002b0df46af0baee973d5a3b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/MonoBehaviour using Guid(53e7ca75002b0df46af0baee973d5a3b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2e1ce7b9817bf04275553c4443b4c801') in 0.005626 seconds
+  Import took 0.007517 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000538 seconds.
+  path: Assets/MCube1/Scripts/MonoBehaviour/TestVectors.cs
+  artifactKey: Guid(ea46bcafb4ba60a429061942d5e07c85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/MonoBehaviour/TestVectors.cs using Guid(ea46bcafb4ba60a429061942d5e07c85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '233ec2bb395afbb3be5e200a1eef00f0') in 0.004867 seconds
+  Import took 0.006657 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.010465 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.91 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.389 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.38 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1390 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.0 MB.
+System memory in use after: 65.1 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1834.
+Total: 1.918100 ms (FindLiveObjects: 0.217500 ms CreateObjectMapping: 0.077300 ms MarkObjects: 1.602200 ms  DeleteObjects: 0.019800 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 16.314269 seconds.
+  path: Assets/MCube1/Scripts/Generators/DataStructures.cs
+  artifactKey: Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/DataStructures.cs using Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd39e91407a691a65c9587f7ddd78b4f3') in 0.008593 seconds
+  Import took 0.012167 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.024705 seconds.
+  path: Assets/MCube1/Scripts/Generators/DataStructures.cs
+  artifactKey: Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/DataStructures.cs using Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd39e91407a691a65c9587f7ddd78b4f3') in 0.005201 seconds
+  Import took 0.007222 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 2.232703 seconds.
+  path: Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator.cs
+  artifactKey: Guid(485715e7b9c6ad348b54b0563dd1a57c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator.cs using Guid(485715e7b9c6ad348b54b0563dd1a57c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '97837f795e94e185d61516cf4077ee26') in 0.006455 seconds
+  Import took 0.009183 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000459 seconds.
+  path: Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator.cs
+  artifactKey: Guid(485715e7b9c6ad348b54b0563dd1a57c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator.cs using Guid(485715e7b9c6ad348b54b0563dd1a57c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '97837f795e94e185d61516cf4077ee26') in 0.007710 seconds
+  Import took 0.010179 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 5.852901 seconds.
+  path: Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator1.cs
+  artifactKey: Guid(973d180d7b3014e45a7502a7f4c38aa9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator1.cs using Guid(973d180d7b3014e45a7502a7f4c38aa9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '77fe4ce7da44ac25adfd230fd4455902') in 0.006589 seconds
+  Import took 0.009443 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.007983 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.39 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.251 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.55 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.1 MB.
+System memory in use after: 65.2 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1838.
+Total: 2.478500 ms (FindLiveObjects: 0.246700 ms CreateObjectMapping: 0.049400 ms MarkObjects: 2.160200 ms  DeleteObjects: 0.020600 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 596.161107 seconds.
+  path: Assets/MCube1/Scripts/Generators/MarchingCubeGPUGenerator.cs
+  artifactKey: Guid(973d180d7b3014e45a7502a7f4c38aa9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/MarchingCubeGPUGenerator.cs using Guid(973d180d7b3014e45a7502a7f4c38aa9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '15f7f814929fa6bfd4188c9d5505099f') in 0.008805 seconds
+  Import took 0.011462 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.010704 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.55 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.298 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.44 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.1 MB.
+System memory in use after: 65.2 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1841.
+Total: 2.014900 ms (FindLiveObjects: 0.137300 ms CreateObjectMapping: 0.035500 ms MarkObjects: 1.825700 ms  DeleteObjects: 0.015100 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 1234.609004 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingUtility.compute
+  artifactKey: Guid(35203ea7a54aca64c8c6694ead7888db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingUtility.compute using Guid(35203ea7a54aca64c8c6694ead7888db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd074308d04b62da5c5119dab3686644e') in 0.027029 seconds
+  Import took 0.030041 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.001988 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingUtility.compute
+  artifactKey: Guid(35203ea7a54aca64c8c6694ead7888db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingUtility.compute using Guid(35203ea7a54aca64c8c6694ead7888db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd074308d04b62da5c5119dab3686644e') in 0.006663 seconds
+  Import took 0.009555 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 71.215948 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingUtility.compute
+  artifactKey: Guid(35203ea7a54aca64c8c6694ead7888db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingUtility.compute using Guid(35203ea7a54aca64c8c6694ead7888db) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c8a50ddd84d5d940f2ab83f09ffa3d5d') in 0.006522 seconds
+  Import took 0.009026 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 28.094528 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute
+  artifactKey: Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute using Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '64fc2e0030bf2191ee59971be8c12973') in 0.008776 seconds
+  Import took 0.011919 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 55.726735 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute
+  artifactKey: Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute using Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0527dd5be3e437931ce7a7061b8ece2f') in 0.007553 seconds
+  Import took 0.010343 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 151.779748 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute
+  artifactKey: Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute using Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6f9bd128cc9d4e2ca87361b9e342e002') in 0.005903 seconds
+  Import took 0.009277 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 10.256152 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute
+  artifactKey: Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCubeData.compute using Guid(8489987d1f7f5d14c88023c6291a1e5c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9f4854593dbf74b9273781617b8c78a6') in 0.007300 seconds
+  Import took 0.009703 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.042644 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.40 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.517 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.44 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.1 MB.
+System memory in use after: 65.2 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1844.
+Total: 1.955400 ms (FindLiveObjects: 0.184600 ms CreateObjectMapping: 0.057900 ms MarkObjects: 1.691500 ms  DeleteObjects: 0.020100 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.008232 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.41 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.305 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.31 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.1 MB.
+System memory in use after: 65.3 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1847.
+Total: 1.802300 ms (FindLiveObjects: 0.132500 ms CreateObjectMapping: 0.038600 ms MarkObjects: 1.613000 ms  DeleteObjects: 0.017200 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.012176 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.43 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.309 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.42 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.1 MB.
+System memory in use after: 65.3 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1850.
+Total: 1.789900 ms (FindLiveObjects: 0.218800 ms CreateObjectMapping: 0.060700 ms MarkObjects: 1.494600 ms  DeleteObjects: 0.014700 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.012025 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.31 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.459 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.36 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.2 MB.
+System memory in use after: 65.3 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1853.
+Total: 1.640100 ms (FindLiveObjects: 0.140200 ms CreateObjectMapping: 0.041800 ms MarkObjects: 1.440600 ms  DeleteObjects: 0.016200 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.009917 seconds.
 Begin MonoManager ReloadAssembly
 Native extension for WindowsStandalone target not found
 Refreshing native plugins compatible for Editor in 0.28 ms, found 2 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.184 seconds
+- Completed reload, in  1.160 seconds
 Platform modules already initialized, skipping
-========================================================================
-Worker process is ready to serve import requests
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.07 seconds
-Refreshing native plugins compatible for Editor in 0.51 ms, found 2 plugins.
+Refreshing native plugins compatible for Editor in 0.32 ms, found 2 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 1396 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 64.8 MB.
-System memory in use after: 64.9 MB.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.2 MB.
+System memory in use after: 65.3 MB.
 
-Unloading 18 unused Assets to reduce memory usage. Loaded Objects now: 1830.
-Total: 1.735700 ms (FindLiveObjects: 0.152100 ms CreateObjectMapping: 0.048600 ms MarkObjects: 1.474100 ms  DeleteObjects: 0.059200 ms)
-
-========================================================================
-Received Import Request.
-  path: Assets/MCube1
-  artifactKey: Guid(6c76a2eda8270144886a6f5bebc2ff80) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1 using Guid(6c76a2eda8270144886a6f5bebc2ff80) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cf6d83dfaa20286cd50db14c1d3258a0') in 0.006838 seconds
-  Import took 0.008773 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.000231 seconds.
-  path: Assets/MCube1/Main.unity
-  artifactKey: Guid(aaf66dc70e151df46b8c998f28109ca9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Main.unity using Guid(aaf66dc70e151df46b8c998f28109ca9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '738a42a5a0fda29ddafefbaa80284223') in 0.012474 seconds
-  Import took 0.014378 seconds .
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1856.
+Total: 1.838600 ms (FindLiveObjects: 0.180400 ms CreateObjectMapping: 0.054300 ms MarkObjects: 1.584000 ms  DeleteObjects: 0.018700 ms)
 
 ========================================================================
 Received Prepare
 Registering precompiled user dll's ...
-Registered in 0.014668 seconds.
+Registered in 0.006812 seconds.
 Begin MonoManager ReloadAssembly
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 0.34 ms, found 2 plugins.
+Refreshing native plugins compatible for Editor in 0.26 ms, found 2 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.502 seconds
+- Completed reload, in  0.873 seconds
 Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 0.31 ms, found 2 plugins.
+Refreshing native plugins compatible for Editor in 0.26 ms, found 2 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 1390 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 64.7 MB.
-System memory in use after: 64.8 MB.
+Unloading 1391 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.2 MB.
+System memory in use after: 65.3 MB.
 
-Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1833.
-Total: 2.254100 ms (FindLiveObjects: 0.169100 ms CreateObjectMapping: 0.049800 ms MarkObjects: 2.004700 ms  DeleteObjects: 0.029300 ms)
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1859.
+Total: 1.601100 ms (FindLiveObjects: 0.153800 ms CreateObjectMapping: 0.047500 ms MarkObjects: 1.383900 ms  DeleteObjects: 0.014600 ms)
 
-========================================================================
-Received Import Request.
-  Time since last request: 118.002363 seconds.
-  path: Assets/MCube1/Scripts
-  artifactKey: Guid(55b8d0dfdf07c874f939c3c4239e2553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts using Guid(55b8d0dfdf07c874f939c3c4239e2553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '409063520b793dc8061a19f4cec112ab') in 0.008676 seconds
-  Import took 0.012344 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 2.957241 seconds.
-  path: Assets/MCube1/Scripts/LittleMarchingCubeShower.cs
-  artifactKey: Guid(21d0f2491b12a5947974a0853ea7bcd1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/LittleMarchingCubeShower.cs using Guid(21d0f2491b12a5947974a0853ea7bcd1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '377b0b5e0240a2f4a682bdf0ed3072d3') in 0.053808 seconds
-  Import took 0.056537 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 7.917014 seconds.
-  path: Assets/MCube1/Scripts/LittleMarchingCubeShowerInspector.cs
-  artifactKey: Guid(5f988d6dc49be974c97b6f64aca81744) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/LittleMarchingCubeShowerInspector.cs using Guid(5f988d6dc49be974c97b6f64aca81744) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd937edb96dce5af5277e7788f41bc29c') in 0.006806 seconds
-  Import took 0.009643 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.765370 seconds.
-  path: Assets/MCube1/Scripts/TestVectors.cs
-  artifactKey: Guid(ea46bcafb4ba60a429061942d5e07c85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/TestVectors.cs using Guid(ea46bcafb4ba60a429061942d5e07c85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd54e37271f51a3636497d5a6415224f2') in 0.005759 seconds
-  Import took 0.008017 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 2.190880 seconds.
-  path: Assets/MCube1/Scripts/Generators
-  artifactKey: Guid(ffba0cbc3458b8846b74df063f85dcec) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators using Guid(ffba0cbc3458b8846b74df063f85dcec) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd78fa26b6a33e6a89e928d6f24187ff4') in 0.005385 seconds
-  Import took 0.008200 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.000566 seconds.
-  path: Assets/MCube1/Scripts/Generators
-  artifactKey: Guid(ffba0cbc3458b8846b74df063f85dcec) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators using Guid(ffba0cbc3458b8846b74df063f85dcec) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd78fa26b6a33e6a89e928d6f24187ff4') in 0.005087 seconds
-  Import took 0.007789 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.537234 seconds.
-  path: Assets/MCube1/Scripts/Generators/DataStructures.cs
-  artifactKey: Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators/DataStructures.cs using Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0fe5d65e66c4bfe1c6380587749f9eea') in 0.005408 seconds
-  Import took 0.007872 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.980916 seconds.
-  path: Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator.cs
-  artifactKey: Guid(485715e7b9c6ad348b54b0563dd1a57c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators/MarchingCubeCPUGenerator.cs using Guid(485715e7b9c6ad348b54b0563dd1a57c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c11abfab31ea193c4a72a3b3651f401e') in 0.006380 seconds
-  Import took 0.009712 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.502675 seconds.
-  path: Assets/MCube1/Scripts/Generators/Perlin3DGenerator.cs
-  artifactKey: Guid(a28cb0ba09b07c14db27fa9516f9bc49) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators/Perlin3DGenerator.cs using Guid(a28cb0ba09b07c14db27fa9516f9bc49) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0e9a335152cf2a46f531ad084bb934cf') in 0.006114 seconds
-  Import took 0.008892 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 3.070123 seconds.
-  path: Assets/MCube1/Scripts/Generators/ComputeShaders
-  artifactKey: Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators/ComputeShaders using Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13a41378bfad8f9b13ea5205690a4366') in 0.005875 seconds
-  Import took 0.008497 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.000697 seconds.
-  path: Assets/MCube1/Scripts/Generators/ComputeShaders
-  artifactKey: Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators/ComputeShaders using Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13a41378bfad8f9b13ea5205690a4366') in 0.005068 seconds
-  Import took 0.008004 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 0.038532 seconds.
-  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCube.compute
-  artifactKey: Guid(a695cd1c59e0b3c4f84f43a678b96ad9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCube.compute using Guid(a695cd1c59e0b3c4f84f43a678b96ad9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'efc5c28530f30152efa95f0a941cf40c') in 0.019977 seconds
-  Import took 0.022600 seconds .
-
-AssetImportWorkerClient::OnTransportError - code=2 error=End of file
