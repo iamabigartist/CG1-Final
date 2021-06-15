@@ -1,0 +1,106 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#define PI32 5.5683278
+#define PI 3.1415926
+struct Particle {
+    float3 position;
+    float3 prePosition;
+    float3 velocity;
+    float3 preVelocity;
+    float3 Aext;
+    float3 Ap;
+    float p;
+    float d;
+};
+
+float W(float3 v, float h) {
+    float r = length(v);
+    float mul = r < 0.0001 ? 0.0 : 1.0;
+    float r2 = r * r;
+    float h2 = h * h;
+    return 1.0 / (h2 * h * PI32) * (2.5 - r2) * exp(-r2 / h2) * mul;
+}
+
+float3 GradW(float3 v, float h) {
+    float r = length(v);
+    float mul = r < 0.0001 ? 0.0 : 1.0;
+    float r2 = r * r;
+    float h2 = h * h;
+    float n = -2.0 * exp(-r2 / h2) / (h2 * h * PI32) * ((2.5 - r2) / h2 + 1.0);
+    return n * v * mul;
+}
+
+int particleCount;
+float dt;
+float3 gravity;
+float particleMass;
+float h;
+float d0;
+//float delta;
+
+RWStructuredBuffer<Particle> particles;
+
+#pragma kernel Initialize
+[numthreads(8,1,1)]
+void Initialize (uint3 id : SV_DispatchThreadID)
+{
+    particles[id.x].Aext = gravity;
+    particles[id.x].p = 0.0;
+    particles[id.x].Ap = float3(0.0, 0.0, 0.0);
+}
+
+#pragma kernel Predict
+[numthreads(8, 1, 1)]
+void Predict(uint3 id : SV_DispatchThreadID) 
+{
+    particles[id.x].preVelocity = particles[id.x].velocity + (particles[id.x].Aext + particles[id.x].Ap) * dt;
+    particles[id.x].prePosition = particles[id.x].position + particles[id.x].velocity * dt;
+}
+
+#pragma kernel Correct
+[numthreads(8, 1, 1)]
+void Correct(uint3 id : SV_DispatchThreadID)
+{
+    float preDensity = 0.0;
+    float3 sumGrad = {0.0, 0.0, 0.0};
+    float3 grad;
+    float sumDot = 0.0;
+    for (int i = 0; i < particleCount; i++) {
+        preDensity += W(particles[id.x].prePosition - particles[i].prePosition, h);
+        grad = GradW(particles[id.x].position - particles[i].position, h);
+        sumGrad += grad;
+        sumDot += dot(grad, grad);
+    }
+    preDensity *= particleMass;
+    float derr = preDensity - d0;
+    float beta = dt * dt * particleMass * particleMass * 2.0 / (d0 * d0);
+    float delta = -1.0 / (beta * (-dot(sumGrad, sumGrad) - sumDot));
+    float perr = delta * derr;
+    particles[id.x].p += perr;
+    particles[id.x].d = preDensity;
+
+    particles[id.x].Ap = -particleMass * 2.0 * particles[id.x].p / (d0 * d0) * sumGrad;
+    // particles[id.x].Ap.x = beta;
+    // particles[id.x].Ap.y = delta;
+    // particles[id.x].Ap.z = preDensity;
+}
+
+#pragma kernel Force
+[numthreads(8, 1, 1)]
+void Force(uint3 id : SV_DispatchThreadID)
+{
+    // float3 accP = {0.0, 0.0, 0.0};
+    // Particle self = particles[id.x];
+    // for (int i = 0; i < particleCount; i++) {
+    //     Particle neighbour = particles[i];
+    //     accP += (self.p / (self.d * self.d) + neighbour.p / (neighbour.d * neighbour.d)) * GradW(neighbour.position - self.position, h);
+    // }
+    // particles[id.x].Ap = -particleMass * accP;
+}
+
+#pragma kernel Finalize
+[numthreads(8, 1, 1)]
+void Finalize(uint3 id : SV_DispatchThreadID)
+{
+    particles[id.x].velocity += (particles[id.x].Aext + particles[id.x].Ap) * dt;
+    particles[id.x].position += particles[id.x].velocity * dt;
+}
