@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System. Collections. Generic;
 
 using UnityEngine;
 
@@ -354,24 +353,24 @@ namespace MarchingCube1
 
         #region Interface
 
-        public void Input(VolumeMatrix volume_matrix, float iso_value)
+        public void Input ( VolumeMatrix volume_matrix , float iso_value )
         {
             _volume_matrix = volume_matrix;
             _iso_value = iso_value;
         }
 
-        public void Output(out Mesh mesh, out Vector3[] vertices, out int[] triangles)
+        public void Output ( out Mesh mesh , out Vector3 [ ] vertices , out int [ ] triangles )
         {
             mesh = new Mesh();
             Init();
             IsoMark();
             FindVertices();
             Triangulation();
-            vertices = _vertices.ToArray();
-            triangles = _triangles.ToArray();
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.RecalculateNormals();
+            vertices = _vertices. ToArray();
+            triangles = _triangles. ToArray();
+            mesh. vertices = vertices;
+            mesh. triangles = triangles;
+            mesh. RecalculateNormals();
         }
 
         #endregion Interface
@@ -381,16 +380,16 @@ namespace MarchingCube1
         /// <summary>
         /// Use xyz point position to get 1d vertex index.
         /// </summary>
-        private int XYZToVertexIndex(int x, int y, int z)
+        private int XYZToVertexIndex ( int x , int y , int z )
         {
-            return x + y * _volume_matrix.size.x + z * _volume_matrix.size.y * _volume_matrix.size.x;
+            return x + y * _volume_matrix. size. x + z * _volume_matrix. size. y * _volume_matrix. size. x;
         }
 
         /// <summary>
         /// Use xyz point position and axis to get 1d edge index in <see cref="_vertices_indices"/>
         /// </summary>
         /// <param name="axis">can only be 0,1,2</param>
-        private int XYZToEdgeIndex(int x, int y, int z, int axis)
+        private int XYZToEdgeIndex ( int x , int y , int z , int axis )
         {
             int start = _start_indices[axis];
             int s_x = _volume_matrix.size.x - (axis == 0 ? 1 : 0);
@@ -403,121 +402,127 @@ namespace MarchingCube1
         /// Use xyz orginal point position and binary offset from <see cref="edges_convert1"/> to
         /// get 1d edge index in <see cref="_vertices_indices"/>
         /// </summary>
-        private int GridEdgeToEdgeIndex(int x, int y, int z, int binary_edge_index)
+        private int GridEdgeToEdgeIndex ( int x , int y , int z , int binary_edge_index )
         {
             //X Axis edge
-            if (binary_edge_index < 4)
+            if ( binary_edge_index < 4 )
             {
                 return XYZToEdgeIndex(
-                    x,
-                    y + ((binary_edge_index & (1 << 0)) >> 0),
-                    z + ((binary_edge_index & (1 << 1)) >> 1),
-                    0);
+                    x ,
+                    y + ( ( binary_edge_index & ( 1 << 0 ) ) >> 0 ) ,
+                    z + ( ( binary_edge_index & ( 1 << 1 ) ) >> 1 ) ,
+                    0 );
             }
             //Y Axis edge
-            else if (binary_edge_index < 8)
+            else if ( binary_edge_index < 8 )
             {
                 binary_edge_index -= 4;
                 return XYZToEdgeIndex(
-                    x + ((binary_edge_index & (1 << 0)) >> 0),
-                    y,
-                    z + ((binary_edge_index & (1 << 1)) >> 1),
-                    1);
+                    x + ( ( binary_edge_index & ( 1 << 0 ) ) >> 0 ) ,
+                    y ,
+                    z + ( ( binary_edge_index & ( 1 << 1 ) ) >> 1 ) ,
+                    1 );
             }
             //Z Axis edge
             else
             {
                 binary_edge_index -= 8;
                 return XYZToEdgeIndex(
-                    x + ((binary_edge_index & (1 << 0)) >> 0),
-                    y + ((binary_edge_index & (1 << 1)) >> 1),
-                    z,
-                    2);
+                    x + ( ( binary_edge_index & ( 1 << 0 ) ) >> 0 ) ,
+                    y + ( ( binary_edge_index & ( 1 << 1 ) ) >> 1 ) ,
+                    z ,
+                    2 );
             }
         }
 
-        private Vector3 InterpolateVertex(Vector4 p_a, Vector4 p_b)
+        private Vector3 InterpolateVertex ( Vector4 p_a , Vector4 p_b )
         {
             float t = (_iso_value - p_a.w) / (p_b.w - p_a.w);
-            return (Vector3)p_a + t * ((Vector3)p_b - (Vector3)p_a);
+            return ( Vector3 ) p_a + t * ( ( Vector3 ) p_b - ( Vector3 ) p_a );
         }
 
         #endregion Utility
 
         #region MarchingCubeSteps
 
-        private void Init()
+        private void Init ()
         {
-            _mark_matrix = new bool[_volume_matrix.data.Length];
-            for (int i = 0; i < _mark_matrix.Length; i++) { _mark_matrix[i] = false; }
+            _mark_matrix = new bool [ _volume_matrix. data. Length ];
+            for ( int i = 0; i < _mark_matrix. Length; i++ ) { _mark_matrix [ i ] = false; }
 
-            _start_indices = Vector3Int.zero;
-            _start_indices.y = (_volume_matrix.size.x - 1) * _volume_matrix.size.y * _volume_matrix.size.z;
-            _start_indices.z = _start_indices.y +
-                _volume_matrix.size.x * (_volume_matrix.size.y - 1) * _volume_matrix.size.z;
+            _start_indices = Vector3Int. zero;
+            _start_indices. y = ( _volume_matrix. size. x - 1 ) * _volume_matrix. size. y * _volume_matrix. size. z;
+            _start_indices. z = _start_indices. y +
+                _volume_matrix. size. x * ( _volume_matrix. size. y - 1 ) * _volume_matrix. size. z;
 
-            _vertices_indices = new int[_start_indices.z +
-                _volume_matrix.size.x * _volume_matrix.size.y * (_volume_matrix.size.z - 1)];
-            for (int i = 0; i < _vertices_indices.Length; i++) { _vertices_indices[i] = -1; }
+            _vertices_indices = new int [ _start_indices. z +
+                _volume_matrix. size. x * _volume_matrix. size. y * ( _volume_matrix. size. z - 1 ) ];
+            for ( int i = 0; i < _vertices_indices. Length; i++ ) { _vertices_indices [ i ] = -1; }
 
-            if (_vertices == null) _vertices = new List<Vector3>();
-            else { _vertices.Clear(); }
-            if (_triangles == null) _triangles = new List<int>();
-            else { _triangles.Clear(); }
+            if ( _vertices == null ) _vertices = new List<Vector3>();
+            else { _vertices. Clear(); }
+            if ( _triangles == null ) _triangles = new List<int>();
+            else { _triangles. Clear(); }
         }
 
-        private void IsoMark()
+        private void IsoMark ()
         {
-            for (int i = 0; i < _volume_matrix.data.Length; i++)
+            for ( int i = 0; i < _volume_matrix. data. Length; i++ )
             {
-                if (_volume_matrix.data[i].w > _iso_value)
+                if ( _volume_matrix. data [ i ] > _iso_value )
                 {
-                    _mark_matrix[i] = true;
+                    _mark_matrix [ i ] = true;
                 }
             }
         }
 
-        private void FindVertices()
+        private void FindVertices ()
         {
-            for (int z = 0; z < _volume_matrix.size.z; z++)
+            for ( int z = 0; z < _volume_matrix. size. z; z++ )
             {
-                for (int y = 0; y < _volume_matrix.size.y; y++)
+                for ( int y = 0; y < _volume_matrix. size. y; y++ )
                 {
-                    for (int x = 0; x < _volume_matrix.size.x; x++)
+                    for ( int x = 0; x < _volume_matrix. size. x; x++ )
                     {
                         if (
-                            x != _volume_matrix.size.x - 1 &&
-                            _mark_matrix[XYZToVertexIndex(x, y, z)] ^ _mark_matrix[XYZToVertexIndex(x + 1, y, z)])
+                            x != _volume_matrix. size. x - 1 &&
+                            _mark_matrix [ XYZToVertexIndex( x , y , z ) ] ^ _mark_matrix [ XYZToVertexIndex( x + 1 , y , z ) ] )
                         {
-                            _vertices.Add(InterpolateVertex(_volume_matrix[x, y, z], _volume_matrix[x + 1, y, z]));
-                            _vertices_indices[XYZToEdgeIndex(x, y, z, 0)] = _vertices.Count - 1;
+                            _vertices. Add( InterpolateVertex(
+                                new Vector4( x , y , z , _volume_matrix [ x , y , z ] ) ,
+                                new Vector4( x + 1 , y , z , _volume_matrix [ x + 1 , y , z ] ) ) );
+                            _vertices_indices [ XYZToEdgeIndex( x , y , z , 0 ) ] = _vertices. Count - 1;
                         }
                         if (
-                            y != _volume_matrix.size.y - 1 &&
-                            _mark_matrix[XYZToVertexIndex(x, y, z)] ^ _mark_matrix[XYZToVertexIndex(x, y + 1, z)])
+                            y != _volume_matrix. size. y - 1 &&
+                            _mark_matrix [ XYZToVertexIndex( x , y , z ) ] ^ _mark_matrix [ XYZToVertexIndex( x , y + 1 , z ) ] )
                         {
-                            _vertices.Add(InterpolateVertex(_volume_matrix[x, y, z], _volume_matrix[x, y + 1, z]));
-                            _vertices_indices[XYZToEdgeIndex(x, y, z, 1)] = _vertices.Count - 1;
+                            _vertices. Add( InterpolateVertex(
+                                new Vector4( x , y , z , _volume_matrix [ x , y , z ] ) ,
+                                new Vector4( x , y + 1 , z , _volume_matrix [ x , y + 1 , z ] ) ) );
+                            _vertices_indices [ XYZToEdgeIndex( x , y , z , 1 ) ] = _vertices. Count - 1;
                         }
                         if (
-                            z != _volume_matrix.size.z - 1 &&
-                            _mark_matrix[XYZToVertexIndex(x, y, z)] ^ _mark_matrix[XYZToVertexIndex(x, y, z + 1)])
+                            z != _volume_matrix. size. z - 1 &&
+                            _mark_matrix [ XYZToVertexIndex( x , y , z ) ] ^ _mark_matrix [ XYZToVertexIndex( x , y , z + 1 ) ] )
                         {
-                            _vertices.Add(InterpolateVertex(_volume_matrix[x, y, z], _volume_matrix[x, y, z + 1]));
-                            _vertices_indices[XYZToEdgeIndex(x, y, z, 2)] = _vertices.Count - 1;
+                            _vertices. Add( InterpolateVertex(
+                                new Vector4( x , y , z , _volume_matrix [ x , y , z ] ) ,
+                                new Vector4( x , y , z + 1 , _volume_matrix [ x , y , z + 1 ] ) ) );
+                            _vertices_indices [ XYZToEdgeIndex( x , y , z , 2 ) ] = _vertices. Count - 1;
                         }
                     }
                 }
             }
         }
 
-        private void Triangulation()
+        private void Triangulation ()
         {
-            for (int z = 0; z < _volume_matrix.size.z - 1; z++)
+            for ( int z = 0; z < _volume_matrix. size. z - 1; z++ )
             {
-                for (int y = 0; y < _volume_matrix.size.y - 1; y++)
+                for ( int y = 0; y < _volume_matrix. size. y - 1; y++ )
                 {
-                    for (int x = 0; x < _volume_matrix.size.x - 1; x++)
+                    for ( int x = 0; x < _volume_matrix. size. x - 1; x++ )
                     {
                         int grid_index =
                                 (Convert.ToInt32(_mark_matrix[XYZToVertexIndex(x, y, z)]) << vertices_convert1[0b000]) |
@@ -528,9 +533,9 @@ namespace MarchingCube1
                                 (Convert.ToInt32(_mark_matrix[XYZToVertexIndex(x, y + 1, z + 1)]) << vertices_convert1[0b110]) |
                                 (Convert.ToInt32(_mark_matrix[XYZToVertexIndex(x + 1, y, z + 1)]) << vertices_convert1[0b101]) |
                                 (Convert.ToInt32(_mark_matrix[XYZToVertexIndex(x + 1, y + 1, z + 1)]) << vertices_convert1[0b111]);
-                        for (int i = 0; triangulation[grid_index, i] != -1; i++)
+                        for ( int i = 0; triangulation [ grid_index , i ] != -1; i++ )
                         {
-                            _triangles.Add(_vertices_indices[GridEdgeToEdgeIndex(x, y, z, edges_convert1[triangulation[grid_index, i]])]);
+                            _triangles. Add( _vertices_indices [ GridEdgeToEdgeIndex( x , y , z , edges_convert1 [ triangulation [ grid_index , i ] ] ) ] );
                         }
                     }
                 }

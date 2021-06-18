@@ -20,6 +20,7 @@ public class PCISPHSlow : MonoBehaviour
         public float density;
     }
 
+    public MeshFilter meshFilter;
     public ComputeShader computeSPH;
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
@@ -34,7 +35,7 @@ public class PCISPHSlow : MonoBehaviour
     [SerializeField] private float m_dt;
     [SerializeField] private bool m_randomness;
     [SerializeField] private float m_viscosity;
-    [SerializeField] private int m_gridStep;
+    [SerializeField] private float m_gridStep;
     //[SerializeField] private float m_dampingRate;
     //[SerializeField] private float m_pressureConstant;
 
@@ -42,7 +43,7 @@ public class PCISPHSlow : MonoBehaviour
     private int m_actualNumParticles;
     private ComputeBuffer m_particleBuffer;
     public Particle[] m_particles;
-    private Transform[] m_objects;
+    //private Transform[] m_objects;
     private float m_massPerParticle;
 
     private int m_initKernel;
@@ -56,8 +57,11 @@ public class PCISPHSlow : MonoBehaviour
     private float m_preDelta;
 
     private bool m_started = false;
-    private float[] m_grid;
     private Vector3Int m_gridSize;
+
+    private MarchingCube1.MarchingCubeCPUGenerator m_generator;
+    private MarchingCube1.VolumeMatrix m_volume;
+    private Mesh m_mesh;
 
     private void Start()
     {
@@ -72,12 +76,14 @@ public class PCISPHSlow : MonoBehaviour
         CreateParticles();
         InitializeKernels();
         Vector3 s = m_boundingBox.size / m_gridStep;
-        m_gridSize.x = Mathf.CeilToInt(s.x);
-        m_gridSize.y = Mathf.CeilToInt(s.y);
-        m_gridSize.z = Mathf.CeilToInt(s.z);
-        m_grid = new float[m_gridSize.x * m_gridSize.y * m_gridSize.z];
-        for (int i = 0; i < m_grid.Length; ++i)
-            m_grid[i] = 0f;
+        m_gridSize.x = Mathf.CeilToInt(s.x) + 2;
+        m_gridSize.y = Mathf.CeilToInt(s.y) + 2;
+        m_gridSize.z = Mathf.CeilToInt(s.z) + 2;
+
+        m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
+        m_volume = new MarchingCube1.VolumeMatrix(m_gridSize);
+        m_mesh = new Mesh();
+        meshFilter.mesh = m_mesh;
     }
 
     private void Update()
@@ -87,13 +93,6 @@ public class PCISPHSlow : MonoBehaviour
         {
             Simulate();
             if (m_frameByFrame) m_started = false;
-        }
-        if (Input.GetKey(KeyCode.L))
-        {
-            for (int i = 0; i < m_actualNumParticles; i++)
-            {
-                m_objects[i].position = m_particles[i].position;
-            }
         }
     }
 
@@ -122,7 +121,7 @@ public class PCISPHSlow : MonoBehaviour
         m_massPerParticle = (m_initialDensity * m_generateBox.size.x * m_generateBox.size.y * m_generateBox.size.z) / m_actualNumParticles;
 
         m_particles = new Particle[m_actualNumParticles];
-        m_objects = new Transform[m_actualNumParticles];
+        //m_objects = new Transform[m_actualNumParticles];
 
         float posX = min.x;
         for (int i = 0; i < particleCount.x; i++)
@@ -134,13 +133,13 @@ public class PCISPHSlow : MonoBehaviour
                 for (int k = 0; k < particleCount.z; k++)
                 {
                     int index = particleCount.y * particleCount.z * i + particleCount.z * j + k;
-                    m_objects[index] = Instantiate(particleObject, transform).transform;
+                    //m_objects[index] = Instantiate(particleObject, transform).transform;
                     m_particles[index].position.x = posX;
                     m_particles[index].position.y = posY;
                     m_particles[index].position.z = posZ;
                     if (m_randomness) m_particles[index].position += new Vector3(Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f));
                     m_particles[index].velocity = Vector3.zero;
-                    m_objects[index].position = m_particles[index].position;
+                    //m_objects[index].position = m_particles[index].position;
 
                     posZ += step;
                 }
@@ -250,16 +249,22 @@ public class PCISPHSlow : MonoBehaviour
             CalculateBoundary(i);
         });
 
+        for (int i = 0; i < m_volume.data.Length; ++i)
+            m_volume.data[i] = 0f;
         for (int i = 0; i < m_actualNumParticles; i++)
         {
-            m_objects[i].position = m_particles[i].position;
+            //m_objects[i].position = m_particles[i].position;
             Vector3 tem = m_particles[i].position - m_boundingBox.min;
-            int x = Mathf.FloorToInt(tem.x / m_gridStep);
-            int y = Mathf.FloorToInt(tem.y / m_gridStep);
-            int z = Mathf.FloorToInt(tem.z / m_gridStep);
-            m_grid[x + y * m_gridSize.x + z * m_gridSize.x * m_gridSize.y] += 1f;
+            int x = Mathf.Clamp(Mathf.FloorToInt(tem.x / m_gridStep) + 1, 1, m_gridSize.x - 2);
+            int y = Mathf.Clamp(Mathf.FloorToInt(tem.y / m_gridStep) + 1, 1, m_gridSize.y - 2);
+            int z = Mathf.Clamp(Mathf.FloorToInt(tem.z / m_gridStep) + 1, 1, m_gridSize.z - 2);
+            m_volume[x, y, z] += 1f;
         }
-
+        m_generator.Input(m_volume, 0.5f);
+        Vector3[] vs;
+        int[] tris;
+        m_generator.Output(out m_mesh, out vs, out tris);
+        meshFilter.mesh = m_mesh;
     }
 
     private void CalculateBoundary(int particle)
