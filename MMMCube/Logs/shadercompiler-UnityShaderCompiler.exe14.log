@@ -12,3 +12,6 @@ Cmd: compileComputeKernel
   error: 1 plat 25 at C:/Users/DIV-4/Documents/GitHub/CG1-Final/MMMCube/Library/PackageCache/com.unity.render-pipelines.core@10.5.0/ShaderLibrary/API/D3D11.hlsl(116): 'SAMPLE_DEPTH_TEXTURE_LOD': macro redefinition. Previous definition found at C:/Program Files/Unity/Hub/Editor/2020.3.11f1c1/Editor/Data/CGIncludes/HLSLSupport.cginc:345.
  ok=1 outsize=6511
 
+Cmd: shutdown
+
+Quitting shader compiler process

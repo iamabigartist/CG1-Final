@@ -362,3 +362,32 @@ Received Import Request.
 Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCube.compute using Guid(a695cd1c59e0b3c4f84f43a678b96ad9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '481f0a27d6250fc1de299e1b10671787') in 0.006580 seconds
   Import took 0.010064 seconds .
 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.008029 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.48 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.084 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.46 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2701 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 106.3 MB.
+System memory in use after: 106.5 MB.
+
+Unloading 14 unused Assets to reduce memory usage. Loaded Objects now: 3176.
+Total: 2.296800 ms (FindLiveObjects: 0.353400 ms CreateObjectMapping: 0.112200 ms MarkObjects: 1.812200 ms  DeleteObjects: 0.018100 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 2455.810045 seconds.
+  path: Assets/MPixelRenderer/PRenderer1.vfx
+  artifactKey: Guid(8d49d93346620a0458177e33b23e5254) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MPixelRenderer/PRenderer1.vfx using Guid(8d49d93346620a0458177e33b23e5254) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'efdc20c360450514a158439b6b783988') in 0.014137 seconds
+  Import took 0.017902 seconds .
+
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file

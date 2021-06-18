@@ -533,8 +533,10 @@ namespace MarchingCube1
                                 (Convert.ToInt32(_mark_matrix[XYZToVertexIndex(x, y + 1, z + 1)]) << vertices_convert1[0b110]) |
                                 (Convert.ToInt32(_mark_matrix[XYZToVertexIndex(x + 1, y, z + 1)]) << vertices_convert1[0b101]) |
                                 (Convert.ToInt32(_mark_matrix[XYZToVertexIndex(x + 1, y + 1, z + 1)]) << vertices_convert1[0b111]);
-                        for ( int i = 0; triangulation [ grid_index , i ] != -1; i++ )
+                        for ( int i = 0; triangulation [ grid_index , i ] != -1; i += 3 )
                         {
+                            _triangles. Add( _vertices_indices [ GridEdgeToEdgeIndex( x , y , z , edges_convert1 [ triangulation [ grid_index , i + 2 ] ] ) ] );
+                            _triangles. Add( _vertices_indices [ GridEdgeToEdgeIndex( x , y , z , edges_convert1 [ triangulation [ grid_index , i + 1 ] ] ) ] );
                             _triangles. Add( _vertices_indices [ GridEdgeToEdgeIndex( x , y , z , edges_convert1 [ triangulation [ grid_index , i ] ] ) ] );
                         }
                     }
