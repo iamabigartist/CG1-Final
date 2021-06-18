@@ -1,4 +1,5 @@
 #define MeshR
+#define ParticleR
 
 using System. Collections;
 using System. Collections. Generic;
@@ -277,6 +278,10 @@ public class PCISPHSlow : MonoBehaviour
         meshFilter. mesh = m_mesh;
 
         #endregion MeshRenderer
+
+#endif
+
+#if ParticleR
 
 #endif
     }
