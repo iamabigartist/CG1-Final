@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using System. Collections;
+using System. Collections. Generic;
 
 using UnityEngine;
 
@@ -17,20 +17,20 @@ namespace MarchingCube1
     public class VolumeMatrix
     {
         public readonly Vector3Int size;
-        public Vector4[] data;
+        public float[] data;
 
-        public VolumeMatrix(Vector3Int size)
+        public VolumeMatrix ( Vector3Int size )
         {
-            this.size = size;
-            data = new Vector4[size.x * size.y * size.z];
+            this. size = size;
+            data = new float [ size. x * size. y * size. z ];
         }
 
-        public Vector4 this[int x, int y, int z]
+        public float this [ int x , int y , int z ]
         {
-            get => data[x + y * size.x + z * size.y * size.x];
+            get => data [ x + y * size. x + z * size. y * size. x ];
             set
             {
-                data[x + y * size.x + z * size.y * size.x] = value;
+                data [ x + y * size. x + z * size. y * size. x ] = value;
             }
         }
     }
@@ -40,6 +40,12 @@ namespace MarchingCube1
     /// </summary>
     public class MarchingCubeMesh
     {
+        #region Input
+
+        public VolumeMatrix volume_matrix;
+
+        #endregion Input
+
         #region Config
 
         public float iso_value;
@@ -51,17 +57,17 @@ namespace MarchingCube1
         /// <summary>
         /// Matrix marking every particle whether it is bigger than the isovalue
         /// </summary>
-        public bool[] _mark_matrix;
+        public bool[] mark_matrix;
 
         /// <summary>
         /// Array that store the actual index of each vertex on the edges
         /// </summary>
-        public int[] _vertices_indices;
+        public int[] vertices_indices;
 
         /// <summary>
         /// The start indices of the 3 axis edges' vertices
         /// </summary>
-        public Vector3Int _start_indices;
+        public Vector3Int start_indices;
 
         #endregion Info
 

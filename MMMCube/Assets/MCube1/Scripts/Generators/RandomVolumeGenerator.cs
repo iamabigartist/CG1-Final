@@ -51,7 +51,7 @@ namespace MarchingCube1
                     for (int x = 0; x < size.x; x++)
                     {
                         Vector3 p = _original_point + new Vector3(x, y, z) * _step;
-                        volumeMatrix[x, y, z] = new Vector4(p.x, p.y, p.z, Random.Range(0f, 5f));
+                        volumeMatrix[x, y, z] = Random.Range(0f, 5f);
                     }
                 }
             }
