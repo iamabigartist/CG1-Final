@@ -38,6 +38,7 @@ public class PCISPHSlow : MonoBehaviour
     [SerializeField] private bool m_randomness;
     [SerializeField] private float m_viscosity;
     [SerializeField] private float m_gridStep;
+    [SerializeField] private float m_smoothLength;
     //[SerializeField] private float m_dampingRate;
     //[SerializeField] private float m_pressureConstant;
 
@@ -207,6 +208,13 @@ public class PCISPHSlow : MonoBehaviour
         return alpha * Mathf. Pow( 1f - q * 0.5f , 8f ) * ( 4f * q2 * q + 6.25f * q2 + 4f * q + 1f );
     }
 
+    private float Gaussian(Vector3 v, float h)
+    {
+        float r2 = v.sqrMagnitude;
+        float h2 = h * h;
+        return 1f / (PI32 * h2 * h) * Mathf.Exp(-r2 / h2);
+    }
+
     private Vector3 GradW ( Vector3 v , float h )
     {
         float r = v.magnitude;
@@ -269,8 +277,36 @@ public class PCISPHSlow : MonoBehaviour
             int x = Mathf.Clamp(Mathf.FloorToInt(tem.x / m_gridStep) + 1, 1, m_gridSize.x - 2);
             int y = Mathf.Clamp(Mathf.FloorToInt(tem.y / m_gridStep) + 1, 1, m_gridSize.y - 2);
             int z = Mathf.Clamp(Mathf.FloorToInt(tem.z / m_gridStep) + 1, 1, m_gridSize.z - 2);
-            m_volume [ x , y , z ] += 1f;
+
+            int range = Mathf.CeilToInt(2 * m_smoothLength / m_gridStep);
+            int t_x, t_y, t_z;
+            for(int m=-range; m<=range; ++m)
+            {
+                t_x = Mathf.Clamp(x + m, 1, m_gridSize.x - 2);
+                for (int n =-range; n <=range; ++n)
+                {
+                    t_y = Mathf.Clamp(y + n, 1, m_gridSize.y - 2);
+                    for (int k = -range; k <=range; ++k)
+                    {
+                        t_z = Mathf.Clamp(z + k, 1, m_gridSize.z - 2);
+                        Vector3 gridPos = new Vector3((t_x + 0.5f) * m_gridStep, (t_y + 0.5f) * m_gridStep, (t_z + 0.5f) * m_gridStep);
+                        m_volume[t_x, t_y, t_z] += Gaussian(gridPos - tem, m_smoothLength);
+                    }
+                }
+
+            }
         }
+
+        //for( int i=0; i<m_actualNumParticles; ++i)
+        //{
+        //    Vector3 tem = m_particles[i].position - m_boundingBox.min;
+        //    int x = Mathf.Clamp(Mathf.FloorToInt(tem.x / m_gridStep) + 1, 1, m_gridSize.x - 2);
+        //    int y = Mathf.Clamp(Mathf.FloorToInt(tem.y / m_gridStep) + 1, 1, m_gridSize.y - 2);
+        //    int z = Mathf.Clamp(Mathf.FloorToInt(tem.z / m_gridStep) + 1, 1, m_gridSize.z - 2);
+
+
+        //}
+
         m_generator. Input( m_volume , 0.5f );
         Vector3[] vs;
         int[] tris;

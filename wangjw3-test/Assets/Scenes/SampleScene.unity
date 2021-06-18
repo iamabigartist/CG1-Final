@@ -160,15 +160,16 @@ MonoBehaviour:
   boundingBox: {fileID: 2101007395}
   particleObject: {fileID: 1411974829}
   m_frameByFrame: 0
-  m_numParticles: 10000
+  m_numParticles: 8000
   m_initialDensity: 1000
   m_h: 1
   m_iterations: 5
   m_bounce: -1
   m_dt: 0.01
   m_randomness: 1
-  m_viscosity: 10000
-  m_gridStep: 0.8
+  m_viscosity: 100
+  m_gridStep: 0.5
+  m_smoothLength: 1
   m_particles: []
 --- !u!4 &467138967
 Transform:
@@ -400,7 +401,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &963194226
 AudioListener:
   m_ObjectHideFlags: 0
