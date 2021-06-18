@@ -12,21 +12,66 @@ struct Particle {
     float d;
 };
 
+// float W(float3 v, float h) {
+//     float r = length(v);
+//     float mul = r < 0.0001 ? 0.0 : 1.0;
+//     mul = r > h ? 0.0 : mul;
+//     float r2 = r * r;
+//     float h2 = h * h;
+//     return 1.0 / (h2 * h * PI32) * (2.5 - r2) * exp(-r2 / h2) * mul;
+// }
+
+// float3 GradW(float3 v, float h) {
+//     float r = length(v);
+//     float mul = r < 0.0001 ? 0.0 : 1.0;
+//     mul = r > h ? 0.0 : mul;
+//     float r2 = r * r;
+//     float h2 = h * h;
+//     float n = -2.0 * exp(-r2 / h2) / (h2 * h * PI32) * ((2.5 - r2) / h2 + 1.0);
+//     return n * v * mul;
+// }
+
+// float W(float3 v, float h) {
+//     float r = length(v);
+//     float mul = r < 0.0001 ? 0.0 : 1.0;
+//     mul = r > 3 * h ? 0.0 : mul;
+//     float r2 = r * r;
+//     float h2 = h * h;
+//     return 1.0 / (PI32 * h2 * h) * exp(-r2 / h2) * mul;
+// }
+
+// float3 GradW(float3 v, float h) {
+//     float r = length(v);
+//     float mul = r < 0.0001 ? 0.0 : 1.0;
+//     mul = r > 3 * h ? 0.0 : mul;
+//     float r2 = r * r;
+//     float h2 = h * h;
+//     float n = -2.0 * exp(-r2 / h2) / (PI32 * h2 * h2 * h);
+//     return n * v * mul;
+// }
+
 float W(float3 v, float h) {
     float r = length(v);
-    float mul = r < 0.0001 ? 0.0 : 1.0;
-    float r2 = r * r;
+    if (r < 0.0001 || r > 2.0 * h) return 0.0;
+    float q = r / h;
+    float q2 = q * q;
     float h2 = h * h;
-    return 1.0 / (h2 * h * PI32) * (2.5 - r2) * exp(-r2 / h2) * mul;
+    float alpha = 1365.0 / (512.0 * PI * h2 * h);
+    return alpha * pow(1.0 - q * 0.5, 8.0) * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0);
 }
 
 float3 GradW(float3 v, float h) {
     float r = length(v);
-    float mul = r < 0.0001 ? 0.0 : 1.0;
-    float r2 = r * r;
+    float3 ret = {0.0, 0.0, 0.0};
+    if (r < 0.0001 || r > 2.0 * h) return ret;
+    float q = r / h;
+    float q2 = q * q;
     float h2 = h * h;
-    float n = -2.0 * exp(-r2 / h2) / (h2 * h * PI32) * ((2.5 - r2) / h2 + 1.0);
-    return n * v * mul;
+    float alpha = 1365.0 / (512.0 * PI * h2 * h);
+    float temp = 1.0 - 0.5 * q;
+    float temp7 = pow(temp, 7.0);
+    float n = ((12.0 * q + 12.5 + 4.0 / q) * temp7 * temp - 4.0 / q * temp7 * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0)) / h2;
+    return n * v * alpha;
 }
 
 int particleCount;
@@ -35,7 +80,7 @@ float3 gravity;
 float particleMass;
 float h;
 float d0;
-//float delta;
+float delta;
 
 RWStructuredBuffer<Particle> particles;
 
@@ -53,7 +98,7 @@ void Initialize (uint3 id : SV_DispatchThreadID)
 void Predict(uint3 id : SV_DispatchThreadID) 
 {
     particles[id.x].preVelocity = particles[id.x].velocity + (particles[id.x].Aext + particles[id.x].Ap) * dt;
-    particles[id.x].prePosition = particles[id.x].position + particles[id.x].velocity * dt;
+    particles[id.x].prePosition = particles[id.x].position + particles[id.x].preVelocity * dt;
 }
 
 #pragma kernel Correct
@@ -61,24 +106,26 @@ void Predict(uint3 id : SV_DispatchThreadID)
 void Correct(uint3 id : SV_DispatchThreadID)
 {
     float preDensity = 0.0;
-    float3 sumGrad = {0.0, 0.0, 0.0};
-    float3 grad;
-    float sumDot = 0.0;
+    //float3 sumGrad = {0.0, 0.0, 0.0};
+    float3 v;
+    //float3 grad;
+    //float sumDot = 0.00001;
     for (int i = 0; i < particleCount; i++) {
-        preDensity += W(particles[id.x].prePosition - particles[i].prePosition, h);
-        grad = GradW(particles[id.x].position - particles[i].position, h);
-        sumGrad += grad;
-        sumDot += dot(grad, grad);
+        v = particles[id.x].prePosition - particles[i].prePosition;
+        preDensity += W(v, h);
+        //grad = GradW(v, h);
+        //sumGrad += grad;
+        //sumDot += dot(grad, grad);
     }
     preDensity *= particleMass;
     float derr = preDensity - d0;
-    float beta = dt * dt * particleMass * particleMass * 2.0 / (d0 * d0);
-    float delta = -1.0 / (beta * (-dot(sumGrad, sumGrad) - sumDot));
-    float perr = delta * derr;
-    particles[id.x].p += perr;
+    //float beta = dt * particleMass * particleMass * 2.0 / (d0 * d0);
+    //float delta = 1.0 / (beta * (dot(sumGrad, sumGrad) + sumDot));
+    //float delta = 1.0 / (beta * sumDot);
+    particles[id.x].p += delta * derr;
     particles[id.x].d = preDensity;
 
-    particles[id.x].Ap = -particleMass * 2.0 * particles[id.x].p / (d0 * d0) * sumGrad;
+    //particles[id.x].Ap = -particleMass * 2.0 * particles[id.x].p / (d0 * d0) * sumGrad;
     // particles[id.x].Ap.x = beta;
     // particles[id.x].Ap.y = delta;
     // particles[id.x].Ap.z = preDensity;
@@ -88,13 +135,13 @@ void Correct(uint3 id : SV_DispatchThreadID)
 [numthreads(8, 1, 1)]
 void Force(uint3 id : SV_DispatchThreadID)
 {
-    // float3 accP = {0.0, 0.0, 0.0};
-    // Particle self = particles[id.x];
-    // for (int i = 0; i < particleCount; i++) {
-    //     Particle neighbour = particles[i];
-    //     accP += (self.p / (self.d * self.d) + neighbour.p / (neighbour.d * neighbour.d)) * GradW(neighbour.position - self.position, h);
-    // }
-    // particles[id.x].Ap = -particleMass * accP;
+    float3 accP = {0.0, 0.0, 0.0};
+    Particle self = particles[id.x];
+    for (int i = 0; i < particleCount; i++) {
+        Particle neighbour = particles[i];
+        accP += (self.p / (self.d * self.d) + neighbour.p / (neighbour.d * neighbour.d)) * GradW(self.position - neighbour.position, h);
+    }
+    particles[id.x].Ap = -particleMass * accP;
 }
 
 #pragma kernel Finalize

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -156,12 +156,14 @@ MonoBehaviour:
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
   particleObject: {fileID: 1411974829}
-  m_frameByFrame: 1
-  m_numParticles: 1000
+  m_frameByFrame: 0
+  m_numParticles: 10000
   m_initialDensity: 1000
-  m_h: 0.3
-  m_iterations: 1
-  bounce: -1
+  m_h: 1
+  m_iterations: 5
+  m_bounce: -1
+  m_dt: 0.01
+  m_randomness: 1
   m_particles: []
 --- !u!4 &467138967
 Transform:
@@ -303,13 +305,15 @@ MonoBehaviour:
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
   particleObject: {fileID: 1411974829}
-  m_numParticles: 1000
+  m_frameByFrame: 1
+  m_numParticles: 10000
   m_initialDensity: 1000
-  m_particleRadius: 0.16
-  m_gridSize: 0.16
-  m_h: 0.16
+  m_gridSize: 1
+  m_h: 1
   m_iterations: 5
   bounce: -1
+  m_dt: 0.01
+  m_randomness: 1
   m_particles: []
 --- !u!4 &948690976
 Transform:
@@ -448,8 +452,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1176479946}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -5, y: 0, z: 0}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -893,7 +897,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.05
+      scalar: 0.5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -5460,7 +5464,7 @@ Transform:
   m_GameObject: {fileID: 2101007394}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 20, y: 20, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4

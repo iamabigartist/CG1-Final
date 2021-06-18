@@ -1,6 +1,5 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #define MAX_NEIGHBOUR 256
-#define MIN_ITERATIONS 2
 #define PI32 5.5683278
 #define PI 3.1415926
 struct Particle {
@@ -17,17 +16,26 @@ struct Particle {
 
 float W(float3 v, float h) {
     float r = length(v);
-    float r2 = r * r;
+    if (r < 0.0001 || r > 2.0 * h) return 0.0;
+    float q = r / h;
+    float q2 = q * q;
     float h2 = h * h;
-    return 1.0 / (h2 * h * PI32) * (2.5 - r2) * exp(-r2 / h2);
+    float alpha = 1365.0 / (512.0 * PI * h2 * h);
+    return alpha * pow(1.0 - q * 0.5, 8.0) * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0);
 }
 
 float3 GradW(float3 v, float h) {
     float r = length(v);
-    float r2 = r * r;
+    float3 ret = {0.0, 0.0, 0.0};
+    if (r < 0.0001 || r > 2.0 * h) return ret;
+    float q = r / h;
+    float q2 = q * q;
     float h2 = h * h;
-    float n = -2.0 * exp(-r2 / h2) / (h2 * h * PI32) * ((2.5 - r2) / h2 + 1.0);
-    return 1.0 * v;
+    float alpha = 1365.0 / (512.0 * PI * h2 * h);
+    float temp = 1.0 - 0.5 * q;
+    float temp7 = pow(temp, 7.0);
+    float n = ((12.0 * q + 12.5 + 4.0 / q) * temp7 * temp - 4.0 / q * temp7 * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0)) / h2;
+    return n * v * alpha;
 }
 
 float dt;
@@ -62,21 +70,22 @@ void Predict(uint3 id : SV_DispatchThreadID)
 void Correct(uint3 id : SV_DispatchThreadID)
 {
     float preDensity = 0.0;
-    float3 sumGrad = {0.0, 0.0, 0.0};
+    //float3 sumGrad = {0.0, 0.0, 0.0};
     //float sumDot = 0;
-    float3 grad;
+    //float3 grad;
+    float3 v;
     for (int i = 0; i < particles[id.x].neighbourCount; i++) {
-        preDensity += W(particles[neighbours[MAX_NEIGHBOUR * id.x + i]].prePosition - particles[id.x].prePosition, h);
-        grad = GradW(particles[neighbours[MAX_NEIGHBOUR * id.x + i]].position - particles[id.x].position, h);
-        sumGrad += grad;
+        v = particles[id.x].prePosition - particles[neighbours[MAX_NEIGHBOUR * id.x + i]].prePosition;
+        preDensity += W(v, h);
+        //grad = GradW(particles[neighbours[MAX_NEIGHBOUR * id.x + i]].position - particles[id.x].position, h);
+        //sumGrad += grad;
         //sumDot += dot(grad, grad);
     }
     preDensity *= particleMass;
     float derr = preDensity - d0;
     //float beta = dt * dt * particleMass * particleMass * 2.0 / (d0 * d0);
     //float delta = -1.0 / (beta * (-dot(sumGrad, sumGrad) - sumDot));
-    float perr = delta * derr;
-    particles[id.x].p += perr;
+    particles[id.x].p += delta * derr;
     particles[id.x].d = preDensity;
 
     //particles[id.x].Ap = -particleMass * 2.0 * particles[id.x].p / (d0 * d0) * sumGrad;
@@ -93,7 +102,7 @@ void Force(uint3 id : SV_DispatchThreadID)
     Particle self = particles[id.x];
     for (int i = 0; i < particles[id.x].neighbourCount; i++) {
         Particle neighbour = particles[neighbours[MAX_NEIGHBOUR * id.x + i]];
-        accP += (self.p / (self.d * self.d) + neighbour.p / (neighbour.d * neighbour.d)) * GradW(neighbour.position - self.position, h);
+        accP += (self.p / (self.d * self.d) + neighbour.p / (neighbour.d * neighbour.d)) * GradW(self.position - neighbour.position, h);
     }
     particles[id.x].Ap = -particleMass * accP;
 }

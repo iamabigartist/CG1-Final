@@ -30,7 +30,9 @@ public class PCISPHSlow : MonoBehaviour
     [SerializeField] private float m_initialDensity;
     [SerializeField] private float m_h;
     [SerializeField] private int m_iterations;
-    [SerializeField] private float bounce;
+    [SerializeField] private float m_bounce;
+    [SerializeField] private float m_dt;
+    [SerializeField] private bool m_randomness;
     //[SerializeField] private float m_dampingRate;
     //[SerializeField] private float m_pressureConstant;
 
@@ -40,9 +42,6 @@ public class PCISPHSlow : MonoBehaviour
     public Particle[] m_particles;
     private Transform[] m_objects;
     private float m_massPerParticle;
-
-    //Range search
-    private float m_particleRadius2;
 
     private int m_initKernel;
     private int m_predictKernel;
@@ -110,7 +109,6 @@ public class PCISPHSlow : MonoBehaviour
         Vector3Int particleCount = new Vector3Int(Mathf.RoundToInt(particleCountFloat.x), Mathf.RoundToInt(particleCountFloat.y), Mathf.RoundToInt(particleCountFloat.z));
         m_actualNumParticles = particleCount.x * particleCount.y * particleCount.z;
         m_massPerParticle = (m_initialDensity * m_generateBox.size.x * m_generateBox.size.y * m_generateBox.size.z) / m_actualNumParticles;
-        m_particleRadius2 = m_h * m_h;
 
         m_particles = new Particle[m_actualNumParticles];
         m_objects = new Transform[m_actualNumParticles];
@@ -129,7 +127,7 @@ public class PCISPHSlow : MonoBehaviour
                     m_particles[index].position.x = posX;
                     m_particles[index].position.y = posY;
                     m_particles[index].position.z = posZ;
-                    //m_particles[index].position += new Vector3(Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f));
+                    if (m_randomness) m_particles[index].position += new Vector3(Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f));
                     m_particles[index].velocity = Vector3.zero;
                     m_objects[index].position = m_particles[index].position;
 
@@ -145,26 +143,24 @@ public class PCISPHSlow : MonoBehaviour
         float sumDot = 0;
         int count = 0;
         float density = 0;
-        for (float x = -m_h; x <= m_h; x += step)
+        for (float x = -2f * m_h; x <= 2f * m_h; x += step)
         {
-            for (float y = -m_h; y <= m_h; y += step)
+            for (float y = -2f * m_h; y <= 2f * m_h; y += step)
             {
-                for (float z = -m_h; z <= m_h; z += step)
+                for (float z = -2f * m_h; z <= 2f * m_h; z += step)
                 {
                     Vector3 point = new Vector3(x, y, z);
-                    if (point.sqrMagnitude < m_particleRadius2 && point.sqrMagnitude > Mathf.Epsilon)
-                    {
-                        density += W(point, m_h);
-                        grad = GradW(point, m_h);
-                        sumGrad += grad;
-                        sumDot += Vector3.Dot(grad, grad);
-                        count += 1;
-                    }
+                    density += W(-point, m_h);
+                    grad = GradW(-point, m_h);
+                    sumGrad += grad;
+                    sumDot += Vector3.Dot(grad, grad);
+                    count += 1;
                 }
             }
         }
         Debug.Log("density = " + m_massPerParticle * density);
         Debug.Log("Counted " + count + " neighbours");
+        Debug.Log("sumGrad: " + sumGrad + ", sumDot: " + sumDot);
         m_preDelta = -1f / (m_massPerParticle * m_massPerParticle * 2f / (m_initialDensity * m_initialDensity) * (-Vector3.Dot(sumGrad, sumGrad) - sumDot));
     }
 
@@ -188,32 +184,43 @@ public class PCISPHSlow : MonoBehaviour
 
     private float W(Vector3 v, float h)
     {
-        float r2 = v.sqrMagnitude;
+        float r = v.magnitude;
+        if (r < 0.0001f || r > 2) return 0f;
+        float q = r / h;
+        float q2 = q * q;
         float h2 = h * h;
-        return 1f / (h2 * h * PI32) * (2.5f - r2) * Mathf.Exp(-r2 / h2);
+        float alpha = 1365f / (512f * Mathf.PI * h2 * h);
+        return alpha * Mathf.Pow(1f - q * 0.5f, 8f) * (4f * q2 * q + 6.25f * q2 + 4f * q + 1f);
     }
 
     private Vector3 GradW(Vector3 v, float h)
     {
-        float r2 = v.sqrMagnitude;
+        float r = v.magnitude;
+        if (r < 0.0001f || r > 2) return Vector3.zero;
+        float q = r / h;
+        float q2 = q * q;
         float h2 = h * h;
-        float n = -2f * Mathf.Exp(-r2 / h2) / (h2 * h * PI32) * ((2.5f - r2) / h2 + 1f);
-        return n * v;
+        float alpha = 1365f / (512f * Mathf.PI * h2 * h);
+        float temp = 1f - 0.5f * q;
+        float temp7 = Mathf.Pow(temp, 7f);
+        float n = ((12f * q + 12.5f + 4f / q) * temp7 * temp - 4f / q * temp7 * (4f * q2 * q + 6.25f * q2 + 4f * q + 1f)) / h2;
+        return n * v * alpha;
     }
 
     private float CalculateDelta(float dt)
     {
-        return m_preDelta * (1f / (dt * dt));
+        return m_preDelta * (1f / (dt));
     }
 
     private void Simulate()
     {
         m_particleBuffer.SetData(m_particles);
 
-        float dt = Time.deltaTime;
-        //Debug.Log("dt = " + dt);
+        float dt = m_dt < Mathf.Epsilon ? Time.deltaTime : m_dt;
         computeSPH.SetFloat("dt", dt);
-        //computeSPH.SetFloat("delta", CalculateDelta(dt));
+        float delta = CalculateDelta(dt);
+        //Debug.Log(delta);
+        computeSPH.SetFloat("delta", delta);
         computeSPH.Dispatch(m_initKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
         int it = 0;
         while (it < m_iterations)
@@ -248,32 +255,32 @@ public class PCISPHSlow : MonoBehaviour
         Vector3 velocity = m_particles[particle].velocity;
         if (position.y < min.y)
         {
-            if (velocity.y < 0f) boundy = bounce;
+            if (velocity.y < 0f) boundy = m_bounce;
             m_particles[particle].position.y = min.y;
         }
         else if (position.y > max.y)
         {
-            if (velocity.y > 0f) boundy = bounce;
+            if (velocity.y > 0f) boundy = m_bounce;
             m_particles[particle].position.y = max.y - Mathf.Epsilon;
         }
         if (position.x < min.x)
         {
-            if (velocity.x < 0f) boundx = bounce;
+            if (velocity.x < 0f) boundx = m_bounce;
             m_particles[particle].position.x = min.x;
         }
         else if (position.x > max.x)
         {
-            if (velocity.x > 0f) boundx = bounce;
+            if (velocity.x > 0f) boundx = m_bounce;
             m_particles[particle].position.x = max.x - Mathf.Epsilon;
         }
         if (position.z < min.z)
         {
-            if (velocity.z < 0f) boundz = bounce;
+            if (velocity.z < 0f) boundz = m_bounce;
             m_particles[particle].position.z = min.z;
         }
         else if (position.z > max.z)
         {
-            if (velocity.z > 0f) boundz = bounce;
+            if (velocity.z > 0f) boundz = m_bounce;
             m_particles[particle].position.z = max.z - Mathf.Epsilon;
         }
         m_particles[particle].velocity.x = velocity.x * boundx;
