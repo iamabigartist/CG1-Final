@@ -33,6 +33,8 @@ public class PCISPHSlow : MonoBehaviour
     [SerializeField] private float m_bounce;
     [SerializeField] private float m_dt;
     [SerializeField] private bool m_randomness;
+    [SerializeField] private float m_viscosity;
+    [SerializeField] private int m_gridStep;
     //[SerializeField] private float m_dampingRate;
     //[SerializeField] private float m_pressureConstant;
 
@@ -54,6 +56,8 @@ public class PCISPHSlow : MonoBehaviour
     private float m_preDelta;
 
     private bool m_started = false;
+    private float[] m_grid;
+    private Vector3Int m_gridSize;
 
     private void Start()
     {
@@ -67,6 +71,13 @@ public class PCISPHSlow : MonoBehaviour
 
         CreateParticles();
         InitializeKernels();
+        Vector3 s = m_boundingBox.size / m_gridStep;
+        m_gridSize.x = Mathf.CeilToInt(s.x);
+        m_gridSize.y = Mathf.CeilToInt(s.y);
+        m_gridSize.z = Mathf.CeilToInt(s.z);
+        m_grid = new float[m_gridSize.x * m_gridSize.y * m_gridSize.z];
+        for (int i = 0; i < m_grid.Length; ++i)
+            m_grid[i] = 0f;
     }
 
     private void Update()
@@ -178,6 +189,7 @@ public class PCISPHSlow : MonoBehaviour
         computeSPH.SetFloat("particleMass", m_massPerParticle);
         computeSPH.SetFloat("h", m_h);
         computeSPH.SetFloat("d0", m_initialDensity);
+        computeSPH.SetFloat("u", m_viscosity);
     }
 
     const float PI32 = 5.5683278f;
@@ -241,7 +253,13 @@ public class PCISPHSlow : MonoBehaviour
         for (int i = 0; i < m_actualNumParticles; i++)
         {
             m_objects[i].position = m_particles[i].position;
+            Vector3 tem = m_particles[i].position - m_boundingBox.min;
+            int x = Mathf.FloorToInt(tem.x / m_gridStep);
+            int y = Mathf.FloorToInt(tem.y / m_gridStep);
+            int z = Mathf.FloorToInt(tem.z / m_gridStep);
+            m_grid[x + y * m_gridSize.x + z * m_gridSize.x * m_gridSize.y] += 1f;
         }
+
     }
 
     private void CalculateBoundary(int particle)

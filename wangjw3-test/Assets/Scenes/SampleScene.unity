@@ -164,6 +164,7 @@ MonoBehaviour:
   m_bounce: -1
   m_dt: 0.01
   m_randomness: 1
+  m_viscosity: 10000
   m_particles: []
 --- !u!4 &467138967
 Transform:
