@@ -354,3 +354,11 @@ Received Import Request.
 Start importing Assets/MPixelRenderer/PRenderer1.vfx using Guid(8d49d93346620a0458177e33b23e5254) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aafc73c41b028b60ab7e9ca4ea29b5cd') in 0.004504 seconds
   Import took 0.007967 seconds .
 
+========================================================================
+Received Import Request.
+  Time since last request: 144.948831 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCube.compute
+  artifactKey: Guid(a695cd1c59e0b3c4f84f43a678b96ad9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders/MarchingCube.compute using Guid(a695cd1c59e0b3c4f84f43a678b96ad9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '481f0a27d6250fc1de299e1b10671787') in 0.006580 seconds
+  Import took 0.010064 seconds .
+
