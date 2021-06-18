@@ -270,3 +270,92 @@ System memory in use after: 65.2 MB.
 Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1862.
 Total: 1.729300 ms (FindLiveObjects: 0.145300 ms CreateObjectMapping: 0.035400 ms MarkObjects: 1.533800 ms  DeleteObjects: 0.013800 ms)
 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.006929 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.26 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.896 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.48 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1394 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.1 MB.
+System memory in use after: 65.2 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1865.
+Total: 1.764400 ms (FindLiveObjects: 0.148800 ms CreateObjectMapping: 0.037400 ms MarkObjects: 1.562100 ms  DeleteObjects: 0.015000 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.007421 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.27 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.909 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.50 ms, found 2 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1394 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 65.1 MB.
+System memory in use after: 65.2 MB.
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1868.
+Total: 1.671700 ms (FindLiveObjects: 0.129100 ms CreateObjectMapping: 0.034200 ms MarkObjects: 1.492000 ms  DeleteObjects: 0.015100 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 1295.402024 seconds.
+  path: Assets/Scripts
+  artifactKey: Guid(6bd858e4106d42240a8cb5b508eaf540) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts using Guid(6bd858e4106d42240a8cb5b508eaf540) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd9e62ced51effa59ffa7d0da6522132f') in 0.006944 seconds
+  Import took 0.008810 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 8.696889 seconds.
+  path: Assets/MCube1/Scripts
+  artifactKey: Guid(55b8d0dfdf07c874f939c3c4239e2553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts using Guid(55b8d0dfdf07c874f939c3c4239e2553) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '409063520b793dc8061a19f4cec112ab') in 0.003785 seconds
+  Import took 0.005544 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 23.978806 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders
+  artifactKey: Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders using Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13a41378bfad8f9b13ea5205690a4366') in 0.004346 seconds
+  Import took 0.006241 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.001707 seconds.
+  path: Assets/MCube1/Scripts/Generators/ComputeShaders
+  artifactKey: Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/ComputeShaders using Guid(f9597b2b5eff2dc46b50e7dc331baeae) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13a41378bfad8f9b13ea5205690a4366') in 0.003541 seconds
+  Import took 0.005197 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.037025 seconds.
+  path: Assets/MCube1/Scripts/Generators/DataStructures.cs
+  artifactKey: Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/DataStructures.cs using Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3b44f2acce435fb1f2d581874c73ccd7') in 0.003741 seconds
+  Import took 0.005569 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.023005 seconds.
+  path: Assets/MCube1/Scripts/Generators/DataStructures.cs
+  artifactKey: Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MCube1/Scripts/Generators/DataStructures.cs using Guid(1e0e24509868d0947b0197e38d7756b6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3b44f2acce435fb1f2d581874c73ccd7') in 0.004105 seconds
+  Import took 0.005900 seconds .
+
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
