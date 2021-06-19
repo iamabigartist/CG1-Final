@@ -143,6 +143,7 @@ public class PCISPHSlow : MonoBehaviour
                     m_particles [ index ]. position. z = posZ;
                     if ( m_randomness ) m_particles [ index ]. position += new Vector3( Random. Range( -0.02f , 0.02f ) , Random. Range( -0.02f , 0.02f ) , Random. Range( -0.02f , 0.02f ) );
                     m_particles [ index ]. velocity = Vector3. zero;
+                    m_particles[index].density = m_initialDensity;
                     //m_objects[index].position = m_particles[index].position;
 
                     posZ += step;
@@ -187,12 +188,16 @@ public class PCISPHSlow : MonoBehaviour
         computeSPH. SetBuffer( m_forceKernel , "particles" , m_particleBuffer );
         computeSPH. SetBuffer( m_finalKernel , "particles" , m_particleBuffer );
 
+        computeSPH.SetBuffer(computeSPH.FindKernel("Step"), "particles", m_particleBuffer);
+
         computeSPH. SetInt( "particleCount" , m_actualNumParticles );
         computeSPH. SetFloats( "gravity" , 0f , -9.81f , 0f );
         computeSPH. SetFloat( "particleMass" , m_massPerParticle );
         computeSPH. SetFloat( "h" , m_h );
         computeSPH. SetFloat( "d0" , m_initialDensity );
         computeSPH. SetFloat( "u" , m_viscosity );
+
+        computeSPH.SetInt("iterations", m_iterations);
     }
 
     private const float PI32 = 5.5683278f;
@@ -245,16 +250,17 @@ public class PCISPHSlow : MonoBehaviour
         float delta = CalculateDelta(dt);
         //Debug.Log(delta);
         computeSPH. SetFloat( "delta" , delta );
-        computeSPH. Dispatch( m_initKernel , Mathf. CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
-        int it = 0;
-        while ( it < m_iterations )
-        {
-            computeSPH. Dispatch( m_predictKernel , Mathf. CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
-            computeSPH. Dispatch( m_correctKernel , Mathf. CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
-            computeSPH. Dispatch( m_forceKernel , Mathf. CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
-            it++;
-        }
-        computeSPH. Dispatch( m_finalKernel , Mathf. CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
+        //computeSPH.Dispatch(m_initKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+        //int it = 0;
+        //while (it < m_iterations)
+        //{
+        //    computeSPH.Dispatch(m_predictKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+        //    computeSPH.Dispatch(m_correctKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+        //    computeSPH.Dispatch(m_forceKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+        //    it++;
+        //}
+        //computeSPH.Dispatch(m_finalKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+        computeSPH.Dispatch(computeSPH.FindKernel("Step"), Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
         m_particleBuffer. GetData( m_particles );
 
         Parallel. For( 0 , m_actualNumParticles , i =>
