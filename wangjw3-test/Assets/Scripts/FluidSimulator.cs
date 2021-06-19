@@ -1,9 +1,9 @@
 using System.Collections;
+
 using UnityEngine;
 
 public class FluidSimulator : MonoBehaviour
 {
-    public ComputeShader computeSPH;
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
 
@@ -13,11 +13,11 @@ public class FluidSimulator : MonoBehaviour
     [SerializeField] private float m_h;
     [SerializeField] private int m_iterations;
     [SerializeField] private float m_dt;
-    [SerializeField, Range(0f, 1f)] private float m_randomness;
+    [SerializeField, Range( 0f , 1f )] private float m_randomness;
     [SerializeField] private float m_viscosity;
     [SerializeField] private float m_gridStep;
     [SerializeField] private float m_smoothLength;
-    [SerializeField, Range(0f, 1f)] private float m_threshold;
+    [SerializeField, Range( 0f , 1f )] private float m_threshold;
 
     private MeshFilter m_meshFilter;
 
@@ -27,46 +27,46 @@ public class FluidSimulator : MonoBehaviour
     private Mesh m_mesh;
 
     private bool m_started = false;
-    Vector3[] vs;
-    int[] tris;
+    private Vector3[] vs;
+    private int[] tris;
     private bool m_visualize = false;
 
-    private void Start()
+    private void Start ()
     {
         m_meshFilter = GetComponent<MeshFilter>();
 
         m_simulator = new SPHSimulator.PCISPHSimulatorSlow(
-            m_numParticles, m_viscosity, m_h, m_iterations, m_randomness, generateBox.bounds, boundingBox.bounds, computeSPH);
-        m_converter = new ParticleToVolume(m_gridStep, m_smoothLength, boundingBox.bounds);
+            m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds );
+        m_converter = new ParticleToVolume( m_gridStep , m_smoothLength , boundingBox.bounds );
         m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
         m_mesh = new Mesh();
 
-        m_converter.Compute(ref m_simulator.particlePositionArray);
-        m_generator.Input(m_converter.volume, m_threshold);
-        m_generator.Output(out m_mesh, out vs, out tris);
+        m_converter.Compute( ref m_simulator.particlePositionArray );
+        m_generator.Input( m_converter.volume , m_threshold );
+        m_generator.Output( out m_mesh , out vs , out tris );
         m_meshFilter.mesh = m_mesh;
     }
 
-    private void Update()
+    private void Update ()
     {
-        if (Input.GetButtonDown("Submit")) m_started = true;
-        if (Input.GetKey(KeyCode.Space)) m_visualize = true;
-        if (m_started)
+        if ( Input.GetButtonDown( "Submit" ) ) m_started = true;
+        if ( Input.GetKey( KeyCode.Space ) ) m_visualize = true;
+        if ( m_started )
         {
             Step();
-            if (m_frameByFrame) m_started = false;
+            if ( m_frameByFrame ) m_started = false;
         }
     }
 
-    private void Step()
+    private void Step ()
     {
         float dt = m_dt < Mathf.Epsilon ? Time.deltaTime : m_dt;
-        m_simulator.Step(dt);
-        if (m_visualize)
+        m_simulator.Step( dt );
+        if ( m_visualize )
         {
-            m_converter.Compute(ref m_simulator.particlePositionArray);
-            m_generator.Input(m_converter.volume, m_threshold);
-            m_generator.Output(out m_mesh, out vs, out tris);
+            m_converter.Compute( ref m_simulator.particlePositionArray );
+            m_generator.Input( m_converter.volume , m_threshold );
+            m_generator.Output( out m_mesh , out vs , out tris );
             m_meshFilter.mesh = m_mesh;
             m_visualize = false;
         }

@@ -5,7 +5,7 @@
 // with cs.SetTexture
 RWStructuredBuffer<float3> Result;
 
-[numthreads(8,8,1)]
+[numthreads(8,8,4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     // TODO: insert actual code here!
