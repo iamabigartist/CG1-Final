@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
 
 using UnityEngine;
+using Unity.Collections;
+using Unity.Mathematics;
+using Unity.Jobs;
 
 namespace SPHSimulator
 {
-    public class PCISPHSimulatorSlowAlt
+    public class PCISPHSimulatorNeighbour
     {
         private const float INITIAL_DENSITY = 1000f;
 
@@ -16,6 +19,7 @@ namespace SPHSimulator
         private Bounds m_boundingBox;
         private float m_force1;
         private float m_force2;
+        private int m_neighbourCount;
 
         private ComputeShader m_computePCISPH;
 
@@ -27,6 +31,7 @@ namespace SPHSimulator
         private int m_finalKernel;
         private float m_preDelta;
 
+        private NativeArray<float3> m_positionNative;
         private Vector3[] m_positionArray;
         private ComputeBuffer m_positionBuffer;
 
@@ -41,14 +46,22 @@ namespace SPHSimulator
         private ComputeBuffer m_densityBuffer;
         private float[] m_densityArray;
 
-        public PCISPHSimulatorSlowAlt ( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds, float force1, float force2)
+        private ComputeBuffer m_neighbourBuffer;
+        private NativeArray<int> m_neighbourArray;
+        
+        private KNN.KnnContainer m_knnContainer;
+        private KNN.Jobs.KnnRebuildJob m_rebuildJob;
+        private KNN.Jobs.QueryKNearestJob m_queryJob;
+
+        public PCISPHSimulatorNeighbour ( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds, float force1, float force2, int neighbourCount)
         {
+            m_neighbourCount = neighbourCount;
             m_h = h;
             m_iterations = iterations;
             m_viscosity = viscosity;
             m_generateBox = generate;
             m_boundingBox = bounds;
-            m_computePCISPH = Resources.Load<ComputeShader>( "Shaders/PCISPHSlowAltComputeShader" );
+            m_computePCISPH = Resources.Load<ComputeShader>( "Shaders/PCISPHSlowNeighbourComputeShader" );
             m_force1 = force1;
             m_force2 = force2;
 
@@ -60,11 +73,6 @@ namespace SPHSimulator
 
             CreateParticles( particleCount , randomness );
             InitializeKernels();
-        }
-
-        ~PCISPHSimulatorSlowAlt ()
-        {
-            DisposeBuffer();
         }
 
         private Vector3 calculateForceAcc(Vector3 v, float strength)
@@ -95,9 +103,14 @@ namespace SPHSimulator
             m_actualNumParticles = particleDimension.x * particleDimension.y * particleDimension.z;
             m_massPerParticle = INITIAL_DENSITY * volume / m_actualNumParticles;
 
+            m_positionNative = new NativeArray<float3>(m_actualNumParticles, Allocator.Persistent);
             m_positionArray = new Vector3[ m_actualNumParticles ];
             m_velocityArray = new Vector3[ m_actualNumParticles ];
             m_densityArray = new float[ m_actualNumParticles ];
+
+            m_knnContainer = new KNN.KnnContainer(m_positionNative, false, Allocator.Persistent);
+            m_rebuildJob = new KNN.Jobs.KnnRebuildJob(m_knnContainer);
+            m_neighbourArray = new NativeArray<int>(m_actualNumParticles * m_neighbourCount, Allocator.Persistent);
 
             Vector3 b_min = m_boundingBox.min;
             Vector3 b_max = m_boundingBox.max;
@@ -113,9 +126,11 @@ namespace SPHSimulator
                     for ( int k = 0; k < particleDimension.z; k++ )
                     {
                         int index = particleDimension.y * particleDimension.z * i + particleDimension.z * j + k;
-                        m_positionArray[ index ].x = posX + Random.Range( -random , random );
-                        m_positionArray[ index ].y = posY + Random.Range( -random , random );
-                        m_positionArray[ index ].z = posZ + Random.Range( -random , random );
+                        m_positionNative[index] = new float3(
+                            posX + UnityEngine.Random.Range(-random, random),
+                            posY + UnityEngine.Random.Range(-random, random),
+                            posZ + UnityEngine.Random.Range(-random, random));
+                        m_positionArray[index] = m_positionNative[index];
 
                         Vector3 tem1 = new Vector3(b_min.x, m_positionArray[index].y, m_positionArray[index].z);
                         Vector3 tem2 = new Vector3(b_max.x, m_positionArray[index].y, m_positionArray[index].z);
@@ -160,6 +175,7 @@ namespace SPHSimulator
             m_accelerationPressureBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) * 3 );
             m_pressureBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) );
             m_densityBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) );
+            m_neighbourBuffer = new ComputeBuffer(m_actualNumParticles * m_neighbourCount, sizeof(int));
 
             m_computePCISPH.SetBuffer(m_initKernel , "position" , m_positionBuffer );
             m_computePCISPH.SetBuffer(m_initKernel, "velocity" , m_velocityBuffer );
@@ -167,6 +183,7 @@ namespace SPHSimulator
             m_computePCISPH.SetBuffer(m_initKernel, "Ap" , m_accelerationPressureBuffer );
             m_computePCISPH.SetBuffer(m_initKernel, "p" , m_pressureBuffer );
             m_computePCISPH.SetBuffer(m_initKernel, "d" , m_densityBuffer );
+            m_computePCISPH.SetBuffer(m_initKernel, "neighbours" , m_neighbourBuffer );
 
             m_computePCISPH.SetBuffer(m_predictKernel, "position", m_positionBuffer);
             m_computePCISPH.SetBuffer(m_predictKernel, "velocity", m_velocityBuffer);
@@ -178,11 +195,13 @@ namespace SPHSimulator
             m_computePCISPH.SetBuffer(m_correctKernel, "prePosition", m_predictedPositionBuffer);
             m_computePCISPH.SetBuffer(m_correctKernel, "p", m_pressureBuffer);
             m_computePCISPH.SetBuffer(m_correctKernel, "d", m_densityBuffer);
+            m_computePCISPH.SetBuffer(m_correctKernel, "neighbours", m_neighbourBuffer);
 
             m_computePCISPH.SetBuffer(m_forceKernel, "prePosition", m_predictedPositionBuffer);
             m_computePCISPH.SetBuffer(m_forceKernel, "p", m_pressureBuffer);
             m_computePCISPH.SetBuffer(m_forceKernel, "d", m_densityBuffer);
             m_computePCISPH.SetBuffer(m_forceKernel, "Ap", m_accelerationPressureBuffer);
+            m_computePCISPH.SetBuffer(m_forceKernel, "neighbours", m_neighbourBuffer);
 
             m_computePCISPH.SetBuffer(m_finalKernel, "position", m_positionBuffer);
             m_computePCISPH.SetBuffer(m_finalKernel, "velocity", m_velocityBuffer);
@@ -196,6 +215,7 @@ namespace SPHSimulator
             m_computePCISPH.SetFloat( "d0" , INITIAL_DENSITY );
             m_computePCISPH.SetFloat( "u" , m_viscosity );
             m_computePCISPH.SetInt( "iterations" , m_iterations );
+            m_computePCISPH.SetInt("neighbourCount", m_neighbourCount);
 
             m_densityBuffer.SetData( m_densityArray );
         }
@@ -220,10 +240,21 @@ namespace SPHSimulator
             m_pressureBuffer.Dispose();
             m_densityBuffer.Release();
             m_densityBuffer.Dispose();
+
+            m_positionNative.Dispose();
+            m_knnContainer.Dispose();
+            m_neighbourArray.Dispose();
         }
 
         public void Step ( float dt )
         {
+            m_rebuildJob.Schedule().Complete();
+            KNN.Jobs.QueryKNearestBatchJob query = new KNN.Jobs.QueryKNearestBatchJob(
+                m_knnContainer, m_positionNative, m_neighbourArray);
+            query.ScheduleBatch(m_positionNative.Length, m_positionNative.Length >> 5).Complete();
+
+            //int[] array = m_neighbourArray.ToArray();
+            m_neighbourBuffer.SetData(m_neighbourArray);
             m_positionBuffer.SetData( m_positionArray );
             m_velocityBuffer.SetData( m_velocityArray );
             m_computePCISPH.SetFloat( "dt" , dt );
@@ -241,18 +272,21 @@ namespace SPHSimulator
             m_computePCISPH.Dispatch(m_finalKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
 
             m_positionBuffer.GetData( m_positionArray );
-            m_velocityBuffer.GetData( m_velocityArray );
+            m_velocityBuffer.GetData(m_velocityArray);
 
             Parallel.For( 0 , m_actualNumParticles , i =>
             {
                 CalculateBoundary( i );
             } );
+
+            for (int i = 0; i < m_actualNumParticles; i++)
+            {
+                m_positionNative[i] = m_positionArray[i];
+            }
         }
 
         public ref Vector3[] particlePositionArray => ref m_positionArray;
         public ComputeBuffer particle_position_buffer => m_positionBuffer;
-
-        //public int actualParticleCount => m_actualNumParticles;
 
         #endregion Interface
 
