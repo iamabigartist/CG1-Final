@@ -1,5 +1,6 @@
 static const int vertices_convert1[8] = //8
 {
+//Convert binary vertex index to original vertex index in the process of <see cref="Triangulation"/>
 	//0b000,//0
 	//0b100,//1
 	//0b101,//2
@@ -20,21 +21,23 @@ static const int vertices_convert1[8] = //8
 
 static const int edges_convert1[12] = //12
 {
-	8 + 0b00,//z aixs, 00
-	0 + 0b10,//x,z0
-	8 + 0b01,//z,0x
-	0 + 0b00,//x,00
-	8 + 0b10,//z,y0
-	0 + 0b11,//x,zy
-	8 + 0b11,//z,yx
-	0 + 0b01,//x,0y
-	4 + 0b00,//y,00
-	4 + 0b10,//y,z0
-	4 + 0b11,//y,zx
-	4 + 0b01,//y,0x
+//Convert original edge index in <see cref="triangulation"/> to binary edge index
+	8 + 0,//z aixs, 00
+	0 + 2,//x,z0
+	8 + 1,//z,0x
+	0 + 0,//x,00
+	8 + 2,//z,y0
+	0 + 3,//x,zy
+	8 + 3,//z,yx
+	0 + 1,//x,0y
+	4 + 0,//y,00
+	4 + 2,//y,z0
+	4 + 3,//y,zx
+	4 + 1,//y,0x
 };
 
 static const int triangulation[256][16] = {//256 16
+//Every grid situation to a triangle index vector
 			{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ 0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ 0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },

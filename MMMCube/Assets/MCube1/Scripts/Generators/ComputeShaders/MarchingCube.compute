@@ -1,9 +1,20 @@
 #pragma kernel CSMain
 #include "/MarchingCubeData.compute"
-[numthreads(8, 8, 1)]
+
+//Matrix marking every particle whether it is bigger than the isovalue
+RWStructuredBuffer<bool> mark_matrix;
+
+//Array that store the actual index of each vertex on the edges
+RWStructuredBuffer<int> _vertices_indices;
+
+// The start indices of the 3 axis edges' vertices
+int3 start_indices;
+
+AppendStructuredBuffer<float3> vertices;
+AppendStructuredBuffer<int> triangles;
+
+[numthreads(8, 8, 4)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	// TODO: insert actual code here!
-
-	Result[id.xy] = float4(id.x & id.y, (id.x & 15) / 15.0, (id.y & 15) / 15.0, 0.0);
+	vertices.Append
 }

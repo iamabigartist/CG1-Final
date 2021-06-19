@@ -55,20 +55,6 @@ public class ParticleRenderer
         _cloud_render.SetFloat( "OutlineSize" , _outline_size );
 
         _cloud_render.SetPass( 0 );
-        _cloud_render.SetVector( "PositionOffset" , new Vector4( 1 , 0 , 0 , 0 ) );
-        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
-        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , 1 , 0 , 0 ) );
-        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
-        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , 0 , 1 , 0 ) );
-        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
-        _cloud_render.SetVector( "PositionOffset" , new Vector4( -1 , 0 , 0 , 0 ) );
-        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
-        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , -1 , 0 , 0 ) );
-        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
-        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , 0 , -1 , 0 ) );
-        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
-
-        _cloud_render.SetPass( 1 );
         Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
     }
 
