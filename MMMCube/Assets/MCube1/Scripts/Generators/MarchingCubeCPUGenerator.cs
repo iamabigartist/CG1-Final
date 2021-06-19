@@ -320,6 +320,7 @@ namespace MarchingCube1
 
         private VolumeMatrix _volume_matrix;
         private float _iso_value;
+        private Vector3 _scale;
 
         #endregion Input
 
@@ -353,10 +354,11 @@ namespace MarchingCube1
 
         #region Interface
 
-        public void Input ( VolumeMatrix volume_matrix , float iso_value )
+        public void Input ( VolumeMatrix volume_matrix , float iso_value , Vector3 scale )
         {
             _volume_matrix = volume_matrix;
             _iso_value = iso_value;
+            _scale = scale;
         }
 
         public void Output ( out Mesh mesh , out Vector3[] vertices , out int[] triangles )
@@ -443,6 +445,11 @@ namespace MarchingCube1
             return ( Vector3 ) p_a + t * ( ( Vector3 ) p_b - ( Vector3 ) p_a );
         }
 
+        private Vector3 CwiseProduct ( Vector3 a , Vector3 b )
+        {
+            return new Vector3( a.x * b.x , a.y * b.y , a.z * b.z );
+        }
+
         #endregion Utility
 
         #region MarchingCubeSteps
@@ -490,27 +497,27 @@ namespace MarchingCube1
                             x != _volume_matrix.size.x - 1 &&
                             _mark_matrix[ XYZToVertexIndex( x , y , z ) ] ^ _mark_matrix[ XYZToVertexIndex( x + 1 , y , z ) ] )
                         {
-                            _vertices.Add( InterpolateVertex(
+                            _vertices.Add( CwiseProduct( _scale , InterpolateVertex(
                                 new Vector4( x , y , z , _volume_matrix[ x , y , z ] ) ,
-                                new Vector4( x + 1 , y , z , _volume_matrix[ x + 1 , y , z ] ) ) );
+                                new Vector4( x + 1 , y , z , _volume_matrix[ x + 1 , y , z ] ) ) ) );
                             _vertices_indices[ XYZToEdgeIndex( x , y , z , 0 ) ] = _vertices.Count - 1;
                         }
                         if (
                             y != _volume_matrix.size.y - 1 &&
                             _mark_matrix[ XYZToVertexIndex( x , y , z ) ] ^ _mark_matrix[ XYZToVertexIndex( x , y + 1 , z ) ] )
                         {
-                            _vertices.Add( InterpolateVertex(
+                            _vertices.Add( CwiseProduct( _scale , InterpolateVertex(
                                 new Vector4( x , y , z , _volume_matrix[ x , y , z ] ) ,
-                                new Vector4( x , y + 1 , z , _volume_matrix[ x , y + 1 , z ] ) ) );
+                                new Vector4( x , y + 1 , z , _volume_matrix[ x , y + 1 , z ] ) ) ) );
                             _vertices_indices[ XYZToEdgeIndex( x , y , z , 1 ) ] = _vertices.Count - 1;
                         }
                         if (
                             z != _volume_matrix.size.z - 1 &&
                             _mark_matrix[ XYZToVertexIndex( x , y , z ) ] ^ _mark_matrix[ XYZToVertexIndex( x , y , z + 1 ) ] )
                         {
-                            _vertices.Add( InterpolateVertex(
+                            _vertices.Add( CwiseProduct( _scale , InterpolateVertex(
                                 new Vector4( x , y , z , _volume_matrix[ x , y , z ] ) ,
-                                new Vector4( x , y , z + 1 , _volume_matrix[ x , y , z + 1 ] ) ) );
+                                new Vector4( x , y , z + 1 , _volume_matrix[ x , y , z + 1 ] ) ) ) );
                             _vertices_indices[ XYZToEdgeIndex( x , y , z , 2 ) ] = _vertices.Count - 1;
                         }
                     }

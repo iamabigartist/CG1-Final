@@ -30,6 +30,11 @@ public class ParticleRenderer : MonoBehaviour
     public void On ( ComputeBuffer particle_buffer , Color main_color , Color outline_color , float outline_size )
     {
         _particle_buffer = particle_buffer;
+        Config( main_color , outline_color , outline_size );
+    }
+
+    public void Config ( Color main_color , Color outline_color , float outline_size )
+    {
         _main_color = main_color;
         _outline_color = outline_color;
         _outline_size = outline_size;

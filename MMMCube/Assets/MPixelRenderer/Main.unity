@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 581694448}
   - component: {fileID: 581694447}
+  - component: {fileID: 581694449}
   m_Layer: 0
   m_Name: renderer
   m_TagString: Untagged
@@ -152,7 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a347bd4679cc0014b8c4ec94967dd151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 3a4d58e7a47c54c44b26098b81661e7a, type: 2}
 --- !u!4 &581694448
 Transform:
   m_ObjectHideFlags: 0
@@ -167,6 +167,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &581694449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581694446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 885033c035a2a614aa571d8234fc18eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  main_color: {r: 0, g: 0, b: 0, a: 0}
+  outline_color: {r: 0, g: 0, b: 0, a: 0}
+  oultine_size: 0
+  particle_num: 0
 --- !u!1 &696155823
 GameObject:
   m_ObjectHideFlags: 0

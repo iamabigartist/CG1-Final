@@ -32,7 +32,7 @@ namespace MarchingCube1
         #endregion Config
 
         // Start is called before the first frame update
-        private void Awake()
+        private void Awake ()
         {
             meshFilter = GetComponent<MeshFilter>();
             volumeGenerator = new RandomVolumeGenerator();
@@ -42,12 +42,12 @@ namespace MarchingCube1
             volume = null;
         }
 
-        public void Generate()
+        public void Generate ()
         {
-            volumeGenerator.Input(transform.position, Vector3.one * scale, scale / particle_num);
-            volumeGenerator.Output(out volume);
-            cubeGenerator.Input(volume, 2.5f);
-            cubeGenerator.Output(out Mesh mesh, out vertices, out triangles);
+            volumeGenerator.Input( transform.position , Vector3.one * scale , scale / particle_num );
+            volumeGenerator.Output( out volume );
+            cubeGenerator.Input( volume , 2.5f , Vector3.one * scale );
+            cubeGenerator.Output( out Mesh mesh , out vertices , out triangles );
             meshFilter.mesh = mesh;
         }
 
