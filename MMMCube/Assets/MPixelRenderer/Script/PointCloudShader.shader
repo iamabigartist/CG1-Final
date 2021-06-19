@@ -6,7 +6,7 @@ Shader "Point Cloud"
 	Properties
 	{
 		main_color("MainColor", Color) = (1.0,0.0,0.0,1.0)
-		ouline_color("OutlineColor", Color) = (1.0,0.0,0.0,1.0)
+		ouline_color("OutlineColor", Color) = (0.0,1.0,0.0,1.0)
 		outline_size("OutlineSize",float) = 2
 	}
 		SubShader
@@ -20,6 +20,7 @@ Shader "Point Cloud"
 			#pragma target 5.0
 			#include "UnityCG.cginc"
 
+			float outline_size;
 			float4 outline_color;
 			StructuredBuffer<float3> cloud;
 
@@ -32,7 +33,7 @@ Shader "Point Cloud"
 			particle vertex_shader(uint id : SV_VertexID)
 			{
 				particle p;
-				float3 T = cloud[id];
+				float3 T = outline_size * cloud[id];
 				p.clip_pos = UnityObjectToClipPos(T);
 				p.z = UnityObjectToViewPos(T).z + 1000;
 				return p;
@@ -40,7 +41,7 @@ Shader "Point Cloud"
 
 			float4 fragment_shader(particle p) : SV_TARGET
 			{
-				return float4(main_color.rgb * p.z / 1000, 1.0);
+				return float4(outline_color.rgb * p.z / 1000, 1.0);
 			}
 
 			ENDCG

@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-
 using UnityEngine;
 
 /// <summary>
@@ -30,12 +27,17 @@ public class ParticleRenderer : MonoBehaviour
     /// <summary>
     /// </summary>
     /// <param name="outline_size">The ouline paticle pos = outline_size * paticle pos</param>
-    public void SetData ( ComputeBuffer particle_buffer , Color main_color , Color outline_color , float outline_size )
+    public void On ( ComputeBuffer particle_buffer , Color main_color , Color outline_color , float outline_size )
     {
         _particle_buffer = particle_buffer;
         _main_color = main_color;
         _outline_color = outline_color;
         _outline_size = outline_size;
+    }
+
+    public void Off ()
+    {
+        _particle_buffer = null;
     }
 
     #endregion Interface
@@ -47,7 +49,13 @@ public class ParticleRenderer : MonoBehaviour
         if ( _particle_buffer == null ) return;
 
         _cloud_render.SetBuffer( "cloud" , _particle_buffer );
+        _cloud_render.SetColor( "MainColor" , _main_color );
+        _cloud_render.SetColor( "OutlineColor" , _outline_color );
+        _cloud_render.SetFloat( "OutlineSize" , _outline_size );
+
         _cloud_render.SetPass( 0 );
+        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
+        _cloud_render.SetPass( 1 );
         Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
     }
 
