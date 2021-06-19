@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SPHSimulator
 {
-    public class PCISPHSimulatorSlow
+    public class PCISPHSimulatorSlowAlt
     {
         private const float INITIAL_DENSITY = 1000f;
 
@@ -14,13 +14,15 @@ namespace SPHSimulator
         private float m_viscosity;
         private Bounds m_generateBox;
         private Bounds m_boundingBox;
-        private float m_force1;
-        private float m_force2;
 
         private ComputeShader m_computePCISPH;
 
         private float m_massPerParticle;
-        private int m_stepKernel;
+        private int m_initKernel;
+        private int m_predictKernel;
+        private int m_correctKernel;
+        private int m_forceKernel;
+        private int m_finalKernel;
         private float m_preDelta;
 
         private Vector3[] m_positionArray;
@@ -37,45 +39,31 @@ namespace SPHSimulator
         private ComputeBuffer m_densityBuffer;
         private float[] m_densityArray;
 
-        public PCISPHSimulatorSlow(int particleCount, float viscosity, float h, int iterations, float randomness, Bounds generate, Bounds bounds, ComputeShader computeShader, float force1, float force2)
+        public PCISPHSimulatorSlowAlt ( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds )
         {
             m_h = h;
             m_iterations = iterations;
             m_viscosity = viscosity;
             m_generateBox = generate;
             m_boundingBox = bounds;
-            m_computePCISPH = computeShader;
-            m_force1 = force1;
-            m_force2 = force2;
+            m_computePCISPH = Resources.Load<ComputeShader>( "Shaders/PCISPHSlowAltComputeShader" );
 
-            m_stepKernel = m_computePCISPH.FindKernel( "Step" );
+            m_initKernel = m_computePCISPH.FindKernel( "Initialize" );       
+            m_predictKernel = m_computePCISPH.FindKernel( "Predict" );
+            m_correctKernel = m_computePCISPH.FindKernel( "Correct" );
+            m_forceKernel = m_computePCISPH.FindKernel( "Force" );
+            m_finalKernel = m_computePCISPH.FindKernel( "Finalize" );
 
             CreateParticles( particleCount , randomness );
             InitializeKernels();
         }
 
-        ~PCISPHSimulatorSlow ()
+        ~PCISPHSimulatorSlowAlt ()
         {
             DisposeBuffer();
         }
 
-
-        private Vector3 calculateForceAcc(Vector3 v, float strength)
-        {
-            Vector3 d = v.normalized;
-            float len = v.magnitude;
-            if (len <= 0)
-            {
-                Vector3 ret = new Vector3(0f, 0f, 0f);
-                return ret;
-            }
-            float a = strength / (len + 0.0001f);
-            a = (a > strength) ? strength : a;
-            return a * d;
-        }
-
-
-        private void CreateParticles(int particleCount, float randomness)
+        private void CreateParticles ( int particleCount , float randomness )
         {
             Vector3 size = m_generateBox.size;
             Vector3 min = m_generateBox.min;
@@ -93,11 +81,7 @@ namespace SPHSimulator
             m_velocityArray = new Vector3[ m_actualNumParticles ];
             m_densityArray = new float[ m_actualNumParticles ];
 
-            Vector3 b_min = m_boundingBox.min; 
-            Vector3 b_max = m_boundingBox.max;
-
-
-            float random = Mathf.Clamp(randomness, 0f, 1f) * step;
+            float random = Mathf.Clamp( randomness , 0f , 1f ) * step;
             float posX = min.x;
             for ( int i = 0; i < particleDimension.x; i++ )
             {
@@ -108,17 +92,11 @@ namespace SPHSimulator
                     for ( int k = 0; k < particleDimension.z; k++ )
                     {
                         int index = particleDimension.y * particleDimension.z * i + particleDimension.z * j + k;
-                        m_positionArray[index].x = posX + Random.Range(-random, random);
-                        m_positionArray[index].y = posY + Random.Range(-random, random);
-                        m_positionArray[index].z = posZ + Random.Range(-random, random);
-
-                        Vector3 tem1 = new Vector3(b_min.x, m_positionArray[index].y, m_positionArray[index].z);
-                        Vector3 tem2 = new Vector3(b_max.x, m_positionArray[index].y, m_positionArray[index].z);
-                        Vector3 a1 = calculateForceAcc((m_positionArray[index] - tem1), m_force1);
-                        Vector3 a2 = calculateForceAcc((m_positionArray[index] - tem2), m_force2);
-                        m_velocityArray[index] = (a1 + a2) * 0.01f;
-                        //m_velocityArray[index] = new Vector3(20f, 0f, 0f);
-                        m_densityArray[index] = INITIAL_DENSITY;
+                        m_positionArray[ index ].x = posX + Random.Range( -random , random );
+                        m_positionArray[ index ].y = posY + Random.Range( -random , random );
+                        m_positionArray[ index ].z = posZ + Random.Range( -random , random );
+                        m_velocityArray[ index ] = Vector3.zero;
+                        m_densityArray[ index ] = INITIAL_DENSITY;
 
                         posZ += step;
                     }
@@ -126,6 +104,7 @@ namespace SPHSimulator
                 }
                 posX += step;
             }
+
             Vector3 grad;
             float sumDot = 0f; ;
             Kernels.WendlandQuinticC63D kernel = new Kernels.WendlandQuinticC63D( m_h );
@@ -155,14 +134,33 @@ namespace SPHSimulator
             m_pressureBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) );
             m_densityBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) );
 
-            m_computePCISPH.SetBuffer( m_stepKernel , "position" , m_positionBuffer );
-            m_computePCISPH.SetBuffer( m_stepKernel , "velocity" , m_velocityBuffer );
-            m_computePCISPH.SetBuffer( m_stepKernel , "prePosition" , m_predictedPositionBuffer );
-            m_computePCISPH.SetBuffer( m_stepKernel , "preVelocity" , m_predictedVelocityBuffer );
-            m_computePCISPH.SetBuffer( m_stepKernel , "Aext" , m_accelerationExternalBuffer );
-            m_computePCISPH.SetBuffer( m_stepKernel , "Ap" , m_accelerationPressureBuffer );
-            m_computePCISPH.SetBuffer( m_stepKernel , "p" , m_pressureBuffer );
-            m_computePCISPH.SetBuffer( m_stepKernel , "d" , m_densityBuffer );
+            m_computePCISPH.SetBuffer(m_initKernel , "position" , m_positionBuffer );
+            m_computePCISPH.SetBuffer(m_initKernel, "velocity" , m_velocityBuffer );
+            m_computePCISPH.SetBuffer(m_initKernel, "Aext" , m_accelerationExternalBuffer );
+            m_computePCISPH.SetBuffer(m_initKernel, "Ap" , m_accelerationPressureBuffer );
+            m_computePCISPH.SetBuffer(m_initKernel, "p" , m_pressureBuffer );
+            m_computePCISPH.SetBuffer(m_initKernel, "d" , m_densityBuffer );
+
+            m_computePCISPH.SetBuffer(m_predictKernel, "position", m_positionBuffer);
+            m_computePCISPH.SetBuffer(m_predictKernel, "velocity", m_velocityBuffer);
+            m_computePCISPH.SetBuffer(m_predictKernel, "prePosition", m_predictedPositionBuffer);
+            m_computePCISPH.SetBuffer(m_predictKernel, "preVelocity", m_predictedVelocityBuffer);
+            m_computePCISPH.SetBuffer(m_predictKernel, "Aext", m_accelerationExternalBuffer);
+            m_computePCISPH.SetBuffer(m_predictKernel, "Ap", m_accelerationPressureBuffer);
+
+            m_computePCISPH.SetBuffer(m_correctKernel, "prePosition", m_predictedPositionBuffer);
+            m_computePCISPH.SetBuffer(m_correctKernel, "p", m_pressureBuffer);
+            m_computePCISPH.SetBuffer(m_correctKernel, "d", m_densityBuffer);
+
+            m_computePCISPH.SetBuffer(m_forceKernel, "prePosition", m_predictedPositionBuffer);
+            m_computePCISPH.SetBuffer(m_forceKernel, "p", m_pressureBuffer);
+            m_computePCISPH.SetBuffer(m_forceKernel, "d", m_densityBuffer);
+            m_computePCISPH.SetBuffer(m_forceKernel, "Ap", m_accelerationPressureBuffer);
+
+            m_computePCISPH.SetBuffer(m_finalKernel, "position", m_positionBuffer);
+            m_computePCISPH.SetBuffer(m_finalKernel, "velocity", m_velocityBuffer);
+            m_computePCISPH.SetBuffer(m_finalKernel, "Aext", m_accelerationExternalBuffer); 
+            m_computePCISPH.SetBuffer(m_finalKernel, "Ap", m_accelerationPressureBuffer);
 
             m_computePCISPH.SetInt( "particleCount" , m_actualNumParticles );
             m_computePCISPH.SetFloats( "gravity" , 0f , -9.81f , 0f );
@@ -173,7 +171,6 @@ namespace SPHSimulator
             m_computePCISPH.SetInt( "iterations" , m_iterations );
 
             m_densityBuffer.SetData( m_densityArray );
-            m_positionBuffer.SetData( m_positionArray );
         }
 
         #region Interface
@@ -205,7 +202,16 @@ namespace SPHSimulator
             m_computePCISPH.SetFloat( "dt" , dt );
             m_computePCISPH.SetFloat( "delta" , CalculateDelta( dt ) );
 
-            m_computePCISPH.Dispatch( m_stepKernel , Mathf.CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
+            m_computePCISPH.Dispatch(m_initKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+            int it = 0;
+            while (it < m_iterations)
+            {
+                m_computePCISPH.Dispatch(m_predictKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+                m_computePCISPH.Dispatch(m_correctKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+                m_computePCISPH.Dispatch(m_forceKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
+                it++;
+            }
+            m_computePCISPH.Dispatch(m_finalKernel, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
 
             m_positionBuffer.GetData( m_positionArray );
             m_velocityBuffer.GetData( m_velocityArray );

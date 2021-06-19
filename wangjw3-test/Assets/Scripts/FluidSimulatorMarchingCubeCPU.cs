@@ -1,19 +1,18 @@
 using System.Collections;
+
 using UnityEngine;
 
-public class FluidSimulator : MonoBehaviour
+public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
 {
-    public ComputeShader computeSPH;
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
 
     [SerializeField] private bool m_frameByFrame;
     [SerializeField] private int m_numParticles;
-    [SerializeField] private float m_initialDensity;
     [SerializeField] private float m_h;
     [SerializeField] private int m_iterations;
     [SerializeField] private float m_dt;
-    [SerializeField, Range(0f, 1f)] private float m_randomness;
+    [SerializeField, Range( 0f , 1f )] private float m_randomness;
     [SerializeField] private float m_viscosity;
     [SerializeField] private float m_gridStep;
     [SerializeField] private float m_smoothLength;
@@ -29,11 +28,11 @@ public class FluidSimulator : MonoBehaviour
     private Mesh m_mesh;
 
     private bool m_started = false;
-    Vector3[] vs;
-    int[] tris;
+    private Vector3[] vs;
+    private int[] tris;
     private bool m_visualize = false;
 
-    private void Start()
+    private void Start ()
     {
         m_meshFilter = GetComponent<MeshFilter>();
         
@@ -49,22 +48,22 @@ public class FluidSimulator : MonoBehaviour
         m_meshFilter.mesh = m_mesh;
     }
 
-    private void Update()
+    private void Update ()
     {
-        if (Input.GetButtonDown("Submit")) m_started = true;
-        if (Input.GetKey(KeyCode.Space)) m_visualize = true;
-        if (m_started)
+        if ( Input.GetButtonDown( "Submit" ) ) m_started = true;
+        if ( Input.GetKey( KeyCode.Space ) ) m_visualize = true;
+        if ( m_started )
         {
             Step();
-            if (m_frameByFrame) m_started = false;
+            if ( m_frameByFrame ) m_started = false;
         }
     }
 
-    private void Step()
+    private void Step ()
     {
         float dt = m_dt < Mathf.Epsilon ? Time.deltaTime : m_dt;
-        m_simulator.Step(dt);
-        if (m_visualize)
+        m_simulator.Step( dt );
+        if ( m_visualize )
         {
             m_converter.Compute(ref m_simulator.particlePositionArray);
             m_generator.Input(m_converter.volume, m_threshold, Vector3.one);
