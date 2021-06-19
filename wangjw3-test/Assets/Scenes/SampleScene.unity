@@ -839,8 +839,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1296219115}
   m_Mesh: {fileID: 0}
-<<<<<<< Updated upstream
-=======
 --- !u!114 &1335592639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -862,7 +860,6 @@ MonoBehaviour:
   m_dt: 0.01
   m_randomness: 0.1
   m_viscosity: 0
->>>>>>> Stashed changes
 --- !u!1 &1411974829
 GameObject:
   m_ObjectHideFlags: 0
