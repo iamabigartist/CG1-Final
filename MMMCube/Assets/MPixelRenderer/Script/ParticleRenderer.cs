@@ -3,8 +3,6 @@ using System. Collections. Generic;
 
 using UnityEngine;
 
-using UnityEngine;
-
 public class ParticleRenderer : MonoBehaviour
 {
     public Material material;
@@ -19,7 +17,7 @@ public class ParticleRenderer : MonoBehaviour
     private void Start ()
     {
         compute_buffer = new ComputeBuffer( number , sizeof( float ) * 3 , ComputeBufferType. Default );
-        Point[] cloud = new Point[number];
+        Point [ ] cloud = new Point [ number ];
         for ( uint i = 0; i < number; ++i )
         {
             cloud [ i ] = new Point();
