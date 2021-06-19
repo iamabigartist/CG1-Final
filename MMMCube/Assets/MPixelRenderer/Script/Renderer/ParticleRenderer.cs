@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// This renderer use a input <see cref="ComputeBuffer"/> and the PointCloudShader to render a point cloud
 /// </summary>
-public class ParticleRenderer : MonoBehaviour
+public class ParticleRenderer
 {
     private Material _cloud_render;
     private ComputeBuffer _particle_buffer;
@@ -16,13 +16,13 @@ public class ParticleRenderer : MonoBehaviour
 
     #endregion Config
 
-    private void Start ()
+    #region Interface
+
+    public ParticleRenderer ()
     {
         _particle_buffer = null;
         _cloud_render = new Material( Shader.Find( "Point Cloud" ) );
     }
-
-    #region Interface
 
     /// <summary>
     /// </summary>
@@ -45,11 +45,7 @@ public class ParticleRenderer : MonoBehaviour
         _particle_buffer = null;
     }
 
-    #endregion Interface
-
-    #region Render
-
-    private void OnRenderObject ()
+    public void Draw ()
     {
         if ( _particle_buffer == null ) return;
 
@@ -59,10 +55,22 @@ public class ParticleRenderer : MonoBehaviour
         _cloud_render.SetFloat( "OutlineSize" , _outline_size );
 
         _cloud_render.SetPass( 0 );
+        _cloud_render.SetVector( "PositionOffset" , new Vector4( 1 , 0 , 0 , 0 ) );
         Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
+        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , 1 , 0 , 0 ) );
+        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
+        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , 0 , 1 , 0 ) );
+        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
+        _cloud_render.SetVector( "PositionOffset" , new Vector4( -1 , 0 , 0 , 0 ) );
+        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
+        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , -1 , 0 , 0 ) );
+        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
+        _cloud_render.SetVector( "PositionOffset" , new Vector4( 0 , 0 , -1 , 0 ) );
+        Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
+
         _cloud_render.SetPass( 1 );
         Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
     }
 
-    #endregion Render
+    #endregion Interface
 }

@@ -144,6 +144,7 @@ namespace SPHSimulator
             m_computePCISPH.SetInt( "iterations" , m_iterations );
 
             m_densityBuffer.SetData( m_densityArray );
+            m_positionBuffer.SetData( m_positionArray );
         }
 
         #region Interface
