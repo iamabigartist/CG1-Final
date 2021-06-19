@@ -541,7 +541,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 10000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -586,8 +586,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7264d5d57c089f429cdb77c0696b103, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_zoomSpeed: 1
-  m_dragSpeed: 10
+  m_zoomSpeed: 5
+  m_dragSpeed: 100
   m_rotateSpeed: 5
 --- !u!1 &1176479946
 GameObject:
@@ -834,15 +834,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
-  m_frameByFrame: 0
+  m_frameByFrame: 1
   m_numParticles: 10000
   m_h: 1
-  m_iterations: 5
+  m_iterations: 1
   m_dt: 0.01
   m_randomness: 0.1
   m_viscosity: 0
-  m_gridStep: 0.5
-  m_smoothLength: 0.5
 --- !u!1 &1411974829
 GameObject:
   m_ObjectHideFlags: 0
