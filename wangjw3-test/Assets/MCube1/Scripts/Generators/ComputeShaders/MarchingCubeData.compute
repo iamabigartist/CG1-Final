@@ -18,21 +18,21 @@ static const int vertices_convert1[8] = //8
 	6
 };
 
-// static const int edges_convert1[12] = //12
-// {
-// 	8 + 0b00,//z aixs, 00
-// 	0 + 0b10,//x,z0
-// 	8 + 0b01,//z,0x
-// 	0 + 0b00,//x,00
-// 	8 + 0b10,//z,y0
-// 	0 + 0b11,//x,zy
-// 	8 + 0b11,//z,yx
-// 	0 + 0b01,//x,0y
-// 	4 + 0b00,//y,00
-// 	4 + 0b10,//y,z0
-// 	4 + 0b11,//y,zx
-// 	4 + 0b01,//y,0x
-// };
+static const int edges_convert1[12] = //12
+{
+	8 + 0b00,//z aixs, 00
+	0 + 0b10,//x,z0
+	8 + 0b01,//z,0x
+	0 + 0b00,//x,00
+	8 + 0b10,//z,y0
+	0 + 0b11,//x,zy
+	8 + 0b11,//z,yx
+	0 + 0b01,//x,0y
+	4 + 0b00,//y,00
+	4 + 0b10,//y,z0
+	4 + 0b11,//y,zx
+	4 + 0b01,//y,0x
+};
 
 static const int triangulation[256][16] = {//256 16
 			{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },

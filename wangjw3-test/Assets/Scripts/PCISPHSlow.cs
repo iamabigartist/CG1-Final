@@ -319,7 +319,7 @@ public class PCISPHSlow : MonoBehaviour
             }
         }
 
-        m_generator.Input( m_volume , 0.5f );
+        m_generator.Input( m_volume , 0.5f , Vector3.one);
         Vector3[] vs;
         int[] tris;
         m_generator.Output( out m_mesh , out vs , out tris );

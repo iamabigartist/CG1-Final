@@ -13,6 +13,8 @@ namespace SPHSimulator
         private float m_viscosity;
         private Bounds m_generateBox;
         private Bounds m_boundingBox;
+        private float m_force1;
+        private float m_force2;
 
         private ComputeShader m_computePCISPH;
 
@@ -34,7 +36,7 @@ namespace SPHSimulator
         private ComputeBuffer m_densityBuffer;
         private float[] m_densityArray;
 
-        public PCISPHSimulatorSlow(int particleCount, float viscosity, float h, int iterations, float randomness, Bounds generate, Bounds bounds, ComputeShader computeShader)
+        public PCISPHSimulatorSlow(int particleCount, float viscosity, float h, int iterations, float randomness, Bounds generate, Bounds bounds, ComputeShader computeShader, float force1, float force2)
         {
             m_h = h;
             m_iterations = iterations;
@@ -42,6 +44,8 @@ namespace SPHSimulator
             m_generateBox = generate;
             m_boundingBox = bounds;
             m_computePCISPH = computeShader;
+            m_force1 = force1;
+            m_force2 = force2;
 
             m_stepKernel = m_computePCISPH.FindKernel("Step");
 
@@ -69,6 +73,22 @@ namespace SPHSimulator
             m_densityBuffer.Dispose();
         }
 
+
+        private Vector3 calculateForceAcc(Vector3 v, float strength)
+        {
+            Vector3 d = v.normalized;
+            float len = v.magnitude;
+            if (len <= 0)
+            {
+                Vector3 ret = new Vector3(0f, 0f, 0f);
+                return ret;
+            }
+            float a = strength / (len + 0.0001f);
+            a = (a > strength) ? strength : a;
+            return a * d;
+        }
+
+
         private void CreateParticles(int particleCount, float randomness)
         {
             Vector3 size = m_generateBox.size;
@@ -87,6 +107,10 @@ namespace SPHSimulator
             m_velocityArray = new Vector3[m_actualNumParticles];
             m_densityArray = new float[m_actualNumParticles];
 
+            Vector3 b_min = m_boundingBox.min; 
+            Vector3 b_max = m_boundingBox.max;
+
+
             float random = Mathf.Clamp(randomness, 0f, 1f) * step;
             float posX = min.x;
             for (int i = 0; i < particleDimension.x; i++)
@@ -101,7 +125,13 @@ namespace SPHSimulator
                         m_positionArray[index].x = posX + Random.Range(-random, random);
                         m_positionArray[index].y = posY + Random.Range(-random, random);
                         m_positionArray[index].z = posZ + Random.Range(-random, random);
-                        m_velocityArray[index] = Vector3.zero;
+
+                        Vector3 tem1 = new Vector3(b_min.x, m_positionArray[index].y, m_positionArray[index].z);
+                        Vector3 tem2 = new Vector3(b_max.x, m_positionArray[index].y, m_positionArray[index].z);
+                        Vector3 a1 = calculateForceAcc((m_positionArray[index] - tem1), m_force1);
+                        Vector3 a2 = calculateForceAcc((m_positionArray[index] - tem2), m_force2);
+                        m_velocityArray[index] = (a1 + a2) * 0.01f;
+                        //m_velocityArray[index] = new Vector3(20f, 0f, 0f);
                         m_densityArray[index] = INITIAL_DENSITY;
 
                         posZ += step;
@@ -110,7 +140,6 @@ namespace SPHSimulator
                 }
                 posX += step;
             }
-
             Vector3 grad;
             float sumDot = 0f; ;
             Kernels.WendlandQuinticC63D kernel = new Kernels.WendlandQuinticC63D(m_h);
