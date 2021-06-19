@@ -10,6 +10,7 @@ float d0;
 float delta;
 float u;
 int iterations;
+int neighbourCount;
 
 float W(float3 v) {
     float r = length(v);
@@ -50,23 +51,25 @@ float3 GradW(float3 v, float m_h) {
 }
 
 
-globallycoherent RWStructuredBuffer<float3> position;
-globallycoherent RWStructuredBuffer<float3> velocity;
-globallycoherent RWStructuredBuffer<float3> prePosition;
-globallycoherent RWStructuredBuffer<float3> preVelocity;
-globallycoherent RWStructuredBuffer<float3> Aext;
-globallycoherent RWStructuredBuffer<float3> Ap;
-globallycoherent RWStructuredBuffer<float> p;
-globallycoherent RWStructuredBuffer<float> d;
+RWStructuredBuffer<float3> position;
+RWStructuredBuffer<float3> velocity;
+RWStructuredBuffer<float3> prePosition;
+RWStructuredBuffer<float3> preVelocity;
+RWStructuredBuffer<float3> Aext;
+RWStructuredBuffer<float3> Ap;
+RWStructuredBuffer<float> p;
+RWStructuredBuffer<float> d;
+StructuredBuffer<int> neighbours;
 
 #pragma kernel Initialize
 [numthreads(8,1,1)]
 void Initialize(uint3 id : SV_DispatchThreadID)
 {
     float3 temp = {0.0, 0.0, 0.0};
-    for (int i = 0; i < particleCount; i++) {
-        float3 grad = GradW(position[id.x] - position[i], h/2);
-        temp += dot(grad, grad) * (velocity[i] - velocity[id.x]) / d[i];
+    for (int i = 0; i < neighbourCount; i++) {
+        int neighbour = neighbours[neighbourCount * id.x + i];
+        float3 grad = GradW(position[id.x] - position[neighbour], h);
+        temp += dot(grad, grad) * (velocity[neighbour] - velocity[id.x]) / d[neighbour];
     }
     Aext[id.x] = u * temp + gravity;
     p[id.x] = 0.0;
@@ -86,8 +89,8 @@ void Predict(uint3 id : SV_DispatchThreadID)
 void Correct(uint3 id : SV_DispatchThreadID)
 {
     float density = 0.0001;
-    for (int i = 0; i < particleCount;i++) {
-        density += W(prePosition[id.x] - prePosition[i]);
+    for (int i = 0; i < neighbourCount; i++) {
+        density += W(prePosition[id.x] - prePosition[neighbours[neighbourCount * id.x + i]]);
     }
     density *= particleMass;
     p[id.x] += delta * (density - d0);
@@ -100,8 +103,9 @@ void Force(uint3 id : SV_DispatchThreadID)
 {
     float3 accP = {0.0, 0.0, 0.0};
     float self = p[id.x] / (d[id.x] * d[id.x]);
-    for (int i = 0; i < particleCount; i++) {
-        accP += (self + p[i] / (d[i] * d[i])) * GradW(prePosition[id.x] - prePosition[i]);
+    for (int i = 0; i < neighbourCount; i++) {
+        int neighbour = neighbours[neighbourCount * id.x + i];
+        accP += (self + p[neighbour] / (d[neighbour] * d[neighbour])) * GradW(prePosition[id.x] - prePosition[neighbour]);
     }
     Ap[id.x] = -particleMass * accP;
 }

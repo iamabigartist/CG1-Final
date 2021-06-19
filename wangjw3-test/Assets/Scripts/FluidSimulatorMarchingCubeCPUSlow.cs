@@ -2,7 +2,7 @@ using System.Collections;
 
 using UnityEngine;
 
-public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
+public class FluidSimulatorMarchingCubeCPUSlow : MonoBehaviour
 {
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
@@ -19,11 +19,10 @@ public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
     [SerializeField] private float m_force1;
     [SerializeField] private float m_force2;
     [SerializeField, Range(0f, 10f)] private float m_threshold;
-    [SerializeField] private int m_neighbourCount;
 
     private MeshFilter m_meshFilter;
 
-    private SPHSimulator.PCISPHSimulatorNeighbour m_simulator;
+    private SPHSimulator.PCISPHSimulatorSlowAlt m_simulator;
     private ParticleToVolume m_converter;
     private MarchingCube1.MarchingCubeCPUGenerator m_generator;
     private Mesh m_mesh;
@@ -37,8 +36,8 @@ public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
     {
         m_meshFilter = GetComponent<MeshFilter>();
         
-        m_simulator = new SPHSimulator.PCISPHSimulatorNeighbour(
-            m_numParticles, m_viscosity, m_h, m_iterations, m_randomness, generateBox.bounds, boundingBox.bounds, m_force1, m_force2, m_neighbourCount);
+        m_simulator = new SPHSimulator.PCISPHSimulatorSlowAlt(
+            m_numParticles, m_viscosity, m_h, m_iterations, m_randomness, generateBox.bounds, boundingBox.bounds, m_force1, m_force2);
         m_converter = new ParticleToVolume(m_gridStep, m_smoothLength, boundingBox.bounds);
         m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
         m_mesh = new Mesh();

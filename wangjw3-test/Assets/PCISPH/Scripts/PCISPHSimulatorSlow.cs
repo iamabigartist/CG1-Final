@@ -37,14 +37,14 @@ namespace SPHSimulator
         private ComputeBuffer m_densityBuffer;
         private float[] m_densityArray;
 
-        public PCISPHSimulatorSlow(int particleCount, float viscosity, float h, int iterations, float randomness, Bounds generate, Bounds bounds, ComputeShader computeShader, float force1, float force2)
+        public PCISPHSimulatorSlow(int particleCount, float viscosity, float h, int iterations, float randomness, Bounds generate, Bounds bounds, float force1, float force2)
         {
             m_h = h;
             m_iterations = iterations;
             m_viscosity = viscosity;
             m_generateBox = generate;
             m_boundingBox = bounds;
-            m_computePCISPH = computeShader;
+            m_computePCISPH = Resources.Load<ComputeShader>("Shaders/PCISPHSlowComputeShader");
             m_force1 = force1;
             m_force2 = force2;
 
