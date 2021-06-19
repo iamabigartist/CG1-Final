@@ -39,6 +39,12 @@ public class PCISPHSlow : MonoBehaviour
     [SerializeField] private float m_viscosity;
     [SerializeField] private float m_gridStep;
     [SerializeField] private float m_smoothLength;
+    [SerializeField] private Vector3 m_forcePosition1;
+    [SerializeField] private Vector3 m_forceDirection1;
+    [SerializeField] private float m_forceStrength1;
+    [SerializeField] private Vector3 m_forcePosition2;
+    [SerializeField] private Vector3 m_forceDirection2;
+    [SerializeField] private float m_forceStrength2;
     //[SerializeField] private float m_dampingRate;
     //[SerializeField] private float m_pressureConstant;
 
@@ -51,6 +57,7 @@ public class PCISPHSlow : MonoBehaviour
     //private Transform[] m_objects;
     private float m_massPerParticle;
 
+    private int m_initVelocity;
     private int m_initKernel;
     private int m_predictKernel;
     private int m_correctKernel;
@@ -70,6 +77,7 @@ public class PCISPHSlow : MonoBehaviour
 
     private void Start ()
     {
+        m_initVelocity = computeSPH.FindKernel("SetInitialVelocity");
         m_initKernel = computeSPH. FindKernel( "Initialize" );
         m_predictKernel = computeSPH. FindKernel( "Predict" );
         m_correctKernel = computeSPH. FindKernel( "Correct" );
@@ -105,7 +113,7 @@ public class PCISPHSlow : MonoBehaviour
     {
         //if (m_started) Simulate();
         //m_started = false;
-    }
+    } 
 
     private void OnDisable ()
     {
@@ -113,6 +121,7 @@ public class PCISPHSlow : MonoBehaviour
         m_particleBuffer. Dispose();
         Debug. Log( "Buffer disposed." );
     }
+
 
     private void CreateParticles ()
     {
@@ -142,7 +151,7 @@ public class PCISPHSlow : MonoBehaviour
                     m_particles [ index ]. position. y = posY;
                     m_particles [ index ]. position. z = posZ;
                     if ( m_randomness ) m_particles [ index ]. position += new Vector3( Random. Range( -0.02f , 0.02f ) , Random. Range( -0.02f , 0.02f ) , Random. Range( -0.02f , 0.02f ) );
-                    m_particles [ index ]. velocity = Vector3. zero;
+                    m_particles[index].velocity = Vector3.zero;
                     //m_objects[index].position = m_particles[index].position;
 
                     posZ += step;
@@ -172,6 +181,7 @@ public class PCISPHSlow : MonoBehaviour
                 }
             }
         }
+        computeSPH.Dispatch(m_initVelocity, Mathf.CeilToInt(m_actualNumParticles / 8f), 1, 1);
         Debug. Log( "density = " + m_massPerParticle * density );
         Debug. Log( "Counted " + count + " neighbours" );
         Debug. Log( "sumGrad: " + sumGrad + ", sumDot: " + sumDot );
@@ -181,6 +191,7 @@ public class PCISPHSlow : MonoBehaviour
     private void InitializeKernels ()
     {
         m_particleBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) * 20 );
+        computeSPH. SetBuffer( m_initVelocity, "particles", m_particleBuffer);
         computeSPH. SetBuffer( m_initKernel , "particles" , m_particleBuffer );
         computeSPH. SetBuffer( m_predictKernel , "particles" , m_particleBuffer );
         computeSPH. SetBuffer( m_correctKernel , "particles" , m_particleBuffer );
@@ -193,6 +204,12 @@ public class PCISPHSlow : MonoBehaviour
         computeSPH. SetFloat( "h" , m_h );
         computeSPH. SetFloat( "d0" , m_initialDensity );
         computeSPH. SetFloat( "u" , m_viscosity );
+        computeSPH. SetFloats( "force1Position" , m_forcePosition1.x, m_forcePosition1.y, m_forcePosition1.z );
+        computeSPH. SetFloats( "forcePlain1Normal" , m_forceDirection1.x, m_forceDirection1.y, m_forceDirection1.z );
+        computeSPH. SetFloat("force1Strength", m_forceStrength1);
+        computeSPH.SetFloats("force2Position", m_forcePosition2.x, m_forcePosition2.y, m_forcePosition2.z);
+        computeSPH.SetFloats("forcePlain2Normal", m_forceDirection2.x, m_forceDirection2.y, m_forceDirection2.z);
+        computeSPH.SetFloat("force2Strength", m_forceStrength2);
     }
 
     private const float PI32 = 5.5683278f;
@@ -278,15 +295,16 @@ public class PCISPHSlow : MonoBehaviour
             int y = Mathf.Clamp(Mathf.FloorToInt(tem.y / m_gridStep) + 1, 1, m_gridSize.y - 2);
             int z = Mathf.Clamp(Mathf.FloorToInt(tem.z / m_gridStep) + 1, 1, m_gridSize.z - 2);
 
+
             int range = Mathf.CeilToInt(2 * m_smoothLength / m_gridStep);
             int t_x, t_y, t_z;
-            for(int m=-range; m<=range; ++m)
+            for (int m = -range; m <= range; ++m)
             {
                 t_x = Mathf.Clamp(x + m, 1, m_gridSize.x - 2);
-                for (int n =-range; n <=range; ++n)
+                for (int n = -range; n <= range; ++n)
                 {
                     t_y = Mathf.Clamp(y + n, 1, m_gridSize.y - 2);
-                    for (int k = -range; k <=range; ++k)
+                    for (int k = -range; k <= range; ++k)
                     {
                         t_z = Mathf.Clamp(z + k, 1, m_gridSize.z - 2);
                         Vector3 gridPos = new Vector3((t_x + 0.5f) * m_gridStep, (t_y + 0.5f) * m_gridStep, (t_z + 0.5f) * m_gridStep);
@@ -297,21 +315,11 @@ public class PCISPHSlow : MonoBehaviour
             }
         }
 
-        //for( int i=0; i<m_actualNumParticles; ++i)
-        //{
-        //    Vector3 tem = m_particles[i].position - m_boundingBox.min;
-        //    int x = Mathf.Clamp(Mathf.FloorToInt(tem.x / m_gridStep) + 1, 1, m_gridSize.x - 2);
-        //    int y = Mathf.Clamp(Mathf.FloorToInt(tem.y / m_gridStep) + 1, 1, m_gridSize.y - 2);
-        //    int z = Mathf.Clamp(Mathf.FloorToInt(tem.z / m_gridStep) + 1, 1, m_gridSize.z - 2);
-
-
-        //}
-
-        m_generator. Input( m_volume , 0.5f );
+        m_generator.Input( m_volume , 0.5f );
         Vector3[] vs;
         int[] tris;
-        m_generator. Output( out m_mesh , out vs , out tris );
-        meshFilter. mesh = m_mesh;
+        m_generator.Output( out m_mesh , out vs , out tris );
+        meshFilter.mesh = m_mesh;
 
         #endregion MeshRenderer
 

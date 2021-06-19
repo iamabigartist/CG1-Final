@@ -50,6 +50,8 @@ struct Particle {
 //     return n * v * mul;
 // }
 
+
+
 float W(float3 v, float h) {
     float r = length(v);
     if (r < 0.0001 || r > 2.0 * h) return 0.0;
@@ -69,10 +71,23 @@ float3 GradW(float3 v, float h) {
     float h2 = h * h;
     float alpha = 1365.0 / (512.0 * PI * h2 * h);
     float temp = 1.0 - 0.5 * q;
+    temp = temp > 0 ? temp : 0;
     float temp7 = pow(temp, 7.0);
     float n = ((12.0 * q + 12.5 + 4.0 / q) * temp7 * temp - 4.0 / q * temp7 * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0)) / h2;
     return n * v * alpha;
 }
+
+float3 calculateForceAcc(float3 v, float3 f_normal, float f_stength){
+    float3 d = normalize(v);
+    float3 n = normalize(f_normal);
+    float r = length(v);
+    float len = dot(d, n) * r;
+    if(len <= 0 )    return float3(0.0, 0.0, 0.0);
+    float a = f_stength / (len * len + 0.0001);
+    a = (a > f_stength) ? f_stength : a;
+    return a * n;
+}
+
 
 int particleCount;
 float dt;
@@ -82,8 +97,23 @@ float h;
 float d0;
 float delta;
 float u;
+float3 force1Position;
+float3 forcePlain1Normal;
+float force1Strength;
+float3 force2Position;
+float3 forcePlain2Normal;
+float force2Strength;
 
 RWStructuredBuffer<Particle> particles;
+
+#pragma kernel SetInitialVelocity
+[numthreads(8,1,1)]
+void SetInitialVelocity (uint3 id : SV_DispatchThreadID)
+{
+    float3 a1 = calculateForceAcc(particles[id.x].position - force1Position, forcePlain1Normal, force1Strength);
+    float3 a2 = calculateForceAcc(particles[id.x].position - force2Position, forcePlain2Normal, force2Strength);
+    particles[id.x].velocity = (a1 + a2) * dt;
+}
 
 #pragma kernel Initialize
 [numthreads(8,1,1)]
@@ -95,6 +125,7 @@ void Initialize (uint3 id : SV_DispatchThreadID)
         Particle neighbour = particles[i];
         temp += pow(GradW(self.position - neighbour.position, h), 2) * (neighbour.velocity - self.velocity) / (neighbour.d + 0.0001);
     }
+
     particles[id.x].Aext = u * temp + gravity;
     particles[id.x].p = 0.0;
     particles[id.x].Ap = float3(0.0, 0.0, 0.0);
