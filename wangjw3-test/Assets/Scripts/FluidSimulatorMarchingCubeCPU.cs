@@ -2,14 +2,13 @@ using System.Collections;
 
 using UnityEngine;
 
-public class FluidSimulator : MonoBehaviour
+public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
 {
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
 
     [SerializeField] private bool m_frameByFrame;
     [SerializeField] private int m_numParticles;
-    [SerializeField] private float m_initialDensity;
     [SerializeField] private float m_h;
     [SerializeField] private int m_iterations;
     [SerializeField] private float m_dt;

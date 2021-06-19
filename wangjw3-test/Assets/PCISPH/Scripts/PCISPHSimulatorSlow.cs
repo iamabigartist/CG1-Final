@@ -52,22 +52,7 @@ namespace SPHSimulator
 
         ~PCISPHSimulatorSlow ()
         {
-            m_positionBuffer.Release();
-            m_positionBuffer.Dispose();
-            m_velocityBuffer.Release();
-            m_velocityBuffer.Dispose();
-            m_predictedPositionBuffer.Release();
-            m_predictedPositionBuffer.Dispose();
-            m_predictedVelocityBuffer.Release();
-            m_predictedVelocityBuffer.Dispose();
-            m_accelerationExternalBuffer.Release();
-            m_accelerationExternalBuffer.Dispose();
-            m_accelerationPressureBuffer.Release();
-            m_accelerationPressureBuffer.Dispose();
-            m_pressureBuffer.Release();
-            m_pressureBuffer.Dispose();
-            m_densityBuffer.Release();
-            m_densityBuffer.Dispose();
+            DisposeBuffer();
         }
 
         private void CreateParticles ( int particleCount , float randomness )
@@ -161,6 +146,28 @@ namespace SPHSimulator
             m_densityBuffer.SetData( m_densityArray );
         }
 
+        #region Interface
+
+        public void DisposeBuffer ()
+        {
+            m_positionBuffer.Release();
+            m_positionBuffer.Dispose();
+            m_velocityBuffer.Release();
+            m_velocityBuffer.Dispose();
+            m_predictedPositionBuffer.Release();
+            m_predictedPositionBuffer.Dispose();
+            m_predictedVelocityBuffer.Release();
+            m_predictedVelocityBuffer.Dispose();
+            m_accelerationExternalBuffer.Release();
+            m_accelerationExternalBuffer.Dispose();
+            m_accelerationPressureBuffer.Release();
+            m_accelerationPressureBuffer.Dispose();
+            m_pressureBuffer.Release();
+            m_pressureBuffer.Dispose();
+            m_densityBuffer.Release();
+            m_densityBuffer.Dispose();
+        }
+
         public void Step ( float dt )
         {
             m_positionBuffer.SetData( m_positionArray );
@@ -174,14 +181,17 @@ namespace SPHSimulator
             m_velocityBuffer.GetData( m_velocityArray );
 
             Parallel.For( 0 , m_actualNumParticles , i =>
-               {
-                   CalculateBoundary( i );
-               } );
+            {
+                CalculateBoundary( i );
+            } );
         }
 
         public ref Vector3[] particlePositionArray => ref m_positionArray;
+        public ComputeBuffer particle_position_buffer => m_positionBuffer;
 
         //public int actualParticleCount => m_actualNumParticles;
+
+        #endregion Interface
 
         private float CalculateDelta ( float dt )
         {

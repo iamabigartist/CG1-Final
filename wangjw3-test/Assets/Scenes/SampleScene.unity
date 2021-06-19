@@ -395,13 +395,14 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!81 &963194226
 AudioListener:
   m_ObjectHideFlags: 0
@@ -467,6 +468,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &963194229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7264d5d57c089f429cdb77c0696b103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_zoomSpeed: 1
+  m_dragSpeed: 10
+  m_rotateSpeed: 5
 --- !u!1 &1176479946
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,15 +723,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1335592635}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05933fa67a3ec074da4dc5819637fdea, type: 3}
+  m_Script: {fileID: 11500000, guid: f487ba582e77ad043b9e3639142d4ac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  computeSPH: {fileID: 7200000, guid: 7f6be1d4d6e0e304d88956da1cef7c71, type: 3}
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
   m_frameByFrame: 0
   m_numParticles: 10000
-  m_initialDensity: 1000
   m_h: 1
   m_iterations: 5
   m_dt: 0.01
@@ -723,7 +737,6 @@ MonoBehaviour:
   m_viscosity: 0
   m_gridStep: 0.5
   m_smoothLength: 0.5
-  m_threshold: 0.5
 --- !u!1 &1411974829
 GameObject:
   m_ObjectHideFlags: 0
