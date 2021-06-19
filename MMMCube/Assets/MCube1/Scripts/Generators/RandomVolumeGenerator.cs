@@ -33,25 +33,24 @@ namespace MarchingCube1
         /// <param name="original_point"></param>
         /// <param name="scale">The volume scale in three dimension</param>
         /// <param name="step">The step to put one particle</param>
-        public void Input(Vector3 original_point, Vector3 scale, float step)
+        public void Input ( Vector3 original_point , Vector3 scale , float step )
         {
             _original_point = original_point;
             _scale = scale;
             _step = step;
         }
 
-        public void Output(out VolumeMatrix volumeMatrix)
+        public void Output ( out VolumeMatrix volumeMatrix )
         {
-            Vector3Int size = Vector3Int.FloorToInt(_scale / _step);
-            volumeMatrix = new VolumeMatrix(size);
-            for (int z = 0; z < size.z; z++)
+            Vector3Int size = Vector3Int.FloorToInt( _scale / _step );
+            volumeMatrix = new VolumeMatrix( size );
+            for ( int z = 0; z < size.z; z++ )
             {
-                for (int y = 0; y < size.y; y++)
+                for ( int y = 0; y < size.y; y++ )
                 {
-                    for (int x = 0; x < size.x; x++)
+                    for ( int x = 0; x < size.x; x++ )
                     {
-                        Vector3 p = _original_point + new Vector3(x, y, z) * _step;
-                        volumeMatrix[x, y, z] = Random.Range(0f, 5f);
+                        volumeMatrix[ x , y , z ] = Random.Range( 0f , 5f );
                     }
                 }
             }
