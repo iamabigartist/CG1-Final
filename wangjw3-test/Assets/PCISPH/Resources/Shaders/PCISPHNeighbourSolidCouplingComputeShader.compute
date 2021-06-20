@@ -205,7 +205,7 @@ void Finalize(uint3 id : SV_DispatchThreadID)
 		
 		float3 v0v1 = v[triangulation[idx + i + 1]] - v[triangulation[idx + i]];
 		float3 v0v2 = v[triangulation[idx + i + 2]] - v[triangulation[idx + i]];
-		float3 normal = normalize(cross(v0v1, v0v2));
+		float3 normal = normalize(cross(v0v2, v0v1));
 		float dotND = dot(normal, direction);
 		if (dotND >= 0)
 			continue;
@@ -235,7 +235,6 @@ void Finalize(uint3 id : SV_DispatchThreadID)
 
 		float3 outDirection = direction - 2 * dotND * normal;
 		velocity[id.x] = outDirection * distance / dt;
-		position[id.x] = p;
 		position[id.x] = p + outDirection * (distance - d);
 		break;
 	}

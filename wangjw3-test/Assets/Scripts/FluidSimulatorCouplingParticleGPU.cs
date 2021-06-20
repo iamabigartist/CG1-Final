@@ -19,9 +19,10 @@ public class FluidSimulatorCouplingParticleGPU : MonoBehaviour
     [SerializeField] private float m_threshold;
     [SerializeField] private float m_baseDt;
     [SerializeField] private int m_baseIterations;
+    [SerializeField] private int m_k;
 
     private SPHSimulator.PCISPHSimulatorNeighbour m_baseSimulator;
-    private ParticleToVolume m_converter;
+    private ParticleToVolumeFast m_converter;
     private MarchingCube1.MarchingCubeCPUGenerator m_generator;
     private SPHSimulator.PCISPHSimulatorNeighbourSolidCoupling m_simulator;
     private ParticleRenderer m_particle_renderer;
@@ -31,14 +32,15 @@ public class FluidSimulatorCouplingParticleGPU : MonoBehaviour
     private void Start ()
     {
         m_baseSimulator = new SPHSimulator.PCISPHSimulatorNeighbour(10000, 0f, 1f, 5, 0.1f, generateBox.bounds, boundingBox.bounds, 0f, 0f, 50);
-        m_converter = new ParticleToVolume(m_gridStep, m_smoothLength, boundingBox.bounds);
+        m_converter = new ParticleToVolumeFast(m_gridStep, m_smoothLength, boundingBox.bounds, m_k);
 
         for (int i = 0; i < m_baseIterations; i++)
         {
             m_baseSimulator.Step(m_baseDt);
         }
-        m_converter.Compute(ref m_baseSimulator.particlePositionArray);
+        m_converter.Compute(m_baseSimulator.KNNContainer, m_baseSimulator.particlePositionArray);
         m_baseSimulator.DisposeBuffer();
+        m_converter.Dispose();
 
         m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
         m_generator.Input(m_converter.volume, m_threshold, Vector3.one * m_gridStep);

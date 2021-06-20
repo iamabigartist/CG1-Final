@@ -51,7 +51,6 @@ namespace SPHSimulator
 
         private KNN.KnnContainer m_knnContainer;
         private KNN.Jobs.KnnRebuildJob m_rebuildJob;
-        private KNN.Jobs.QueryKNearestJob m_queryJob;
 
         public PCISPHSimulatorNeighbour ( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds , float force1 , float force2 , int neighbourCount )
         {
@@ -108,7 +107,7 @@ namespace SPHSimulator
             m_velocityArray = new Vector3[ m_actualNumParticles ];
             m_densityArray = new float[ m_actualNumParticles ];
 
-            m_knnContainer = new KNN.KnnContainer( m_positionNative , false , Allocator.Persistent );
+            m_knnContainer = new KNN.KnnContainer( m_positionNative , true , Allocator.Persistent );
             m_rebuildJob = new KNN.Jobs.KnnRebuildJob( m_knnContainer );
             m_neighbourArray = new NativeArray<int>( m_actualNumParticles * m_neighbourCount , Allocator.Persistent );
 
@@ -289,6 +288,7 @@ namespace SPHSimulator
 
         public ref Vector3[] particlePositionArray => ref m_positionArray;
         public ComputeBuffer particle_position_buffer => m_positionBuffer;
+        public KNN.KnnContainer KNNContainer => m_knnContainer;
 
         #endregion Interface
 

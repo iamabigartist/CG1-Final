@@ -314,7 +314,6 @@ namespace SPHSimulator
         
         private KNN.KnnContainer m_knnContainer;
         private KNN.Jobs.KnnRebuildJob m_rebuildJob;
-        private KNN.Jobs.QueryKNearestJob m_queryJob;
 
         public PCISPHSimulatorNeighbourSolidCoupling( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds, Vector3Int dimension, float volumeStep, float isovalue, float force1, float force2, int neighbourCount)
         {
@@ -338,7 +337,7 @@ namespace SPHSimulator
             InitializeKernels();
 
             m_computePCISPH.SetInts("volumeDimension", dimension.x, dimension.y, dimension.z);
-            m_computePCISPH.SetFloats("volumeOrigin", bounds.min.x - volumeStep, bounds.min.y - volumeStep, bounds.min.z - volumeStep);
+            m_computePCISPH.SetFloats("volumeOrigin", bounds.min.x, bounds.min.y, bounds.min.z);
             m_computePCISPH.SetFloat("volumeStep", volumeStep);
             m_computePCISPH.SetFloat("volumeScale", 1f / volumeStep);
             m_computePCISPH.SetFloat("isovalue", isovalue);
@@ -573,6 +572,7 @@ namespace SPHSimulator
 
         public ref Vector3[] particlePositionArray => ref m_positionArray;
         public ComputeBuffer particle_position_buffer => m_positionBuffer;
+        public KNN.KnnContainer KNNContainer => m_knnContainer;
 
         #endregion Interface
 
