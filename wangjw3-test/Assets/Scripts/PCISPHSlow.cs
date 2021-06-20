@@ -24,6 +24,7 @@ public class PCISPHSlow : MonoBehaviour
 
     public MeshFilter meshFilter;
     public ComputeShader computeSPH;
+    public ComputeShader computeNoise;
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
     public GameObject particleObject;
@@ -57,6 +58,7 @@ public class PCISPHSlow : MonoBehaviour
     //private Transform[] m_objects;
     private float m_massPerParticle;
 
+    private int m_noiseKernal;
     private int m_initVelocity;
     private int m_initKernel;
     private int m_predictKernel;
@@ -85,6 +87,8 @@ public class PCISPHSlow : MonoBehaviour
         m_finalKernel = computeSPH. FindKernel( "Finalize" );
         m_generateBox = generateBox. bounds;
         m_boundingBox = boundingBox. bounds;
+
+        m_noiseKernal = computeNoise.FindKernel("SetNoise");
 
         CreateParticles();
         InitializeKernels();
