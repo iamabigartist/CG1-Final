@@ -1,0 +1,45 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+static const int nt_x = 4;
+static const int nt_y = 4;
+static const int nt_z = 1;
+
+AppendStructuredBuffer<int> result_triangle_indices;
+RWStructuredBuffer<int> indices;
+StructuredBuffer<int> triangle_indices;
+RWStructuredBuffer<int> num;
+RWStructuredBuffer<int> stride;
+
+int triangle_num;
+int repeat_num;
+
+int id_to_index ( uint3 thread_id, uint3 group_id )
+{
+    return
+    group_id * ( nt_x * nt_y * nt_z ) +
+    thread_id.z * nt_y * nt_x + thread_id.y * nt_x + thread_id.x;
+}
+
+[numthreads( nt_x, nt_y, nt_z )]
+void CSMain ( uint3 id_t : SV_GroupThreadID, uint3 id_g : SV_GroupID )
+{
+    int index = id_to_index( id_t, id_g );
+
+    if ( !( index < triangle_num ) )
+        return;
+
+    indices [ index ] = index;
+
+    int cur_tri_index = triangle_indices [ index ];
+    for ( int i = 0; i < repeat_num; i++ )
+    {
+        result_triangle_indices.Append( cur_tri_index );
+        uint cur_dimension, cur_stride;
+        result_triangle_indices.GetDimensions( cur_dimension, cur_stride );
+        num [ index + i ] = cur_dimension;
+        stride [ index + i ] = cur_stride;
+
+    }
+
+}

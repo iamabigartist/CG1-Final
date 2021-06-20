@@ -14,19 +14,22 @@ public class FluidSimulatorParticleGPU : MonoBehaviour
     [SerializeField] private float m_dt;
     [SerializeField, Range( 0f , 1f )] private float m_randomness;
     [SerializeField] private float m_viscosity;
+    [SerializeField] private float m_force1;
+    [SerializeField] private float m_force2;
+    [SerializeField] private int m_neighbourCount;
 
-    private SPHSimulator.PCISPHSimulatorSlow m_simulator;
+    private SPHSimulator.PCISPHSimulatorNeighbour m_simulator;
     private ParticleRenderer m_particle_renderer;
 
     private bool m_started = false;
 
     private void Start ()
     {
-        m_simulator = new SPHSimulator.PCISPHSimulatorSlow(
-            m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds , 0f, 0f);
+        m_simulator = new SPHSimulator.PCISPHSimulatorNeighbour(
+            m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds , m_force1 , m_force2 , m_neighbourCount );
         m_particle_renderer = new ParticleRenderer();
 
-        m_particle_renderer.On( m_simulator.particle_position_buffer , new Color( 0.2f , 0.6f , 0.0f ) , new Color( 1.0f , 1.0f , 0.8f ) , 5f );
+        m_particle_renderer.On( m_simulator.particle_position_buffer , new Color( 0.2f , 0.9f , 0.0f ) , new Color( 1.0f , 1.0f , 0.8f ) , 5f );
     }
 
     private void Update ()
