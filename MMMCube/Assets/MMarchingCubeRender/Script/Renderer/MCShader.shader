@@ -322,11 +322,10 @@ Shader "Volume2MarchingCube"
 			float4 main_color;
 			float cube_size;
 			StructuredBuffer<float> volume;
-			StructuredBuffer<int3> index2xyz;
+			StructuredBuffer<int> index2xyz;
 
 			struct v2g
 			{
-				float4 pos : SV_POSITION;
 				int i : INDEX;
 			};
 
@@ -353,8 +352,8 @@ Shader "Volume2MarchingCube"
 
 			float4 index2obj_pos(int index)
 			{
-				int3 pos = index2xyz[index];
-				return float4(cube_size * float3(pos.x,pos.y,pos.z), volume[index]);
+				int x = index2xyz[3 * index]; int y = index2xyz[3 * index + 1]; int z = index2xyz[3 * index + 2];
+				return float4(cube_size * float3(x,y,z), volume[index]);
 			}
 
 			float4 xyz2obj_pos(int x, int y, int z)
@@ -371,8 +370,6 @@ Shader "Volume2MarchingCube"
 			v2g Vertex(uint id : SV_VertexID)
 			{
 				v2g v;
-				//v.obj_pos = index2obj_pos(id);
-				v.pos = index2obj_pos(id);
 				v.i = id;
 				return v;
 			}
@@ -382,17 +379,17 @@ Shader "Volume2MarchingCube"
 			{
 				//The left down back corner
 				v2g o = input[0];
-				int3 pos = index2xyz[o.i];
+				int x = index2xyz[3 * o.i]; int y = index2xyz[3 * o.i + 1]; int z = index2xyz[3 * o.i + 2];
 				// 8 corners of the current cube
 				float4 cubeCorners[8] = {
-					xyz2obj_pos(pos.x, pos.y, pos.z),
-					xyz2obj_pos(pos.x + 1, pos.y, pos.z),
-					xyz2obj_pos(pos.x + 1, pos.y, pos.z + 1),
-					xyz2obj_pos(pos.x, pos.y, pos.z + 1),
-					xyz2obj_pos(pos.x, pos.y + 1, pos.z),
-					xyz2obj_pos(pos.x + 1, pos.y + 1, pos.z),
-					xyz2obj_pos(pos.x + 1, pos.y + 1, pos.z + 1),
-					xyz2obj_pos(pos.x, pos.y + 1, pos.z + 1)
+					xyz2obj_pos(x, y, z),
+					xyz2obj_pos(x + 1, y, z),
+					xyz2obj_pos(x + 1, y, z + 1),
+					xyz2obj_pos(x, y, z + 1),
+					xyz2obj_pos(x, y + 1, z),
+					xyz2obj_pos(x + 1, y + 1, z),
+					xyz2obj_pos(x + 1, y + 1, z + 1),
+					xyz2obj_pos(x, y + 1, z + 1)
 				};
 
 				// Calculate unique index for each cube configuration.
@@ -431,6 +428,7 @@ Shader "Volume2MarchingCube"
 					cur_v.obj_pos = vA; cur_v.clip_pos = UnityObjectToClipPos(vA); stream.Append(cur_v);
 					cur_v.obj_pos = vB; cur_v.clip_pos = UnityObjectToClipPos(vB); stream.Append(cur_v);
 					cur_v.obj_pos = vC; cur_v.clip_pos = UnityObjectToClipPos(vC); stream.Append(cur_v);
+					stream.RestartStrip();
 				}
 			}
 

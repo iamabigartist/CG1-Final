@@ -39,14 +39,14 @@ public class MarchingCubeRenderer
 
         _volume_matrix = matrix;
         _volume_buffer = new ComputeBuffer( _volume_matrix.count , sizeof( float ) );
-        _index_buffer = new ComputeBuffer( _volume_matrix.count , 3 * sizeof( int ) );
+        _index_buffer = new ComputeBuffer( _volume_matrix.count * 3 , sizeof( int ) );
         _index2xyz = new int[ _volume_matrix.count * 3 ];
         //Init the
-        for ( int x = 0; x < _volume_matrix.size.x; x++ )
+        for ( int z = 0; z < _volume_matrix.size.z; z++ )
         {
             for ( int y = 0; y < _volume_matrix.size.y; y++ )
             {
-                for ( int z = 0; z < _volume_matrix.size.z; z++ )
+                for ( int x = 0; x < _volume_matrix.size.x; x++ )
                 {
                     int i = _volume_matrix.index( x , y , z );
                     _index2xyz[ 3 * i ] = x;
