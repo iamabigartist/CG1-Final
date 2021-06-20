@@ -1,5 +1,7 @@
 using System.Collections;
 
+using UnityEditor;
+
 using UnityEngine;
 
 [System.Serializable]
@@ -40,6 +42,8 @@ public class NoiseTerrain : MonoBehaviour
     private bool m_initialized = false;
 
     private MarchingCube1.VolumeMatrix vol;
+
+    public Mesh cur_mesh => m_meshFilter.mesh;
 
     public void Initialize ()
     {
@@ -85,9 +89,19 @@ public class NoiseTerrain : MonoBehaviour
             computeNoise.Dispatch( m_noiseKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
         }
         m_noiseBuffer.GetData( m_volume.data );
-
         m_generator.Output( out m_mesh );
         m_meshFilter.mesh = m_mesh;
+        SetXY2UV();
+    }
+
+    private void SetXY2UV ()
+    {
+        Vector2[] m_uv = new Vector2[m_mesh.vertices.Length];
+        for (int i = 0; i < m_mesh.vertices.Length; i++)
+        {
+            m_uv[i] = new Vector2( m_mesh.vertices[i].x , m_mesh.vertices[i].y );
+        }
+        m_mesh.uv = m_uv;
     }
 
     private void Update ()
