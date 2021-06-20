@@ -37,10 +37,13 @@ public class NoiseTerrain : MonoBehaviour
     private MeshFilter m_meshFilter;
     private Mesh m_mesh;
 
+    private bool m_initialized = false;
+
     private MarchingCube1.VolumeMatrix vol;
 
     public void Initialize ()
     {
+        if (m_initialized) return;
         Vector3 tem = boundingBox.bounds.size;
         m_gridDimension = new Vector3Int(
             Mathf.CeilToInt( tem.x / m_noiseStep ) ,
@@ -65,6 +68,7 @@ public class NoiseTerrain : MonoBehaviour
         m_generator.Input( m_volume , m_threshold , new Vector3( m_noiseStep , m_noiseStep , m_noiseStep ) , boundingBox.bounds.min );
         m_meshFilter = GetComponent<MeshFilter>();
         m_mesh = new Mesh();
+        m_initialized = true;
     }
 
     public void Generate ()
@@ -90,6 +94,7 @@ public class NoiseTerrain : MonoBehaviour
     {
         if (Input.GetKeyDown( KeyCode.Return ))
         {
+            if (!m_initialized) Initialize();
             Generate();
         }
     }
