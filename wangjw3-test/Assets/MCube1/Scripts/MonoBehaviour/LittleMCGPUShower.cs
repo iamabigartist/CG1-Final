@@ -5,22 +5,13 @@ using UnityEngine;
 
 namespace MarchingCube1
 {
-    [ExecuteInEditMode]
-    public class LittleMarchingCubeShower : MonoBehaviour
+    public class LittleMCGPUShower : MonoBehaviour
     {
-        #region Reference
-
-        private MeshFilter meshFilter;
-
-        #endregion Reference
-
         #region Industry
 
         private RandomVolumeGenerator volumeGenerator;
-        private MarchingCubeCPUGenerator cubeGenerator;
         private VolumeMatrix volume;
-        private Vector3[] vertices;
-        private int[] triangles;
+        private MarchingCubeRenderer cubeRenderer;
 
         #endregion Industry
 
@@ -28,15 +19,15 @@ namespace MarchingCube1
 
         public int particle_num;
         public float scale;
+        public float iso_value;
 
         #endregion Config
 
         // Start is called before the first frame update
         private void Awake ()
         {
-            meshFilter = GetComponent<MeshFilter>();
             volumeGenerator = new RandomVolumeGenerator();
-            cubeGenerator = new MarchingCubeCPUGenerator();
+            cubeRenderer = new MarchingCubeRenderer();
             volume = null;
         }
 
@@ -44,9 +35,17 @@ namespace MarchingCube1
         {
             volumeGenerator.Input( transform.position , Vector3.one * scale , scale / particle_num );
             volumeGenerator.Output( out volume );
-            cubeGenerator.Input( volume , 2.5f , Vector3.one * scale );
-            cubeGenerator.Output( out Mesh mesh , out vertices , out triangles );
-            meshFilter.mesh = mesh;
+            cubeRenderer.On( volume , Color.green , scale , iso_value );
+        }
+
+        private void OnRenderObject ()
+        {
+            cubeRenderer.Draw();
+        }
+
+        private void OnDestroy ()
+        {
+            cubeRenderer.Off();
         }
 
         //private void OnDrawGizmos()

@@ -341,11 +341,6 @@ namespace MarchingCube1
         /// </summary>
         private Vector3Int _start_indices;
 
-        /// <summary>
-        /// The Reference to the output
-        /// </summary>
-        private MarchingCubeMesh _marching_cube_mesh;
-
         private List<Vector3> _vertices;
 
         private List<int> _triangles;

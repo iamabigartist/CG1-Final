@@ -1,5 +1,5 @@
-using System. Collections;
-using System. Collections. Generic;
+using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -21,17 +21,26 @@ namespace MarchingCube1
 
         public VolumeMatrix ( Vector3Int size )
         {
-            this. size = size;
-            data = new float [ size. x * size. y * size. z ];
+            this.size = size;
+            data = new float[ size.x * size.y * size.z ];
         }
 
-        public float this [ int x , int y , int z ]
+        public float this[ int x , int y , int z ]
         {
-            get => data [ x + y * size. x + z * size. y * size. x ];
+            get => data[ x + y * size.x + z * size.y * size.x ];
             set
             {
-                data [ x + y * size. x + z * size. y * size. x ] = value;
+                data[ x + y * size.x + z * size.y * size.x ] = value;
             }
+        }
+
+        public int count => size.x * size.y * size.z;
+
+        public int voxel_count => ( size.x - 1 ) * ( size.y - 1 ) * ( size.z - 1 );
+
+        public int index ( int x , int y , int z )
+        {
+            return x + y * size.x + z * size.y * size.x;
         }
     }
 

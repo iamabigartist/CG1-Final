@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 278485633}
   - component: {fileID: 278485632}
   m_Layer: 0
-  m_Name: FluidSimulatorSlow
+  m_Name: FluidSimulatorSlowMCCPU
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -229,7 +229,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &467138965
 GameObject:
@@ -594,12 +594,12 @@ GameObject:
   - component: {fileID: 1032736224}
   - component: {fileID: 1032736223}
   m_Layer: 0
-  m_Name: FluidSimulatorCoupling
+  m_Name: FluidSimulatorCouplingParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1032736221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -639,7 +639,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1032736223
 MeshRenderer:
@@ -852,7 +852,7 @@ GameObject:
   - component: {fileID: 1296219118}
   - component: {fileID: 1296219116}
   m_Layer: 0
-  m_Name: FluidSimulator
+  m_Name: FluidSimulatorMCCPU
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -872,9 +872,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
+<<<<<<< Updated upstream
   m_frameByFrame: 1
   m_numParticles: 50000
   m_h: 0.8
+=======
+  m_frameByFrame: 0
+  m_numParticles: 10000
+  m_h: 1
+>>>>>>> Stashed changes
   m_iterations: 5
   m_dt: 0.001
   m_randomness: 0.1
@@ -898,7 +904,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1296219118
 MeshRenderer:
@@ -5810,6 +5816,64 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1855795873
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1855795875}
+  - component: {fileID: 1855795874}
+  m_Layer: 0
+  m_Name: FluidSimulatorMCGPU
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1855795874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855795873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cec9c94235a47cf4eb465dcc948c9408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generateBox: {fileID: 1176479947}
+  boundingBox: {fileID: 2101007395}
+  m_frameByFrame: 0
+  m_numParticles: 10000
+  m_h: 0.6
+  m_iterations: 5
+  m_dt: 0.001
+  m_randomness: 0.1
+  m_viscosity: 0
+  m_gridStep: 0.2
+  m_smoothLength: 0.5
+  m_force1: 10000
+  m_force2: 10000
+  m_threshold: 0.5
+  m_neighbourCount: 50
+--- !u!4 &1855795875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855795873}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2101007394
 GameObject:
