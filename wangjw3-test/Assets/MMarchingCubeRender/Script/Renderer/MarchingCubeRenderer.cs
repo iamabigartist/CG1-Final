@@ -20,8 +20,9 @@ public class MarchingCubeRenderer
     private float _cube_size;
     private float _iso_value;
     private Vector3 _origin_pos;
-
     private float _zero_level;
+
+    private Light _light1;
 
     #endregion Config
 
@@ -36,7 +37,7 @@ public class MarchingCubeRenderer
     /// <summary>
     /// </summary>
     /// <param name="outline_size">The ouline paticle pos = outline_size * paticle pos</param>
-    public void On ( VolumeMatrix matrix , Color main_color , float cube_size , float iso_value , Vector3 origin_pos , float zero_level = 0 )
+    public void On ( VolumeMatrix matrix , Color main_color , float cube_size , float iso_value , Vector3 origin_pos , Light light , float zero_level = 0 )
     {
         Off();
 
@@ -59,16 +60,17 @@ public class MarchingCubeRenderer
             }
         }
 
-        Config( main_color , cube_size , iso_value , origin_pos , zero_level );
+        Config( main_color , cube_size , iso_value , origin_pos , light , zero_level );
     }
 
-    public void Config ( Color main_color , float cube_size , float iso_value , Vector3 origin_pos , float zero_level = 0 )
+    public void Config ( Color main_color , float cube_size , float iso_value , Vector3 origin_pos , Light light , float zero_level = 0 )
     {
         _main_color = main_color;
         _cube_size = cube_size;
         _iso_value = iso_value;
         _origin_pos = origin_pos;
         _zero_level = zero_level;
+        _light1 = light;
     }
 
     public void Off ()
@@ -84,6 +86,8 @@ public class MarchingCubeRenderer
 
         _volume_buffer.SetData( _volume_matrix.data );
         _index_buffer.SetData( _index2xyz );
+
+        _cube_render.SetPass( 0 );
 
         //The MarchingCube Original Data
         _cube_render.SetBuffer( "volume" , _volume_buffer );
@@ -101,7 +105,12 @@ public class MarchingCubeRenderer
         _cube_render.SetVector( "origin_pos" , new Vector4( _origin_pos.x , _origin_pos.y , _origin_pos.z , 0 ) );
         _cube_render.SetFloat( "zero_level" , _zero_level );
 
-        _cube_render.SetPass( 0 );
+        //The Light
+        Vector3 dir = _light1.transform.forward;
+        _cube_render.SetVector( "light_dir" , new Vector4( dir.x , dir.y , dir.z , 0 ) );
+        _cube_render.SetColor( "light_color" , _light1.color * _light1.intensity );
+        _cube_render.SetColor( "ambient_color" , new Color( 0.4f , 0.4f , 0.4f ) );
+
         Graphics.DrawProceduralNow( MeshTopology.Points , _volume_matrix.voxel_count );
     }
 

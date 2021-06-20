@@ -35,7 +35,7 @@ namespace MarchingCube1
         {
             volumeGenerator.Input( transform.position , Vector3.one * scale , scale / particle_num );
             volumeGenerator.Output( out volume );
-            cubeRenderer.On( volume , Color.green , scale , iso_value , Vector3.zero );
+            cubeRenderer.On( volume , Color.green , scale , iso_value , Vector3.zero , FindObjectOfType<Light>() );
         }
 
         private void OnRenderObject ()
