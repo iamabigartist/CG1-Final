@@ -70,7 +70,7 @@ public class NoiseTerrain : MonoBehaviour
     public void Generate ()
     {
         computeNoise.Dispatch( m_clearKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
-        foreach ( PerlinNoiseTerrainLayer layer in m_noiseLayers )
+        foreach (PerlinNoiseTerrainLayer layer in m_noiseLayers)
         {
             computeNoise.SetFloat( "magnitude" , layer.magnitude );
             computeNoise.SetFloat( "centerHeight" , layer.centerHeight );
@@ -88,7 +88,7 @@ public class NoiseTerrain : MonoBehaviour
 
     private void Update ()
     {
-        if ( Input.GetKeyDown( KeyCode.Return ) )
+        if (Input.GetKeyDown( KeyCode.Return ))
         {
             Generate();
         }
