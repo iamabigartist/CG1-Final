@@ -41,7 +41,7 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
         Visualise();
 
         m_cubeRenderer = new MarchingCubeRenderer();
-        m_cubeRenderer.On( m_converter.volume , Color.green , 1 , m_threshold );
+        m_cubeRenderer.On( m_converter.volume , Color.green , 1 , m_threshold , Vector3.one );
     }
 
     private void OnDestroy ()

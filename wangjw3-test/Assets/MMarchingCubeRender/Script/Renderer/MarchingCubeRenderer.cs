@@ -19,6 +19,7 @@ public class MarchingCubeRenderer
     private Color _main_color;
     private float _cube_size;
     private float _iso_value;
+    private Vector3 _origin_pos;
 
     #endregion Config
 
@@ -33,7 +34,7 @@ public class MarchingCubeRenderer
     /// <summary>
     /// </summary>
     /// <param name="outline_size">The ouline paticle pos = outline_size * paticle pos</param>
-    public void On ( VolumeMatrix matrix , Color main_color , float cube_size , float iso_value )
+    public void On ( VolumeMatrix matrix , Color main_color , float cube_size , float iso_value , Vector3 origin_pos )
     {
         Off();
 
@@ -56,14 +57,15 @@ public class MarchingCubeRenderer
             }
         }
 
-        Config( main_color , cube_size , iso_value );
+        Config( main_color , cube_size , iso_value , origin_pos );
     }
 
-    public void Config ( Color main_color , float cube_size , float iso_value )
+    public void Config ( Color main_color , float cube_size , float iso_value , Vector3 origin_pos )
     {
         _main_color = main_color;
         _cube_size = cube_size;
         _iso_value = iso_value;
+        _origin_pos = origin_pos;
     }
 
     public void Off ()
@@ -87,6 +89,7 @@ public class MarchingCubeRenderer
         _cube_render.SetFloat( "volume_size_z" , _volume_matrix.size.z );
         _cube_render.SetFloat( "iso_value" , _iso_value );
         _cube_render.SetFloat( "cube_size" , _cube_size );
+        _cube_render.SetVector( "origin_pos" , new Vector4( _origin_pos.x , _origin_pos.y , _origin_pos.z , 0 ) );
         _cube_render.SetPass( 0 );
         Graphics.DrawProceduralNow( MeshTopology.Points , _volume_matrix.voxel_count );
     }

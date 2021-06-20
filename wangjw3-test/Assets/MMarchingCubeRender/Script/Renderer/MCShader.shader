@@ -11,6 +11,7 @@ Shader "Volume2MarchingCube"
 		volume_size_x("VolumeSizeX",Float) = 100
 		volume_size_y("VolumeSizeY",Float) = 100
 		volume_size_z("VolumeSizeZ",Float) = 100
+		origin_pos("OringinalPosition",Vector) = (0.0,0.0,0.0,0.0)
 	}
 		SubShader
 	{
@@ -321,6 +322,7 @@ Shader "Volume2MarchingCube"
 			float iso_value;
 			float4 main_color;
 			float cube_size;
+			float4 origin_pos;
 			StructuredBuffer<float> volume;
 			StructuredBuffer<int> index2xyz;
 
@@ -353,12 +355,12 @@ Shader "Volume2MarchingCube"
 			float4 index2obj_pos(int index)
 			{
 				int x = index2xyz[3 * index]; int y = index2xyz[3 * index + 1]; int z = index2xyz[3 * index + 2];
-				return float4(cube_size * float3(x,y,z), volume[index]);
+				return float4(origin_pos.xyz + cube_size * float3(x,y,z), volume[index]);
 			}
 
 			float4 xyz2obj_pos(int x, int y, int z)
 			{
-				return float4(cube_size * float3(x, y, z), volume[xyz2index(x,y,z)]);
+				return float4(origin_pos.xyz + cube_size * float3(x, y, z), volume[xyz2index(x,y,z)]);
 			}
 
 			float4 interpolateV(float4 v1, float4 v2) {

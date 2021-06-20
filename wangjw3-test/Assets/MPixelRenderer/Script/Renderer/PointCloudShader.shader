@@ -5,7 +5,7 @@ Shader "Point Cloud"
 {
 	Properties
 	{
-		main_color("MainColor", Color) = (1.0,0.0,0.0,1.0)
+		main_color("MainColor", Color) = (0.5,0.5,1.0,1.0)
 	}
 		SubShader
 	{

@@ -264,6 +264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meshFilter: {fileID: 467138969}
   computeSPH: {fileID: 7200000, guid: 270ce82c2cff03f458becedca2d62f6e, type: 3}
+  computeNoise: {fileID: 0}
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
   particleObject: {fileID: 1411974829}
@@ -872,15 +873,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
-<<<<<<< Updated upstream
-  m_frameByFrame: 1
-  m_numParticles: 50000
-  m_h: 0.8
-=======
+  computeNoise: {fileID: 0}
   m_frameByFrame: 0
   m_numParticles: 10000
   m_h: 1
->>>>>>> Stashed changes
   m_iterations: 5
   m_dt: 0.001
   m_randomness: 0.1
@@ -892,6 +888,8 @@ MonoBehaviour:
   m_threshold: 0.5
   m_neighbourCount: 50
   m_k: 50
+  m_noiseStep: 0
+  m_noise: []
 --- !u!4 &1296219117
 Transform:
   m_ObjectHideFlags: 0
@@ -5849,7 +5847,7 @@ MonoBehaviour:
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
   m_frameByFrame: 0
-  m_numParticles: 10000
+  m_numParticles: 1000
   m_h: 0.6
   m_iterations: 5
   m_dt: 0.001
