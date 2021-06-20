@@ -81,13 +81,12 @@ public class MarchingCubeRenderer
         _index_buffer.SetData( _index2xyz );
         _cube_render.SetBuffer( "volume" , _volume_buffer );
         _cube_render.SetBuffer( "index2xyz" , _index_buffer );
-        _cube_render.SetColor( "MainColor" , _main_color );
-        Color A = _cube_render.GetColor( "MainColor" );
-        _cube_render.SetFloat( "VolumeSizeX" , _volume_matrix.size.x );
-        _cube_render.SetFloat( "VolumeSizeY" , _volume_matrix.size.y );
-        _cube_render.SetFloat( "VolumeSizeZ" , _volume_matrix.size.z );
-        _cube_render.SetFloat( "IsoValue" , _iso_value );
-        _cube_render.SetFloat( "CubeSize" , _cube_size );
+        _cube_render.SetColor( "main_color" , _main_color );
+        _cube_render.SetFloat( "volume_size_x" , _volume_matrix.size.x );
+        _cube_render.SetFloat( "volume_size_y" , _volume_matrix.size.y );
+        _cube_render.SetFloat( "volume_size_z" , _volume_matrix.size.z );
+        _cube_render.SetFloat( "iso_value" , _iso_value );
+        _cube_render.SetFloat( "cube_size" , _cube_size );
         _cube_render.SetPass( 0 );
         Graphics.DrawProceduralNow( MeshTopology.Points , _volume_matrix.voxel_count );
     }

@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle_num: 50
   scale: 1
-  iso_value: 0.5
+  iso_value: 2.5
 --- !u!4 &1056142058
 Transform:
   m_ObjectHideFlags: 0
@@ -187,7 +187,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &1278460333
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -255,8 +255,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21d0f2491b12a5947974a0853ea7bcd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particle_num: 3
-  scale: 20
+  particle_num: 50
+  scale: 1
 --- !u!33 &1278460336
 MeshFilter:
   m_ObjectHideFlags: 0

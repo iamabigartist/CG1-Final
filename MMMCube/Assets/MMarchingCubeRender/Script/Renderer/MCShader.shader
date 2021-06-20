@@ -5,18 +5,18 @@ Shader "Volume2MarchingCube"
 {
 	Properties
 	{
-		main_color("MainColor", Color) = (0.5,0.5,0.0,1.0)
+		main_color("MainColor",Color) = (0.5,0.5,0.5,1.0)
 		cube_size("CubeSize",Float) = 1.0
 		iso_value("IsoValue",Float) = 0.9
-		volume_size_x("VolumeSizeX",Float) = 1
-		volume_size_y("VolumeSizeY",Float) = 1
-		volume_size_z("VolumeSizeZ",Float) = 1
+		volume_size_x("VolumeSizeX",Float) = 100
+		volume_size_y("VolumeSizeY",Float) = 100
+		volume_size_z("VolumeSizeZ",Float) = 100
 	}
 		SubShader
 	{
 		Pass
 		{
-			ZTest Always
+			//ZTest Always
 			CGPROGRAM
 			#pragma vertex Vertex
 			#pragma fragment Fragment
@@ -397,14 +397,14 @@ Shader "Volume2MarchingCube"
 				// A value of 0 means cube is entirely inside surface; 255 entirely outside.
 				// The value is used to look up the edge table, which indicates which edges of the cube are cut by the isosurface.
 				int cubeIndex = 0;
-				if (cubeCorners[0].w < iso_value) cubeIndex |= (1 << 0);
-				if (cubeCorners[1].w < iso_value) cubeIndex |= (1 << 1);
-				if (cubeCorners[2].w < iso_value) cubeIndex |= (1 << 2);
-				if (cubeCorners[3].w < iso_value) cubeIndex |= (1 << 3);
-				if (cubeCorners[4].w < iso_value) cubeIndex |= (1 << 4);
-				if (cubeCorners[5].w < iso_value) cubeIndex |= (1 << 5);
-				if (cubeCorners[6].w < iso_value) cubeIndex |= (1 << 6);
-				if (cubeCorners[7].w < iso_value) cubeIndex |= (1 << 7);
+				if (cubeCorners[0].w < iso_value) { cubeIndex = cubeIndex | (1 << 0); }
+				if (cubeCorners[1].w < iso_value) { cubeIndex = cubeIndex | (1 << 1); }
+				if (cubeCorners[2].w < iso_value) { cubeIndex |= (1 << 2); }
+				if (cubeCorners[3].w < iso_value) { cubeIndex |= (1 << 3); }
+				if (cubeCorners[4].w < iso_value) { cubeIndex |= (1 << 4); }
+				if (cubeCorners[5].w < iso_value) { cubeIndex |= (1 << 5); }
+				if (cubeCorners[6].w < iso_value) { cubeIndex |= (1 << 6); }
+				if (cubeCorners[7].w < iso_value) { cubeIndex |= (1 << 7); }
 
 				g2f cur_v;
 
@@ -425,14 +425,14 @@ Shader "Volume2MarchingCube"
 					float4 vB = interpolateV(cubeCorners[a1], cubeCorners[b1]);
 					float4 vC = interpolateV(cubeCorners[a2], cubeCorners[b2]);
 
-					cur_v.obj_pos = vA; cur_v.clip_pos = UnityObjectToClipPos(vA); stream.Append(cur_v);
-					cur_v.obj_pos = vB; cur_v.clip_pos = UnityObjectToClipPos(vB); stream.Append(cur_v);
 					cur_v.obj_pos = vC; cur_v.clip_pos = UnityObjectToClipPos(vC); stream.Append(cur_v);
+					cur_v.obj_pos = vB; cur_v.clip_pos = UnityObjectToClipPos(vB); stream.Append(cur_v);
+					cur_v.obj_pos = vA; cur_v.clip_pos = UnityObjectToClipPos(vA); stream.Append(cur_v);
 					stream.RestartStrip();
 				}
 			}
 
-			float4 Fragment(g2f p) : SV_TARGET
+			float4 Fragment(g2f p) : COLOR
 			{
 				return p.obj_pos.y * main_color / (volume_size_y * cube_size);
 			}
