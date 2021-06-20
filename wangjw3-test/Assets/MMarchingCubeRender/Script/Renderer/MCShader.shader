@@ -3,21 +3,10 @@
 
 Shader "Volume2MarchingCube"
 {
-	Properties
+	SubShader
 	{
-		main_color("MainColor",Color) = (0.5,0.5,0.5,1.0)
-		ambient_color("AmbientColor",Color) = (0.1,0.1,0.1,1.0)
-		cube_size("CubeSize",Float) = 1.0
-		iso_value("IsoValue",Float) = 0.9
-		origin_pos("OringinalPosition",Vector) = (0.0,0.0,0.0,0.0)
-		zero_level("ZeroLevel",Float) = 0.0
-
-		volume_size_x("VolumeSizeX",Float) = 100
-		volume_size_y("VolumeSizeY",Float) = 100
-		volume_size_z("VolumeSizeZ",Float) = 100
-	}
-		SubShader
-	{
+		//Lighting On
+		//Tags { "LightMode" = "Vertex" }
 		Pass
 		{
 			//ZTest Always
@@ -27,6 +16,18 @@ Shader "Volume2MarchingCube"
 			#pragma geometry Geometry
 			#pragma target 5.0
 			#include "UnityCG.cginc"
+
+			struct v2g
+			{
+				int i : INDEX;
+			};
+
+			struct g2f
+			{
+				float4 obj_pos : OBJ_POSITION;
+				float4 obj_normal : NORMAL;
+				float4 clip_pos : SV_POSITION;
+			};
 
 			static const int triangulation[256][16] =
 			{ //256 16
@@ -319,29 +320,26 @@ Shader "Volume2MarchingCube"
 				7
 			};
 
+			//Marching Cube Data
 			StructuredBuffer<float> volume;
 			StructuredBuffer<int> index2xyz;
-
 			float volume_size_x;
 			float volume_size_y;
 			float volume_size_z;
 
+			//Configs
 			float iso_value;
-			float4 main_color;
 			float cube_size;
 			float4 origin_pos;
 			float zero_level;
 
-			struct v2g
-			{
-				int i : INDEX;
-			};
+			//Textutre
+			float4 main_color;
 
-			struct g2f
-			{
-				float4 obj_pos: OBJ_POSITION;
-				float4 clip_pos : SV_POSITION;
-			};
+			//Direct Light
+			float4 light_color;
+			float4 light_dir;
+			float4 ambient_color;
 
 			//int3 index2xyz(int index)
 			//{
@@ -433,6 +431,12 @@ Shader "Volume2MarchingCube"
 					float4 vB = interpolateV(cubeCorners[a1], cubeCorners[b1]);
 					float4 vC = interpolateV(cubeCorners[a2], cubeCorners[b2]);
 
+					//Normal
+					float4 vX = vC - vB;
+					float4 vY = vA - vB;
+					float4 normal = float4(cross(vY, vX),0.0);
+					cur_v.obj_normal = normalize(normal);
+
 					cur_v.obj_pos = vC; cur_v.clip_pos = UnityObjectToClipPos(vC); stream.Append(cur_v);
 					cur_v.obj_pos = vB; cur_v.clip_pos = UnityObjectToClipPos(vB); stream.Append(cur_v);
 					cur_v.obj_pos = vA; cur_v.clip_pos = UnityObjectToClipPos(vA); stream.Append(cur_v);
@@ -445,9 +449,11 @@ Shader "Volume2MarchingCube"
 				//float4 original_color = (p.obj_pos.y + 10) * main_color / (volume_size_y * cube_size);
 				float4 original_color = (1 + (p.obj_pos.y - zero_level) / 5.0f) * main_color;
 
-				//Phong lighting with only ambient and diffuse
+				float cos_n_l = clamp(dot(-light_dir,p.obj_normal), 0, 1);
+				float4 cur_light_color = light_color * cos_n_l + ambient_color;
 
-				return original_color;
+				//Phong lighting with only ambient and diffuse
+				return cur_light_color * original_color;
 			}
 
 			ENDCG

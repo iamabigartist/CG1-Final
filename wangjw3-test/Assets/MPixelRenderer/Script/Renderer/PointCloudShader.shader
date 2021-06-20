@@ -62,11 +62,11 @@ Shader "Point Cloud"
 				}
 				triangle_stream.RestartStrip();
 
-				for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
 				{
 					o.pos = v.pos + float4(0.05f * float3(
-						i != 2,
-						i != 0,
+						j != 2,
+						j != 0,
 						0),
 						1);
 					o.depth = v.depth;
