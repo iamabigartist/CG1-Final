@@ -20,6 +20,7 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
     [SerializeField] private float m_force2;
     [SerializeField, Range( 0f , 10f )] private float m_threshold;
     [SerializeField] private int m_neighbourCount;
+    [SerializeField] private float zero_level;
 
     private MeshFilter m_meshFilter;
 
@@ -41,7 +42,7 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
         Visualise();
 
         m_cubeRenderer = new MarchingCubeRenderer();
-        m_cubeRenderer.On( m_converter.volume , Color.green , 1 , m_threshold , Vector3.one );
+        m_cubeRenderer.On( m_converter.volume , Color.green , 1 , m_threshold , Vector3.one , zero_level );
     }
 
     private void OnDestroy ()

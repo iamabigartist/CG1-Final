@@ -6,12 +6,15 @@ Shader "Volume2MarchingCube"
 	Properties
 	{
 		main_color("MainColor",Color) = (0.5,0.5,0.5,1.0)
+		ambient_color("AmbientColor",Color) = (0.1,0.1,0.1,1.0)
 		cube_size("CubeSize",Float) = 1.0
 		iso_value("IsoValue",Float) = 0.9
+		origin_pos("OringinalPosition",Vector) = (0.0,0.0,0.0,0.0)
+		zero_level("ZeroLevel",Float) = 0.0
+
 		volume_size_x("VolumeSizeX",Float) = 100
 		volume_size_y("VolumeSizeY",Float) = 100
 		volume_size_z("VolumeSizeZ",Float) = 100
-		origin_pos("OringinalPosition",Vector) = (0.0,0.0,0.0,0.0)
 	}
 		SubShader
 	{
@@ -316,15 +319,18 @@ Shader "Volume2MarchingCube"
 				7
 			};
 
+			StructuredBuffer<float> volume;
+			StructuredBuffer<int> index2xyz;
+
 			float volume_size_x;
 			float volume_size_y;
 			float volume_size_z;
+
 			float iso_value;
 			float4 main_color;
 			float cube_size;
 			float4 origin_pos;
-			StructuredBuffer<float> volume;
-			StructuredBuffer<int> index2xyz;
+			float zero_level;
 
 			struct v2g
 			{
@@ -436,7 +442,12 @@ Shader "Volume2MarchingCube"
 
 			float4 Fragment(g2f p) : COLOR
 			{
-				return p.obj_pos.y * main_color / (volume_size_y * cube_size);
+				//float4 original_color = (p.obj_pos.y + 10) * main_color / (volume_size_y * cube_size);
+				float4 original_color = (1 + (p.obj_pos.y - zero_level) / 5.0f) * main_color;
+
+				//Phong lighting with only ambient and diffuse
+
+				return original_color;
 			}
 
 			ENDCG

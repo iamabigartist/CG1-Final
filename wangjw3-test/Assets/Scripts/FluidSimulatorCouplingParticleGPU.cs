@@ -20,6 +20,7 @@ public class FluidSimulatorCouplingParticleGPU : MonoBehaviour
     [SerializeField] private float m_baseDt;
     [SerializeField] private int m_baseIterations;
     [SerializeField] private int m_k;
+    [SerializeField] private float zero_level;
 
     private SPHSimulator.PCISPHSimulatorNeighbour m_baseSimulator;
     private ParticleToVolumeFast m_converter;
@@ -46,7 +47,7 @@ public class FluidSimulatorCouplingParticleGPU : MonoBehaviour
         m_converter.Dispose();
 
         m_renderer = new MarchingCubeRenderer();
-        m_renderer.On( m_converter.volume , Color.white , m_gridStep , m_threshold , boundingBox.bounds.min );
+        m_renderer.On( m_converter.volume , Color.white , m_gridStep , m_threshold , boundingBox.bounds.min , zero_level );
 
         m_simulator = new SPHSimulator.PCISPHSimulatorNeighbourSolidCoupling(
             m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds , m_converter.volume.size , m_gridStep , m_threshold , 0f , 0f , 50 );
@@ -70,6 +71,8 @@ public class FluidSimulatorCouplingParticleGPU : MonoBehaviour
     private void OnRenderObject ()
     {
         m_particle_renderer.Draw();
+
+        m_renderer.Config( Color.white , m_gridStep , m_threshold , boundingBox.bounds.min , zero_level );
         m_renderer.Draw();
     }
 

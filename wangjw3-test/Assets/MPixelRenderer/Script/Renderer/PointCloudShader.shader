@@ -22,6 +22,8 @@ Shader "Point Cloud"
 			float4 main_color;
 			StructuredBuffer<float3> cloud;
 
+			float size = 0.5f;
+
 			struct v2g
 			{
 				float4 pos : SV_POSITION;
@@ -43,21 +45,34 @@ Shader "Point Cloud"
 				return p;
 			}
 
-			[maxvertexcount(12)]
+			[maxvertexcount(6)]
 			void geometry_shader(point v2g input[1], inout TriangleStream<g2f> triangle_stream)
 			{
 				v2g v = input[0];
 				g2f o;
 				for (int i = 0; i < 3; i++)
 				{
-					o.pos = v.pos + float4(
+					o.pos = v.pos + float4(0.05f * float3(
 						i == 0,
 						i == 1,
-						i == 2,
+						0),
 						1);
 					o.depth = v.depth;
 					triangle_stream.Append(o);
 				}
+				triangle_stream.RestartStrip();
+
+				for (int i = 0; i < 3; i++)
+				{
+					o.pos = v.pos + float4(0.05f * float3(
+						i != 2,
+						i != 0,
+						0),
+						1);
+					o.depth = v.depth;
+					triangle_stream.Append(o);
+				}
+				triangle_stream.RestartStrip();
 			}
 
 			float4 fragment_shader(g2f p) : COLOR

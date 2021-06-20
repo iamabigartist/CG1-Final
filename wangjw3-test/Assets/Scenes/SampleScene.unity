@@ -600,7 +600,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1032736221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -615,14 +615,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
-  m_frameByFrame: 1
-  m_numParticles: 10000
-  m_h: 1
+  m_frameByFrame: 0
+  m_numParticles: 50000
+  m_h: 0.8
   m_iterations: 5
-  m_dt: 0.005
+  m_dt: 0.001
   m_randomness: 0.1
   m_viscosity: 0
-  m_gridStep: 0.5
+  m_gridStep: 0.2
   m_smoothLength: 0.5
   m_threshold: 0.5
   m_baseDt: 0.01
@@ -5831,7 +5831,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1855795874
 MonoBehaviour:
   m_ObjectHideFlags: 0
