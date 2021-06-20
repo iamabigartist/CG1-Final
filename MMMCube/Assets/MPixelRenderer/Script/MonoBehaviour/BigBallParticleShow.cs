@@ -19,17 +19,17 @@ public class BigBallParticleShow : MonoBehaviour
     // Start is called before the first frame update
     private void Start ()
     {
-        _particle_cloud = new ComputeBuffer( particle_num , 3 * sizeof( float ) , ComputeBufferType.Structured );
-        for ( int i = 0; i < particle_num; i++ )
-        {
-            while ( true )
-            {
-                Vector3 v = new Vector3(
-                    Random.Range( 0 , 200.0f ) ,
-                    Random.Range( 0 , 200.0f ) ,
-                    Random.Range( 0 , 200.0f ) );
-            }
-        }
+        //_particle_cloud = new ComputeBuffer( particle_num , 3 * sizeof( float ) , ComputeBufferType.Structured );
+        //for ( int i = 0; i < particle_num; i++ )
+        //{
+        //    while ( true )
+        //    {
+        //        Vector3 v = new Vector3(
+        //            Random.Range( 0 , 200.0f ) ,
+        //            Random.Range( 0 , 200.0f ) ,
+        //            Random.Range( 0 , 200.0f ) );
+        //    }
+        //}
     }
 
     // Update is called once per frame

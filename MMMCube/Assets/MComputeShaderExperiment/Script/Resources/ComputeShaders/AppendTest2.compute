@@ -1,0 +1,15 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+AppendStructuredBuffer<int> result;
+RWStructuredBuffer<int> dict;
+
+[numthreads( 8, 1, 1 )]
+void CSMain ( uint3 id : SV_DispatchThreadID )
+{
+    int index = id.x;
+
+    result.Append( dict [ index ] );
+}

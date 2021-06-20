@@ -8,7 +8,7 @@ Shader "Point Cloud"
 		main_color("MainColor", Color) = (1.0,0.0,0.0,1.0)
 		ouline_color("OutlineColor", Color) = (0.0,1.0,0.0,1.0)
 		outline_size("OutlineSize",Float) = 2
-		pos_offset("PositionOffset",Vector)= (0.0,0.0,0.0)
+		pos_offset("PositionOffset",Vector) = (0.0,0.0,0.0)
 	}
 		SubShader
 	{

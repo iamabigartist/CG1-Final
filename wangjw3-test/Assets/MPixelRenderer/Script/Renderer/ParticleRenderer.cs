@@ -51,8 +51,6 @@ public class ParticleRenderer
 
         _cloud_render.SetBuffer( "cloud" , _particle_buffer );
         _cloud_render.SetColor( "MainColor" , _main_color );
-        _cloud_render.SetColor( "OutlineColor" , _outline_color );
-        _cloud_render.SetFloat( "OutlineSize" , _outline_size );
 
         _cloud_render.SetPass( 0 );
         Graphics.DrawProceduralNow( MeshTopology.Points , _particle_buffer.count );
