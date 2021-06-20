@@ -240,6 +240,8 @@ namespace SPHSimulator
             m_pressureBuffer.Dispose();
             m_densityBuffer.Release();
             m_densityBuffer.Dispose();
+            m_neighbourBuffer.Release();
+            m_neighbourBuffer.Dispose();
 
             m_positionNative.Dispose();
             m_knnContainer.Dispose();

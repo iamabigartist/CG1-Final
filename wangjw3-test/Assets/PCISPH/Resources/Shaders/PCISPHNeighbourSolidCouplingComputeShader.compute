@@ -1,0 +1,242 @@
+#define PI32 5.5683278
+#define PI 3.1415926
+#define EPSILON 0.000001
+
+int particleCount;
+float dt;
+float3 gravity;
+float particleMass;
+float h;
+float d0;
+float delta;
+float u;
+int iterations;
+int neighbourCount;
+int3 volumeDimension;
+float3 volumeOrigin;
+float volumeStep;
+float volumeScale;
+float isovalue;
+
+float W(float3 v) {
+    float r = length(v);
+    if (r < 0.0001 || r > 2.0 * h) return 0.0;
+    float q = r / h;
+    float q2 = q * q;
+    float h2 = h * h;
+    float alpha = 1365.0 / (512.0 * PI * h2 * h);
+    return alpha * pow(1.0 - q * 0.5, 8.0) * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0);
+}
+
+float3 GradW(float3 v) {
+    float r = length(v);
+    float3 ret = {0.0, 0.0, 0.0};
+    if (r < 0.0001 || r > 2.0 * h) return ret;
+    float q = r / h;
+    float q2 = q * q;
+    float h2 = h * h;
+    float alpha = 1365.0 / (512.0 * PI * h2 * h);
+    float temp = 1.0 - 0.5 * q;
+    float temp7 = pow(abs(temp), 7.0);
+    float n = ((12.0 * q + 12.5 + 4.0 / q) * temp7 * temp - 4.0 / q * temp7 * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0)) / h2;
+    return n * v * alpha;
+}
+
+float3 GradW(float3 v, float m_h) {
+    float r = length(v);
+    float3 ret = { 0.0, 0.0, 0.0 };
+    if (r < 0.0001 || r > 2.0 * h) return ret;
+    float q = r / m_h;
+    float q2 = q * q;
+    float h2 = m_h * m_h;
+    float alpha = 1365.0 / (512.0 * PI * h2 * m_h);
+    float temp = 1.0 - 0.5 * q;
+    float temp7 = pow(temp, 7.0);
+    float n = ((12.0 * q + 12.5 + 4.0 / q) * temp7 * temp - 4.0 / q * temp7 * (4.0 * q2 * q + 6.25 * q2 + 4.0 * q + 1.0)) / h2;
+    return n * v * alpha;
+}
+
+
+RWStructuredBuffer<float3> position;
+RWStructuredBuffer<float3> velocity;
+RWStructuredBuffer<float3> prePosition;
+RWStructuredBuffer<float3> preVelocity;
+RWStructuredBuffer<float3> Aext;
+RWStructuredBuffer<float3> Ap;
+RWStructuredBuffer<float> p;
+RWStructuredBuffer<float> d;
+StructuredBuffer<int> neighbours;
+StructuredBuffer<float> volume;
+StructuredBuffer<int> triangulation;
+
+float Value(int3 pos)
+{
+	return volume[pos.x + pos.y * volumeDimension.x + pos.z * volumeDimension.y * volumeDimension.x];
+}
+
+bool Side(int3 pos)
+{
+	return volume[pos.x + pos.y * volumeDimension.x + pos.z * volumeDimension.y * volumeDimension.x] >= isovalue;
+}
+
+float3 Interpolate(int3 a, int3 b)
+{
+	float t = (isovalue - Value(a)) / (Value(b) - Value(a));
+	return volumeOrigin + a * volumeStep + t * (b - a) * volumeStep;
+}
+
+#pragma kernel Initialize
+[numthreads(8,1,1)]
+void Initialize(uint3 id : SV_DispatchThreadID)
+{
+	float3 temp = { 0.0, 0.0, 0.0 };
+	int i;
+	for (i = 0; i < neighbourCount; i++)
+	{
+		int neighbour = neighbours[neighbourCount * id.x + i];
+		float3 grad = GradW(position[id.x] - position[neighbour], h);
+		temp += dot(grad, grad) * (velocity[neighbour] - velocity[id.x]) / d[neighbour];
+	}
+    
+	Aext[id.x] = u * temp + gravity;
+	p[id.x] = 0.0;
+	Ap[id.x] = float3(0.0, 0.0, 0.0);
+}
+
+#pragma kernel Predict
+[numthreads(8,1,1)]
+void Predict(uint3 id : SV_DispatchThreadID)
+{
+	preVelocity[id.x] = velocity[id.x] + (Aext[id.x] + Ap[id.x]) * dt;
+	prePosition[id.x] = position[id.x] + preVelocity[id.x] * dt;
+}
+
+#pragma kernel Correct
+[numthreads(8,1,1)]
+void Correct(uint3 id : SV_DispatchThreadID)
+{
+	float density = 0.0001;
+	for (int i = 0; i < neighbourCount; i++)
+	{
+		density += W(prePosition[id.x] - prePosition[neighbours[neighbourCount * id.x + i]]);
+	}
+	density *= particleMass;
+	p[id.x] += delta * (density - d0);
+	d[id.x] = density;
+}
+
+#pragma kernel Force
+[numthreads(8,1,1)]
+void Force(uint3 id : SV_DispatchThreadID)
+{
+	float3 accP = { 0.0, 0.0, 0.0 };
+	float self = p[id.x] / (d[id.x] * d[id.x]);
+	for (int i = 0; i < neighbourCount; i++)
+	{
+		int neighbour = neighbours[neighbourCount * id.x + i];
+		accP += (self + p[neighbour] / (d[neighbour] * d[neighbour])) * GradW(prePosition[id.x] - prePosition[neighbour]);
+	}
+	Ap[id.x] = -particleMass * accP;
+}
+
+#pragma kernel Finalize
+[numthreads(8,1,1)]
+void Finalize(uint3 id : SV_DispatchThreadID)
+{
+	velocity[id.x] += (Aext[id.x] + Ap[id.x]) * dt;
+	float3 displacement = velocity[id.x] * dt;
+	float3 origin = position[id.x];
+	position[id.x] += displacement;
+	float distance = length(displacement);
+	if (distance < EPSILON)
+		return;
+	float3 direction = displacement / distance;
+	
+	int i;
+	float3 localPos = position[id.x] - volumeOrigin;
+	int3 near = clamp((int3) floor(localPos * volumeScale), 0, volumeDimension - 2);
+	int3 idxs[8];
+	idxs[0] = near;
+	idxs[1] = near + int3(0, 0, 1);
+	idxs[2] = near + int3(1, 0, 1);
+	idxs[3] = near + int3(1, 0, 0);
+	idxs[4] = near + int3(0, 1, 0);
+	idxs[5] = near + int3(0, 1, 1);
+	idxs[6] = near + int3(1, 1, 1);
+	idxs[7] = near + int3(1, 1, 0);
+	bool sides[8];
+	int idx = 0;
+	for (i = 0; i < 8; i++)
+	{
+		sides[i] = Side(idxs[i]);
+		idx = ((sides[i] & 0x1) << i) | idx;
+	}
+	idx = idx << 4;	
+	float3 v[12];
+	if (sides[0] ^ sides[1])
+		v[0] = Interpolate(idxs[0], idxs[1]);
+	if (sides[1] ^ sides[2])
+		v[1] = Interpolate(idxs[1], idxs[2]);
+	if (sides[2] ^ sides[3])
+		v[2] = Interpolate(idxs[2], idxs[3]);
+	if (sides[0] ^ sides[3])
+		v[3] = Interpolate(idxs[0], idxs[3]);
+	if (sides[4] ^ sides[5])
+		v[4] = Interpolate(idxs[4], idxs[5]);
+	if (sides[5] ^ sides[6])
+		v[5] = Interpolate(idxs[5], idxs[6]);
+	if (sides[6] ^ sides[7])
+		v[6] = Interpolate(idxs[6], idxs[7]);
+	if (sides[4] ^ sides[7])
+		v[7] = Interpolate(idxs[4], idxs[7]);
+	if (sides[0] ^ sides[4])
+		v[8] = Interpolate(idxs[0], idxs[4]);
+	if (sides[1] ^ sides[5])
+		v[9] = Interpolate(idxs[1], idxs[5]);
+	if (sides[2] ^ sides[6])
+		v[10] = Interpolate(idxs[2], idxs[6]);
+	if (sides[3] ^ sides[7])
+		v[11] = Interpolate(idxs[3], idxs[7]);
+	
+	for (i = 0; i < 15; i += 3)
+	{
+		if (triangulation[idx + i] == -1)
+			break;
+		
+		float3 v0v1 = v[triangulation[idx + i + 1]] - v[triangulation[idx + i]];
+		float3 v0v2 = v[triangulation[idx + i + 2]] - v[triangulation[idx + i]];
+		float3 normal = normalize(cross(v0v1, v0v2));
+		float dotND = dot(normal, direction);
+		if (dotND >= 0)
+			continue;
+		
+		float3 pvec = cross(direction, v0v2);
+		float det = dot(v0v1, pvec);
+
+		if (abs(det) < EPSILON)
+			continue;
+
+		float invDet = 1 / det;
+
+		float3 tvec = origin - v[triangulation[idx + i]];
+		float u = dot(tvec, pvec) * invDet;
+		if (u < 0 || u > 1)
+			continue;
+
+		float3 qvec = cross(tvec, v0v1);
+		float v = dot(direction, qvec) * invDet;
+		if (v < 0 || u + v > 1)
+			continue;
+
+		float d = dot(v0v2, qvec) * invDet;
+		if (d > distance)
+			continue;
+		float3 p = origin + d * direction;
+
+		float3 outDirection = direction - 2 * dotND * normal;
+		velocity[id.x] = outDirection * distance / dt;
+		position[id.x] = p;
+		position[id.x] = p + outDirection * (distance - d);
+		break;
+	}
+}

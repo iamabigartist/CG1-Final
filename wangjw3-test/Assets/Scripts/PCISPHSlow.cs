@@ -257,7 +257,7 @@ public class PCISPHSlow : MonoBehaviour
     private void Simulate ()
     {
         #region Calculate
-
+    
         m_particleBuffer. SetData( m_particles );
 
         float dt = m_dt < Mathf.Epsilon ? Time.deltaTime : m_dt;
