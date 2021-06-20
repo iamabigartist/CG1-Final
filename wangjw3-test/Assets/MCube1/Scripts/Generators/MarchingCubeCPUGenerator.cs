@@ -321,6 +321,7 @@ namespace MarchingCube1
         private VolumeMatrix _volume_matrix;
         private float _iso_value;
         private Vector3 _scale;
+        private Vector3 _origin;
 
         #endregion Input
 
@@ -354,9 +355,18 @@ namespace MarchingCube1
             _volume_matrix = volume_matrix;
             _iso_value = iso_value;
             _scale = scale;
+            _origin = Vector3.zero;
         }
 
-        public void Output ( out Mesh mesh , out Vector3[] vertices , out int[] triangles )
+        public void Input ( VolumeMatrix volume_matrix , float iso_value , Vector3 scale , Vector3 origin )
+        {
+            _volume_matrix = volume_matrix;
+            _iso_value = iso_value;
+            _scale = scale;
+            _origin = origin;
+        }
+
+        public void Output ( out Mesh mesh )
         {
             mesh = new Mesh();
 
@@ -364,8 +374,8 @@ namespace MarchingCube1
             IsoMark();
             FindVertices();
             Triangulation();
-            vertices = _vertices.ToArray();
-            triangles = _triangles.ToArray();
+            Vector3[] vertices = _vertices.ToArray();
+            int[] triangles = _triangles.ToArray();
             mesh.SetIndexBufferParams( triangles.Length , UnityEngine.Rendering.IndexFormat.UInt32 );
             mesh.SetVertices( vertices );
             mesh.SetIndices( triangles , MeshTopology.Triangles , 0 );
@@ -494,7 +504,7 @@ namespace MarchingCube1
                         {
                             _vertices.Add( CwiseProduct( _scale , InterpolateVertex(
                                 new Vector4( x , y , z , _volume_matrix[ x , y , z ] ) ,
-                                new Vector4( x + 1 , y , z , _volume_matrix[ x + 1 , y , z ] ) ) ) );
+                                new Vector4( x + 1 , y , z , _volume_matrix[ x + 1 , y , z ] ) ) ) + _origin );
                             _vertices_indices[ XYZToEdgeIndex( x , y , z , 0 ) ] = _vertices.Count - 1;
                         }
                         if (
@@ -503,7 +513,7 @@ namespace MarchingCube1
                         {
                             _vertices.Add( CwiseProduct( _scale , InterpolateVertex(
                                 new Vector4( x , y , z , _volume_matrix[ x , y , z ] ) ,
-                                new Vector4( x , y + 1 , z , _volume_matrix[ x , y + 1 , z ] ) ) ) );
+                                new Vector4( x , y + 1 , z , _volume_matrix[ x , y + 1 , z ] ) ) ) + _origin );
                             _vertices_indices[ XYZToEdgeIndex( x , y , z , 1 ) ] = _vertices.Count - 1;
                         }
                         if (
@@ -512,7 +522,7 @@ namespace MarchingCube1
                         {
                             _vertices.Add( CwiseProduct( _scale , InterpolateVertex(
                                 new Vector4( x , y , z , _volume_matrix[ x , y , z ] ) ,
-                                new Vector4( x , y , z + 1 , _volume_matrix[ x , y , z + 1 ] ) ) ) );
+                                new Vector4( x , y , z + 1 , _volume_matrix[ x , y , z + 1 ] ) ) ) + _origin );
                             _vertices_indices[ XYZToEdgeIndex( x , y , z , 2 ) ] = _vertices.Count - 1;
                         }
                     }

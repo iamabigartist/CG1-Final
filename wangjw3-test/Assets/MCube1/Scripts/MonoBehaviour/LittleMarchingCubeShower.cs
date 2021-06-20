@@ -45,7 +45,7 @@ namespace MarchingCube1
             volumeGenerator.Input( transform.position , Vector3.one * scale , scale / particle_num );
             volumeGenerator.Output( out volume );
             cubeGenerator.Input( volume , 2.5f , Vector3.one * scale );
-            cubeGenerator.Output( out Mesh mesh , out vertices , out triangles );
+            cubeGenerator.Output( out Mesh mesh );
             meshFilter.mesh = mesh;
         }
 

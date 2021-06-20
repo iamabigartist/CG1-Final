@@ -31,11 +31,15 @@ public class NoiseTerrain : MonoBehaviour
     private Vector3Int m_gridDimension;
     private int m_gridCount;
 
-    private MarchingCubeRenderer m_renderer;
+    //private MarchingCubeRenderer m_renderer;
+    private MarchingCube1.MarchingCubeCPUGenerator m_generator;
+
+    private MeshFilter m_meshFilter;
+    private Mesh m_mesh;
 
     private MarchingCube1.VolumeMatrix vol;
 
-    private void Start ()
+    public void Initialize ()
     {
         Vector3 tem = boundingBox.bounds.size;
         m_gridDimension = new Vector3Int(
@@ -55,11 +59,15 @@ public class NoiseTerrain : MonoBehaviour
         computeNoise.SetFloat( "gridStep" , m_noiseStep );
         computeNoise.SetInts( "size" , m_gridDimension.x , m_gridDimension.y , m_gridDimension.z );
 
-        m_renderer = new MarchingCubeRenderer();
-        m_renderer.On( m_volume , Color.white , m_noiseStep , m_threshold , boundingBox.bounds.min , sunLight , m_levelHeight );
+        //m_renderer = new MarchingCubeRenderer();
+        //m_renderer.On( m_volume , Color.white , m_noiseStep , m_threshold , boundingBox.bounds.min , sunLight , m_levelHeight );
+        m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
+        m_generator.Input( m_volume , m_threshold , new Vector3( m_noiseStep , m_noiseStep , m_noiseStep ) , boundingBox.bounds.min );
+        m_meshFilter = GetComponent<MeshFilter>();
+        m_mesh = new Mesh();
     }
 
-    private void Generate ()
+    public void Generate ()
     {
         computeNoise.Dispatch( m_clearKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
         foreach ( PerlinNoiseTerrainLayer layer in m_noiseLayers )
@@ -73,6 +81,9 @@ public class NoiseTerrain : MonoBehaviour
             computeNoise.Dispatch( m_noiseKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
         }
         m_noiseBuffer.GetData( m_volume.data );
+
+        m_generator.Output( out m_mesh );
+        m_meshFilter.mesh = m_mesh;
     }
 
     private void Update ()
@@ -83,16 +94,20 @@ public class NoiseTerrain : MonoBehaviour
         }
     }
 
-    private void OnRenderObject ()
-    {
-        m_renderer.Config( Color.white , m_noiseStep , m_threshold , boundingBox.bounds.min , sunLight , m_levelHeight );
-        m_renderer.Draw();
-    }
+    //private void OnRenderObject ()
+    //{
+    //    m_renderer.Config( Color.white , m_noiseStep , m_threshold , boundingBox.bounds.min , sunLight , m_levelHeight );
+    //    m_renderer.Draw();
+    //}
+
+    public MarchingCube1.VolumeMatrix volume => m_volume;
+    public float gridStep => m_noiseStep;
+    public float threshold => m_threshold;
 
     private void OnDestroy ()
     {
         m_noiseBuffer.Release();
         m_noiseBuffer.Dispose();
-        m_renderer.Off();
+        //m_renderer.Off();
     }
 }

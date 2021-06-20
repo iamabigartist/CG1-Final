@@ -32,8 +32,6 @@ public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
     private Mesh m_mesh;
 
     private bool m_started = false;
-    private Vector3[] vs;
-    private int[] tris;
     private bool m_visualize = false;
 
     // noiseShader
@@ -54,7 +52,7 @@ public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
 
         m_converter.Compute( m_simulator.KNNContainer , m_simulator.particlePositionArray );
         m_generator.Input( m_converter.volume , m_threshold , Vector3.one );
-        m_generator.Output( out m_mesh , out vs , out tris );
+        m_generator.Output( out m_mesh );
         m_meshFilter.mesh = m_mesh;
 
         Vector3 tem = boundingBox.bounds.max - boundingBox.bounds.min;
@@ -112,7 +110,7 @@ public class FluidSimulatorMarchingCubeCPU : MonoBehaviour
         {
             m_converter.Compute( m_simulator.KNNContainer , m_simulator.particlePositionArray );
             m_generator.Input( m_converter.volume , m_threshold , Vector3.one );
-            m_generator.Output( out m_mesh , out vs , out tris );
+            m_generator.Output( out m_mesh );
             m_meshFilter.mesh = m_mesh;
             m_visualize = false;
         }
