@@ -156,19 +156,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boundingBox: {fileID: 767865010}
   computeNoise: {fileID: 7200000, guid: 11f5e1fa5513bd34790fa626d7c23f32, type: 3}
+  sunLight: {fileID: 923798475}
   m_noiseStep: 0.1
   m_noiseLayers:
   - magnitude: 0.5
     sharpness: 3
-    centerHeight: 1.5
+    centerHeight: 5
     noiseScale: {x: 1, y: 1, z: 1}
-    weight: 1
+    weight: 0.2
   - magnitude: 5
     sharpness: 1
     centerHeight: 5
     noiseScale: {x: 3, y: 3, z: 3}
     weight: 1
-  m_levelHeight: 0
+  m_levelHeight: 3
   m_threshold: 0
 --- !u!4 &509763147
 Transform:
