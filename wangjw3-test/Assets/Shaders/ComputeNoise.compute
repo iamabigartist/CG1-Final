@@ -1,10 +1,5 @@
-#pragma kernel Simplex3D
-
-float noiseStep;
-int3 size;
-
 #define THREAD_COUNT 64
-#define ITERATION (1u << 1)
+#define ITERATION (1u << 27)
 
 float3 wglnoise_mod289(float3 x)
 {
@@ -91,15 +86,29 @@ float ClassicNoise(float3 p)
 
 RWStructuredBuffer<float> output;
 
+int3 size;
 float gridStep;
+
+float magnitude;
+float centerHeight;
+float sharpness;
+float3 noiseScale;
+float weight;
 
 #pragma kernel PerlinNoise
 [numthreads(8, 8, 8)]
-void PerlinNoise(uint3 id : SV_DispatchThreadID){
-    // int x = (int)floor(id.x / (size.y * size.z)); 
-    // int y = (int)floor((id.x - x * size.y * size.z) / size.x);
-    // int z = id.x - x * size.y * size.z - y * size.x;
-    // float3 p = float3(x, y, z);
-    float3 p = float3(id.x, id.y, id.z) * gridStep;
-    output[id.z + id.y * size.x + id.x * size.y * size.z] = ClassicNoise(p);
+void PerlinNoise(uint3 id : SV_DispatchThreadID) 
+   {
+    float3 p = float3(id.x, id.y, id.z) / noiseScale * gridStep;
+    float value = ClassicNoise(p);
+    float h = centerHeight - id.y * gridStep;
+    value += pow(abs(h / magnitude), sharpness) * sign(h);
+    output[id.z + id.y * size.x + id.x * size.y * size.z] += value * weight;
+}
+
+#pragma kernel Clear
+[numthreads(8, 8, 8)]
+void Clear(uint3 id : SV_DispatchThreadID)
+{
+    output[id.z + id.y * size.x + id.x * size.y * size.z] = 0.0;
 }

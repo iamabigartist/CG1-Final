@@ -2,81 +2,96 @@ using System.Collections;
 
 using UnityEngine;
 
+[System.Serializable]
+public class PerlinNoiseTerrainLayer
+{
+    public float magnitude;
+    public float sharpness;
+    public float centerHeight;
+    public Vector3 noiseScale;
+    public float weight;
+}
+
 public class NoiseTerrain : MonoBehaviour
 {
     public BoxCollider boundingBox;
     public ComputeShader computeNoise;
 
     [SerializeField] private float m_noiseStep;
-    [SerializeField, Range(0f, 10f)] private float m_threshold; 
+    [SerializeField] private PerlinNoiseTerrainLayer[] m_noiseLayers;
+    [SerializeField] private float m_levelHeight;
+    [SerializeField] private float m_threshold;
 
-    // noiseShader
     private int m_noiseKernel;
+    private int m_clearKernel;
     private ComputeBuffer m_noiseBuffer;
-    public float[] m_noise;
+    private MarchingCube1.VolumeMatrix m_volume;
 
-    // marching cube and mesh generation
-    private MeshFilter m_meshFilter;
-    private MarchingCube1.MarchingCubeCPUGenerator m_generator;
-    private Mesh m_mesh;
+    private Vector3Int m_gridDimension;
+    private int m_gridCount;
 
-    private Vector3[] vs;
-    private int[] tris;
+    private MarchingCubeRenderer m_renderer;
 
     MarchingCube1.VolumeMatrix vol;
 
     private void Start()
     {
-        m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
-        m_meshFilter = GetComponent<MeshFilter>();
-
         Vector3 tem = boundingBox.bounds.size;
-        Vector3Int size = new Vector3Int(
+        m_gridDimension = new Vector3Int(
             Mathf.CeilToInt(tem.x / m_noiseStep),
             Mathf.CeilToInt(tem.y / m_noiseStep),
-            Mathf.CeilToInt(tem.z / m_noiseStep)
-            );
-        m_noise = new float[size.x * size.y * size.z];
+            Mathf.CeilToInt(tem.z / m_noiseStep));
+        m_gridCount = m_gridDimension.x * m_gridDimension.y * m_gridDimension.z;
+        m_volume = new MarchingCube1.VolumeMatrix(m_gridDimension);
 
-        //for (int i = 0; i < size.z; ++i)
-        //{
-        //    for (int j = 0; j < size.y; ++j)
-        //    {
-        //        for (int k = 0; k < size.x; ++k)
-        //        {
-        //            m_noise[k + j * size.x + i * size.y * size.z] = 0f;
-        //        }
-        //    }
-        //}
-        m_noiseBuffer = new ComputeBuffer(size.x * size.y * size.z, sizeof(float));
-        computeNoise.SetFloat("gridStep", m_noiseStep);
         m_noiseKernel = computeNoise.FindKernel("PerlinNoise");
+        m_clearKernel = computeNoise.FindKernel("Clear");
+
+        m_noiseBuffer = new ComputeBuffer(m_gridCount, sizeof(float));
         computeNoise.SetBuffer(m_noiseKernel, "output", m_noiseBuffer);
-        computeNoise.SetInts("size", size.x, size.y, size.z);
-        computeNoise.SetFloat("noiseStep", m_noiseStep);
+        computeNoise.SetBuffer(m_clearKernel, "output", m_noiseBuffer);
 
-        computeNoise.Dispatch(m_noiseKernel, Mathf.CeilToInt(size.x/ 8f), Mathf.CeilToInt(size.y / 8f), Mathf.CeilToInt(size.z / 8f));
-        m_noiseBuffer.GetData(m_noise);
+        computeNoise.SetFloat("gridStep", m_noiseStep);
+        computeNoise.SetInts("size", m_gridDimension.x, m_gridDimension.y, m_gridDimension.z);
 
-        vol = new MarchingCube1.VolumeMatrix(size);
-        vol.data = m_noise;
-        m_generator.Input(vol, m_threshold, Vector3.one);
-        m_generator.Output(out m_mesh, out vs, out tris);
-        m_meshFilter.mesh = m_mesh;
+        m_renderer = new MarchingCubeRenderer();
+        m_renderer.On(m_volume, Color.white, m_noiseStep, m_threshold, boundingBox.bounds.min, m_levelHeight);
     }
 
-    private void OnDestroy()
+    private void Generate()
     {
-        m_noiseBuffer.Dispose();
-        Debug.Log("Buffer disposed!");
+        computeNoise.Dispatch(m_clearKernel, Mathf.CeilToInt(m_gridDimension.x / 8f), Mathf.CeilToInt(m_gridDimension.y / 8f), Mathf.CeilToInt(m_gridDimension.z / 8f));
+        foreach (PerlinNoiseTerrainLayer layer in m_noiseLayers)
+        {
+            computeNoise.SetFloat("magnitude", layer.magnitude);
+            computeNoise.SetFloat("centerHeight", layer.centerHeight);
+            computeNoise.SetFloat("sharpness", layer.sharpness);
+            computeNoise.SetFloats("noiseScale", layer.noiseScale.x, layer.noiseScale.y, layer.noiseScale.z);
+            computeNoise.SetFloat("weight", layer.weight);
+
+            computeNoise.Dispatch(m_noiseKernel, Mathf.CeilToInt(m_gridDimension.x / 8f), Mathf.CeilToInt(m_gridDimension.y / 8f), Mathf.CeilToInt(m_gridDimension.z / 8f));
+        }
+        m_noiseBuffer.GetData(m_volume.data);
     }
 
     private void Update()
     {
-        //vol.data = m_noise;
-        //m_generator.Input(vol, m_threshold, Vector3.one);
-        //m_generator.Output(out m_mesh, out vs, out tris);
-        //m_meshFilter.mesh = m_mesh;
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            Generate();
+        }
     }
 
+    private void OnRenderObject()
+    {
+        m_renderer.Config(Color.white, m_noiseStep, m_threshold, boundingBox.bounds.min, m_levelHeight);
+        m_renderer.Draw();
+    }
+
+    private void OnDestroy()
+    {
+        m_noiseBuffer.Release();
+        m_noiseBuffer.Dispose();
+        m_renderer.Off();
+    }
 }
