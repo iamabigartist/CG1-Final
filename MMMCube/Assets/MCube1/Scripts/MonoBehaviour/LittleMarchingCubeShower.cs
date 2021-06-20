@@ -37,8 +37,6 @@ namespace MarchingCube1
             meshFilter = GetComponent<MeshFilter>();
             volumeGenerator = new RandomVolumeGenerator();
             cubeGenerator = new MarchingCubeCPUGenerator();
-            particle_num = 3;
-            scale = 20;
             volume = null;
         }
 
