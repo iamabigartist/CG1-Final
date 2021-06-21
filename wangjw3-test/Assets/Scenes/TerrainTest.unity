@@ -20,11 +20,11 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 1, g: 0.9647839, b: 0.44716978, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientIntensity: 2.33
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -526,11 +526,13 @@ MonoBehaviour:
     centerHeight: 3
     noiseScale: {x: 1, y: 1, z: 1}
     weight: 0.2
+    offset: {x: 0, y: 0, z: 0}
   - magnitude: 5
     sharpness: 1
     centerHeight: 5
     noiseScale: {x: 3, y: 3, z: 3}
     weight: 1
+    offset: {x: 0, y: 0, z: 0}
   m_threshold: 0
 --- !u!4 &509763147
 Transform:
@@ -621,7 +623,7 @@ Transform:
   m_GameObject: {fileID: 767865008}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 10, z: 20}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -637,7 +639,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &815987644
 GameObject:
@@ -669,7 +671,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &815987646
 MeshRenderer:
@@ -728,7 +730,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 815987644}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.172, y: 3.433, z: -7.733}
+  m_LocalPosition: {x: -7.19, y: -2.8, z: 5.83}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
@@ -869,16 +871,19 @@ MonoBehaviour:
     centerHeight: 3
     noiseScale: {x: 0.4, y: 0.4, z: 0.4}
     weight: 0.1
+    offset: {x: 0, y: 0, z: 0}
   - magnitude: 8
     sharpness: 3
     centerHeight: 2
     noiseScale: {x: 1, y: 2, z: 1}
     weight: 0.22
+    offset: {x: 0, y: 0, z: 0}
   - magnitude: 2
     sharpness: 2
     centerHeight: 3
     noiseScale: {x: 3, y: 3, z: 3}
     weight: 1
+    offset: {x: 0, y: 0, z: 0}
   m_threshold: 0
 --- !u!114 &1300553803
 MonoBehaviour:
@@ -1049,7 +1054,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1383451973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1067,22 +1072,19 @@ MonoBehaviour:
   sunLight: {fileID: 923798475}
   m_noiseStep: 0.1
   m_noiseLayers:
-  - magnitude: 5
-    sharpness: 3
-    centerHeight: 5
-    noiseScale: {x: 2, y: 2, z: 2}
-    weight: 0.1
-  - magnitude: 5
-    sharpness: 1
-    centerHeight: 5
-    noiseScale: {x: 10, y: 20, z: 10}
-    weight: 1
-  - magnitude: 5
-    sharpness: 3
-    centerHeight: 5
-    noiseScale: {x: 0.4, y: 0.4, z: 0.4}
-    weight: 0.04
-  m_threshold: 0
+  - magnitude: 6
+    sharpness: 0.53
+    centerHeight: 16.2
+    noiseScale: {x: 2.02, y: 86.2, z: 0.5}
+    weight: 0.8
+    offset: {x: 0.5, y: 0, z: 0}
+  - magnitude: 18.97
+    sharpness: 1.46
+    centerHeight: 0.66
+    noiseScale: {x: 10.04, y: 10.17, z: 9.98}
+    weight: 70.3
+    offset: {x: -0.96, y: 0.18, z: 0}
+  m_threshold: -15.43
 --- !u!114 &1383451974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1095,17 +1097,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b87a35abb915d4796c4e0d7f1e188a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generateBox: {fileID: 1589014089}
+  generateBox: {fileID: 815987645}
   terrainRenderer: {fileID: 1809549603}
   m_numParticles: 10000
   m_h: 0.5
   m_iterations: 3
-  m_dt: 0.001
+  m_dt: 0.002
   m_randomness: 0.1
   m_viscosity: 0
   m_visualizeStep: 250
   m_damping: 0.5
-  m_erosion: 0.000003
+  m_erosion: 0.00003
   m_force1: 0
   m_force2: 0
   m_stepsToReset: 10000
@@ -1237,7 +1239,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1451295811
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1304,22 +1306,19 @@ MonoBehaviour:
   sunLight: {fileID: 923798475}
   m_noiseStep: 0.1
   m_noiseLayers:
-  - magnitude: 5
-    sharpness: 3
-    centerHeight: 5
-    noiseScale: {x: 2, y: 2, z: 2}
-    weight: 0.1
-  - magnitude: 5
-    sharpness: 1
-    centerHeight: 5
-    noiseScale: {x: 10, y: 20, z: 10}
-    weight: 1
-  - magnitude: 5
-    sharpness: 3
-    centerHeight: 5
-    noiseScale: {x: 0.4, y: 0.4, z: 0.4}
-    weight: 0.04
-  m_threshold: 0
+  - magnitude: 6
+    sharpness: 0.53
+    centerHeight: 16.2
+    noiseScale: {x: 2.02, y: 86.2, z: 0.5}
+    weight: 0.8
+    offset: {x: 0.5, y: 0, z: 0}
+  - magnitude: 18.97
+    sharpness: 1.46
+    centerHeight: 0.66
+    noiseScale: {x: 10.04, y: 10.17, z: 9.98}
+    weight: 70.3
+    offset: {x: -0.96, y: 0.18, z: 0}
+  m_threshold: -15.43
 --- !u!4 &1451295814
 Transform:
   m_ObjectHideFlags: 0
@@ -1818,7 +1817,7 @@ MonoBehaviour:
   Glossiness: 0
   Metallic: 0
   height0:
-    min: -3
+    min: -26.93
     max: 3
     width: 50
   height1:
@@ -1857,19 +1856,19 @@ MonoBehaviour:
     serializedVersion: 2
     key0: {r: 0.1981132, g: 0.1981132, b: 0.1981132, a: 1}
     key1: {r: 0.8207547, g: 0.50467134, b: 0, a: 1}
-    key2: {r: 0, g: 0.754717, b: 0.088969536, a: 1}
-    key3: {r: 0.6132076, g: 0.33223101, b: 0, a: 1}
-    key4: {r: 1, g: 1, b: 1, a: 1}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
+    key2: {r: 0.6666667, g: 0.3031077, b: 0.058823507, a: 1}
+    key3: {r: 0, g: 0.754717, b: 0.088969536, a: 1}
+    key4: {r: 0.6666667, g: 0.35127005, b: 0.07058823, a: 1}
+    key5: {r: 0.6132076, g: 0.33223101, b: 0, a: 0}
+    key6: {r: 1, g: 1, b: 1, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
     ctime1: 15420
-    ctime2: 34695
-    ctime3: 53199
-    ctime4: 65535
-    ctime5: 0
-    ctime6: 0
+    ctime2: 20239
+    ctime3: 34695
+    ctime4: 38550
+    ctime5: 53199
+    ctime6: 65535
     ctime7: 0
     atime0: 0
     atime1: 20046
@@ -1880,7 +1879,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 5
+    m_NumColorKeys: 7
     m_NumAlphaKeys: 4
   weight_curve_h1:
     serializedVersion: 2

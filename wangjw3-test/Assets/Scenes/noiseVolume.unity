@@ -160,23 +160,26 @@ MonoBehaviour:
   sunLight: {fileID: 923798475}
   m_noiseStep: 0.2
   m_noiseLayers:
-  - magnitude: 11.98
-    sharpness: 26.1
+  - magnitude: 11.7
+    sharpness: 10.02
     centerHeight: 2
-    noiseScale: {x: 1, y: 1, z: 1}
-    weight: 0.7
+    noiseScale: {x: 0.23, y: 0.082, z: 0.118}
+    weight: 0.09
+    offset: {x: 0, y: 0, z: 0}
   - magnitude: 6
-    sharpness: 3
-    centerHeight: 2
-    noiseScale: {x: 5, y: 1000, z: 5}
-    weight: 13.1
-  - magnitude: 34.24
-    sharpness: 1.4
+    sharpness: 0.53
+    centerHeight: 16.2
+    noiseScale: {x: 2.02, y: 86.2, z: 0.5}
+    weight: 0.8
+    offset: {x: 0.5, y: 0, z: 0}
+  - magnitude: 18.97
+    sharpness: 1.46
     centerHeight: 0.66
-    noiseScale: {x: 60, y: 30, z: 60}
-    weight: 43.6
+    noiseScale: {x: 10.04, y: 10.17, z: 9.98}
+    weight: 70.3
+    offset: {x: -0.96, y: 0.18, z: 0}
   m_levelHeight: 1.77
-  m_threshold: -12.4
+  m_threshold: -15.43
 --- !u!4 &509763147
 Transform:
   m_ObjectHideFlags: 0
@@ -255,8 +258,8 @@ MonoBehaviour:
   Glossiness: 0
   Metallic: 0
   height0:
-    min: -3
-    max: 3
+    min: -38.2
+    max: 7.4
     width: 50
   height1:
     min: 0
@@ -451,7 +454,7 @@ Transform:
   m_GameObject: {fileID: 767865008}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 10, z: 20}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -467,7 +470,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2, y: 1, z: 2}
+  m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &923798474
 GameObject:
