@@ -24,7 +24,7 @@ public class TerrainRenderer : MonoBehaviour
 
     private Texture2D height_w0, height_w1, slope_w0;
 
-    private void Start ()
+    private void Awake ()
     {
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();

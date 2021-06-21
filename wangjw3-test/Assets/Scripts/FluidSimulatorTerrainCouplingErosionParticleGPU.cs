@@ -5,7 +5,7 @@ using UnityEngine;
 public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
 {
     public BoxCollider generateBox;
-    public MeshFilter terrainMeshFilter;
+    public TerrainRenderer terrainRenderer;
 
     [SerializeField] private int m_numParticles;
     [SerializeField] private float m_h;
@@ -17,6 +17,9 @@ public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
     [SerializeField] private int m_visualizeStep;
     [SerializeField] private float m_damping;
     [SerializeField] private float m_erosion;
+    [SerializeField] private float m_force1;
+    [SerializeField] private float m_force2;
+    [SerializeField] private int m_stepsToReset;
 
     private SPHSimulator.PCISPHSimulatorNeighbourSolidCouplingErosion m_simulator;
 
@@ -30,6 +33,8 @@ public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
 
     private bool m_started = false;
     private int m_stepCounter = 0;
+    private int m_resetCounter = 0;
+    private int m_resets = 0;
 
     private void Start ()
     {
@@ -37,14 +42,14 @@ public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
         m_terrain.Initialize();
         m_terrain.Generate();
 
-        m_simulator = new SPHSimulator.PCISPHSimulatorNeighbourSolidCouplingErosion( m_viscosity , m_h , m_iterations , m_terrain.bounds , m_terrain.volume.size , m_terrain.gridStep , m_terrain.threshold , 0f , 0f , 50 , m_terrain.volume , m_damping , m_erosion );
+        m_simulator = new SPHSimulator.PCISPHSimulatorNeighbourSolidCouplingErosion( m_viscosity , m_h , m_iterations , m_terrain.bounds , m_terrain.volume.size , m_terrain.gridStep , m_terrain.threshold , m_force1 , m_force2 , 50 , m_terrain.volume , m_damping , m_erosion );
 
         m_terrainMesh = new Mesh();
 
         m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
         m_generator.Input( m_simulator.terrainVolume , m_terrain.threshold , new Vector3( m_terrain.gridStep , m_terrain.gridStep , m_terrain.gridStep ) , m_terrain.bounds.min );
         m_generator.Output( out m_terrainMesh );
-        terrainMeshFilter.mesh = m_terrainMesh;
+        terrainRenderer.Setup( m_terrainMesh );
     }
 
     private void InitFluid ()
@@ -84,12 +89,23 @@ public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
         float dt = m_dt < Mathf.Epsilon ? Time.deltaTime : m_dt;
         m_simulator.Step( dt );
         m_stepCounter++;
+        m_resetCounter++;
         if ( m_stepCounter >= m_visualizeStep )
         {
             m_generator.Input( m_simulator.terrainVolume , m_terrain.threshold , new Vector3( m_terrain.gridStep , m_terrain.gridStep , m_terrain.gridStep ) , m_terrain.bounds.min );
             m_generator.Output( out m_terrainMesh );
-            terrainMeshFilter.mesh = m_terrainMesh;
+            terrainRenderer.Setup( m_terrainMesh );
             m_stepCounter = 0;
+        }
+        if ( m_resetCounter >= m_stepsToReset )
+        {
+            m_simulator.ResetParticles( m_randomness );
+            m_resetCounter = 0;
+            m_resets++;
+            if ( m_resets % 5 == 1 )
+            {
+                m_simulator.terrainVolume.SaveToFile( "C:\\Users\\DIV-4\\Desktop\\Temp\\test.bin" );
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 using UnityEngine;
 
@@ -11,9 +13,25 @@ namespace MarchingCube1
         public Vector3[] data;
     }
 
+    [System.Serializable]
+    public class Dimension
+    {
+        public int x;
+        public int y;
+        public int z;
+
+        public Dimension ( Vector3Int int3 )
+        {
+            x = int3.x;
+            y = int3.y;
+            z = int3.z;
+        }
+    }
+
     /// <summary>
     /// A uniform partice filed
     /// </summary>
+    [System.Serializable]
     public class VolumeMatrix
     {
         public readonly Vector3Int size;
@@ -50,6 +68,33 @@ namespace MarchingCube1
         public int index ( int x , int y , int z )
         {
             return x + y * size.x + z * size.y * size.x;
+        }
+
+        public void SaveToFile ( string path )
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream fs = new FileStream( path , FileMode.Create );
+            formatter.Serialize( fs , new Dimension( size ) );
+            formatter.Serialize( fs , data );
+            fs.Close();
+            Debug.Log( "volume data saved to " + path );
+        }
+
+        public static VolumeMatrix LoadFromFile ( string path )
+        {
+            if ( !File.Exists( path ) )
+            {
+                Debug.LogError( "No volume data found in " + path );
+                return null;
+            }
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream fs = new FileStream( path , FileMode.Open );
+            Dimension int3 = formatter.Deserialize( fs ) as Dimension;
+            VolumeMatrix ret = new VolumeMatrix( new Vector3Int( int3.x , int3.y , int3.z ) );
+            ret.data = formatter.Deserialize( fs ) as float[];
+            fs.Close();
+            Debug.Log( "Volume data loaded from " + path );
+            return ret;
         }
     }
 

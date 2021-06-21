@@ -25,12 +25,11 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
     private MeshFilter m_meshFilter;
 
     private SPHSimulator.PCISPHSimulatorNeighbour m_simulator;
-    private ParticleToVolume m_converter;
+    private ParticleToVolumeFast m_converter;
     private MarchingCubeRenderer m_cubeRenderer;
 
     private bool m_started = false;
-    private Vector3[] vs;
-    private int[] tris;
+    private bool m_visualize = false;
 
     private void Start ()
     {
@@ -38,7 +37,7 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
 
         m_simulator = new SPHSimulator.PCISPHSimulatorNeighbour(
             m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds , m_force1 , m_force2 , m_neighbourCount );
-        m_converter = new ParticleToVolume( m_gridStep , m_smoothLength , boundingBox.bounds );
+        m_converter = new ParticleToVolumeFast( m_gridStep , m_smoothLength , boundingBox.bounds , 50 );
         Visualise();
 
         m_cubeRenderer = new MarchingCubeRenderer();
@@ -48,12 +47,14 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
     private void OnDestroy ()
     {
         m_simulator.DisposeBuffer();
+        m_converter.Dispose();
         Debug.Log( "Buffer disposed!" );
     }
 
     private void Update ()
     {
         if ( Input.GetButtonDown( "Submit" ) ) m_started = true;
+        if ( Input.GetKey( KeyCode.Space ) ) m_visualize = true;
         if ( m_started )
         {
             Step();
@@ -63,14 +64,18 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
 
     private void Visualise ()
     {
-        m_converter.Compute( ref m_simulator.particlePositionArray );
+        m_converter.Compute( m_simulator.KNNContainer , m_simulator.particlePositionArray );
     }
 
     private void Step ()
     {
         float dt = m_dt < Mathf.Epsilon ? Time.deltaTime : m_dt;
         m_simulator.Step( dt );
-        Visualise();
+        if ( m_visualize )
+        {
+            Visualise();
+            m_visualize = false;
+        }
     }
 
     private void OnRenderObject ()

@@ -297,6 +297,8 @@ namespace SPHSimulator
         private int m_forceKernel;
         private int m_finalKernel;
         private float m_preDelta;
+        private Vector3Int m_particleDimension;
+        private float m_particleStep;
 
         private NativeArray<float3> m_positionNative;
         private Vector3[] m_positionArray;
@@ -344,9 +346,6 @@ namespace SPHSimulator
             m_forceKernel = m_computePCISPH.FindKernel( "Force" );
             m_finalKernel = m_computePCISPH.FindKernel( "Finalize" );
 
-            //CreateParticles( particleCount , randomness );
-            //InitializeKernels();
-
             m_computePCISPH.SetInts( "volumeDimension" , dimension.x , dimension.y , dimension.z );
             m_computePCISPH.SetFloats( "volumeOrigin" , bounds.min.x , bounds.min.y , bounds.min.z );
             m_computePCISPH.SetFloat( "volumeStep" , volumeStep );
@@ -377,19 +376,56 @@ namespace SPHSimulator
             return a * d;
         }
 
+        public void ResetParticles ( float randomness )
+        {
+            Vector3 min = m_generateBox.min;
+            Vector3 origin = m_boundingBox.min;
+            float random = Mathf.Clamp( randomness , 0f , 1f ) * m_particleStep;
+            float posX = min.x;
+            for ( int i = 0; i < m_particleDimension.x; i++ )
+            {
+                float posY = min.y;
+                for ( int j = 0; j < m_particleDimension.y; j++ )
+                {
+                    float posZ = min.z;
+                    for ( int k = 0; k < m_particleDimension.z; k++ )
+                    {
+                        int index = m_particleDimension.y * m_particleDimension.z * i + m_particleDimension.z * j + k;
+                        m_positionNative[ index ] = new float3(
+                            posX + UnityEngine.Random.Range( -random , random ) ,
+                            posY + UnityEngine.Random.Range( -random , random ) ,
+                            posZ + UnityEngine.Random.Range( -random , random ) );
+                        m_positionArray[ index ] = m_positionNative[ index ];
+
+                        Vector3 tem1 = new Vector3( origin.x , m_positionArray[ index ].y , m_positionArray[ index ].z );
+                        Vector3 tem2 = new Vector3( origin.x , m_positionArray[ index ].y , m_positionArray[ index ].z );
+                        Vector3 a1 = calculateForceAcc( ( m_positionArray[ index ] - tem1 ) , m_force1 );
+                        Vector3 a2 = calculateForceAcc( ( m_positionArray[ index ] - tem2 ) , m_force2 );
+                        m_velocityArray[ index ] = ( a1 + a2 ) * 0.01f;
+
+                        m_densityArray[ index ] = INITIAL_DENSITY;
+
+                        posZ += m_particleStep;
+                    }
+                    posY += m_particleStep;
+                }
+                posX += m_particleStep;
+            }
+        }
+
         public void CreateParticles ( int particleCount , float randomness , Bounds generate )
         {
             m_generateBox = generate;
             Vector3 size = m_generateBox.size;
             Vector3 min = m_generateBox.min;
             float volume = size.x * size.y * size.z;
-            float step = Mathf.Pow( volume / particleCount , 1f / 3f );
-            Vector3 particleDimensionFloat = size / step;
-            Vector3Int particleDimension = new Vector3Int(
+            m_particleStep = Mathf.Pow( volume / particleCount , 1f / 3f );
+            Vector3 particleDimensionFloat = size / m_particleStep;
+            m_particleDimension = new Vector3Int(
                 Mathf.RoundToInt( particleDimensionFloat.x ) ,
                 Mathf.RoundToInt( particleDimensionFloat.y ) ,
                 Mathf.RoundToInt( particleDimensionFloat.z ) );
-            m_actualNumParticles = particleDimension.x * particleDimension.y * particleDimension.z;
+            m_actualNumParticles = m_particleDimension.x * m_particleDimension.y * m_particleDimension.z;
             m_massPerParticle = INITIAL_DENSITY * volume / m_actualNumParticles;
 
             m_positionNative = new NativeArray<float3>( m_actualNumParticles , Allocator.Persistent );
@@ -406,17 +442,17 @@ namespace SPHSimulator
             Vector3 b_min = m_boundingBox.min;
             Vector3 b_max = m_boundingBox.max;
 
-            float random = Mathf.Clamp( randomness , 0f , 1f ) * step;
+            float random = Mathf.Clamp( randomness , 0f , 1f ) * m_particleStep;
             float posX = min.x;
-            for ( int i = 0; i < particleDimension.x; i++ )
+            for ( int i = 0; i < m_particleDimension.x; i++ )
             {
                 float posY = min.y;
-                for ( int j = 0; j < particleDimension.y; j++ )
+                for ( int j = 0; j < m_particleDimension.y; j++ )
                 {
                     float posZ = min.z;
-                    for ( int k = 0; k < particleDimension.z; k++ )
+                    for ( int k = 0; k < m_particleDimension.z; k++ )
                     {
-                        int index = particleDimension.y * particleDimension.z * i + particleDimension.z * j + k;
+                        int index = m_particleDimension.y * m_particleDimension.z * i + m_particleDimension.z * j + k;
                         m_positionNative[ index ] = new float3(
                             posX + UnityEngine.Random.Range( -random , random ) ,
                             posY + UnityEngine.Random.Range( -random , random ) ,
@@ -431,21 +467,21 @@ namespace SPHSimulator
 
                         m_densityArray[ index ] = INITIAL_DENSITY;
 
-                        posZ += step;
+                        posZ += m_particleStep;
                     }
-                    posY += step;
+                    posY += m_particleStep;
                 }
-                posX += step;
+                posX += m_particleStep;
             }
 
             Vector3 grad;
             float sumDot = 0f; ;
             Kernels.WendlandQuinticC63D kernel = new Kernels.WendlandQuinticC63D( m_h );
-            for ( float x = -2f * m_h; x <= 2f * m_h; x += step )
+            for ( float x = -2f * m_h; x <= 2f * m_h; x += m_particleStep )
             {
-                for ( float y = -2f * m_h; y <= 2f * m_h; y += step )
+                for ( float y = -2f * m_h; y <= 2f * m_h; y += m_particleStep )
                 {
-                    for ( float z = -2f * m_h; z <= 2f * m_h; z += step )
+                    for ( float z = -2f * m_h; z <= 2f * m_h; z += m_particleStep )
                     {
                         Vector3 point = new Vector3( x , y , z );
                         grad = kernel.GradW( -point );
@@ -592,30 +628,31 @@ namespace SPHSimulator
                 if ( m_collisionArray[ i ].gridIndex.x == -1 ) continue;
 
                 float projection = Vector3.Dot( m_collisionArray[ i ].normal , -m_collisionArray[ i ].momentum );
+                float projection2 = projection * projection;
 
                 float dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , -N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex ] -= dot * m_erosion * projection2;
 
                 dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , -N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 0 ) ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 0 ) ] -= dot * m_erosion * projection2;
 
                 dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 0 ) ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 0 ) ] -= dot * m_erosion * projection2;
 
                 dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , -N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 0 , 1 ) ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 0 , 1 ) ] -= dot * m_erosion * projection2;
 
                 dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 0 ) ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 0 ) ] -= dot * m_erosion * projection2;
 
                 dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , -N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 1 ) ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 1 ) ] -= dot * m_erosion * projection2;
 
                 dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 1 ) ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 1 ) ] -= dot * m_erosion * projection2;
 
                 dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 1 ) ] -= dot * m_erosion * projection;
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 1 ) ] -= dot * m_erosion * projection2;
             }
         }
 
