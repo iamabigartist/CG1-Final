@@ -63,6 +63,8 @@ public class NoiseTerrainWithRenderer : MonoBehaviour
         terrainRenderer = GetComponent<TerrainRenderer>();
 
         m_initialized = true;
+
+        //Generate();
     }
 
     public void Generate ()
@@ -79,17 +81,19 @@ public class NoiseTerrainWithRenderer : MonoBehaviour
             computeNoise.Dispatch( m_noiseKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
         }
         m_noiseBuffer.GetData( m_volume.data );
+        m_generator.Config( threshold );
         m_generator.Output( out m_mesh );
         terrainRenderer.Setup( m_mesh );
     }
 
+    private void OnValidate ()
+    {
+        if (!m_initialized) Initialize();
+        Generate();
+    }
+
     private void Update ()
     {
-        if (Input.GetKeyDown( KeyCode.Return ))
-        {
-            if (!m_initialized) Initialize();
-            Generate();
-        }
     }
 
     //private void OnRenderObject ()

@@ -158,25 +158,25 @@ MonoBehaviour:
   boundingBox: {fileID: 767865010}
   computeNoise: {fileID: 7200000, guid: 11f5e1fa5513bd34790fa626d7c23f32, type: 3}
   sunLight: {fileID: 923798475}
-  m_noiseStep: 0.1
+  m_noiseStep: 0.2
   m_noiseLayers:
-  - magnitude: 5
-    sharpness: 5
-    centerHeight: 3
-    noiseScale: {x: 0.1, y: 0.1, z: 0.1}
-    weight: 0.02
-  - magnitude: 8
+  - magnitude: 11.65
+    sharpness: 24.61
+    centerHeight: 2
+    noiseScale: {x: 1, y: 1, z: 1}
+    weight: 1
+  - magnitude: 6
     sharpness: 3
     centerHeight: 2
-    noiseScale: {x: 1, y: 2, z: 1}
-    weight: 0.22
-  - magnitude: 2
-    sharpness: 2
-    centerHeight: 3
-    noiseScale: {x: 3, y: 3, z: 3}
-    weight: 1
-  m_levelHeight: 1.86
-  m_threshold: 0
+    noiseScale: {x: 5, y: 1000, z: 5}
+    weight: 10
+  - magnitude: 0.6
+    sharpness: 1
+    centerHeight: 2
+    noiseScale: {x: 3, y: 4.86, z: 3}
+    weight: 2
+  m_levelHeight: 1.2
+  m_threshold: 1
 --- !u!4 &509763147
 Transform:
   m_ObjectHideFlags: 0
@@ -467,7 +467,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.5, z: 1}
+  m_Size: {x: 2, y: 1, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &923798474
 GameObject:
