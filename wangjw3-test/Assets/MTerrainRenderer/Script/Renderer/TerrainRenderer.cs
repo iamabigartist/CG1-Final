@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+[System.Serializable]
 [RequireComponent( typeof( MeshFilter ) ), RequireComponent( typeof( MeshRenderer ) )]
 public class TerrainRenderer : MonoBehaviour
 {
@@ -14,7 +15,13 @@ public class TerrainRenderer : MonoBehaviour
     public float Metallic;
 
     public TerrainGradient height0, height1, slope0;
+
+    public AnimationCurve weight_curve_h0; public Gradient color_curve_h0;
+    public AnimationCurve weight_curve_h1; public Gradient color_curve_h1;
+    public AnimationCurve weight_curve_s0; public Gradient color_curve_s0;
+
     private Texture2D height_t0, height_t1, slope_t0;
+
     private Texture2D height_w0, height_w1, slope_w0;
 
     private void Start ()
@@ -23,15 +30,22 @@ public class TerrainRenderer : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = new Material( Shader.Find( "Custom/MTerrain" ) );
         material = meshRenderer.material;
+        //height0 = new TerrainGradient();
+        //weight_curve_h0 = new AnimationCurve(); color_curve_h0 = new Gradient();
+        //height1 = new TerrainGradient();
+        //weight_curve_h1 = new AnimationCurve(); color_curve_h1 = new Gradient();
+        //slope0 = new TerrainGradient();
+        //weight_curve_s0 = new AnimationCurve(); color_curve_s0 = new Gradient();
     }
 
     #region Interface
 
     public void ResetShader ()
     {
-        height0.Generate( out height_t0 , out height_w0 );
-        height1.Generate( out height_t1 , out height_w1 );
-        slope0.Generate( out slope_t0 , out slope_w0 );
+        print( height0 );
+        height0.Generate( out height_t0 , out height_w0 , weight_curve_h0 , color_curve_h0 );
+        height1.Generate( out height_t1 , out height_w1 , weight_curve_h1 , color_curve_h1 );
+        slope0.Generate( out slope_t0 , out slope_w0 , weight_curve_s0 , color_curve_s0 );
 
         material.SetTexture( "height_texture0" , height_t0 );
         material.SetTexture( "height_texture1" , height_t1 );
