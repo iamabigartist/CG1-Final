@@ -5,7 +5,7 @@ using UnityEngine;
 public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
 {
     public BoxCollider generateBox;
-    public MeshFilter terrainMeshFilter;
+    public TerrainRenderer terrainRenderer;
 
     [SerializeField] private int m_numParticles;
     [SerializeField] private float m_h;
@@ -20,6 +20,8 @@ public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
     [SerializeField] private int m_visualizeStep;
     [SerializeField] private float m_damping;
     [SerializeField] private float m_erosion;
+    [SerializeField] private float m_force1;
+    [SerializeField] private float m_force2;
 
     private SPHSimulator.PCISPHSimulatorNeighbourSolidCouplingErosion m_simulator;
 
@@ -42,14 +44,14 @@ public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
         m_terrain.Initialize();
         m_terrain.Generate();
 
-        m_simulator = new SPHSimulator.PCISPHSimulatorNeighbourSolidCouplingErosion( m_viscosity , m_h , m_iterations , m_terrain.bounds , m_terrain.volume.size , m_terrain.gridStep , m_terrain.threshold , 0f , 0f , 50 , m_terrain.volume , m_damping , m_erosion );
+        m_simulator = new SPHSimulator.PCISPHSimulatorNeighbourSolidCouplingErosion( m_viscosity , m_h , m_iterations , m_terrain.bounds , m_terrain.volume.size , m_terrain.gridStep , m_terrain.threshold , m_force1 , m_force2 , 50 , m_terrain.volume , m_damping , m_erosion );
 
         m_terrainMesh = new Mesh();
 
         m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
         m_generator.Input( m_simulator.terrainVolume , m_terrain.threshold , new Vector3( m_terrain.gridStep , m_terrain.gridStep , m_terrain.gridStep ) , m_terrain.bounds.min );
         m_generator.Output( out m_terrainMesh );
-        terrainMeshFilter.mesh = m_terrainMesh;
+        terrainRenderer.Setup( m_terrainMesh );
     }
 
     private void InitFluid ()
@@ -99,7 +101,7 @@ public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
             m_generator.Input( m_simulator.terrainVolume , m_terrain.threshold , new Vector3( m_terrain.gridStep , m_terrain.gridStep , m_terrain.gridStep ) , m_terrain.bounds.min );
             m_generator.Output( out m_terrainMesh );
             m_meshFilter.mesh = m_mesh;
-            terrainMeshFilter.mesh = m_terrainMesh;
+            terrainRenderer.Setup( m_terrainMesh );
             m_stepCounter = 0;
         }
     }

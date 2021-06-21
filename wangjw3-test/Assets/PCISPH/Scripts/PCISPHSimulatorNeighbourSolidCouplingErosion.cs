@@ -366,7 +366,7 @@ namespace SPHSimulator
         {
             Vector3 d = v.normalized;
             float len = v.magnitude;
-            if ( len <= 0 )
+            if (len <= 0)
             {
                 Vector3 ret = new Vector3( 0f , 0f , 0f );
                 return ret;
@@ -382,28 +382,28 @@ namespace SPHSimulator
             Vector3 origin = m_boundingBox.min;
             float random = Mathf.Clamp( randomness , 0f , 1f ) * m_particleStep;
             float posX = min.x;
-            for ( int i = 0; i < m_particleDimension.x; i++ )
+            for (int i = 0; i < m_particleDimension.x; i++)
             {
                 float posY = min.y;
-                for ( int j = 0; j < m_particleDimension.y; j++ )
+                for (int j = 0; j < m_particleDimension.y; j++)
                 {
                     float posZ = min.z;
-                    for ( int k = 0; k < m_particleDimension.z; k++ )
+                    for (int k = 0; k < m_particleDimension.z; k++)
                     {
                         int index = m_particleDimension.y * m_particleDimension.z * i + m_particleDimension.z * j + k;
-                        m_positionNative[ index ] = new float3(
+                        m_positionNative[index] = new float3(
                             posX + UnityEngine.Random.Range( -random , random ) ,
                             posY + UnityEngine.Random.Range( -random , random ) ,
                             posZ + UnityEngine.Random.Range( -random , random ) );
-                        m_positionArray[ index ] = m_positionNative[ index ];
+                        m_positionArray[index] = m_positionNative[index];
 
-                        Vector3 tem1 = new Vector3( origin.x , m_positionArray[ index ].y , m_positionArray[ index ].z );
-                        Vector3 tem2 = new Vector3( origin.x , m_positionArray[ index ].y , m_positionArray[ index ].z );
-                        Vector3 a1 = calculateForceAcc( ( m_positionArray[ index ] - tem1 ) , m_force1 );
-                        Vector3 a2 = calculateForceAcc( ( m_positionArray[ index ] - tem2 ) , m_force2 );
-                        m_velocityArray[ index ] = ( a1 + a2 ) * 0.01f;
+                        Vector3 tem1 = new Vector3( origin.x , m_positionArray[index].y , m_positionArray[index].z );
+                        Vector3 tem2 = new Vector3( origin.x , m_positionArray[index].y , m_positionArray[index].z );
+                        Vector3 a1 = calculateForceAcc( ( m_positionArray[index] - tem1 ) , m_force1 );
+                        Vector3 a2 = calculateForceAcc( ( m_positionArray[index] - tem2 ) , m_force2 );
+                        m_velocityArray[index] = ( a1 + a2 ) * 0.01f;
 
-                        m_densityArray[ index ] = INITIAL_DENSITY;
+                        m_densityArray[index] = INITIAL_DENSITY;
 
                         posZ += m_particleStep;
                     }
@@ -429,43 +429,43 @@ namespace SPHSimulator
             m_massPerParticle = INITIAL_DENSITY * volume / m_actualNumParticles;
 
             m_positionNative = new NativeArray<float3>( m_actualNumParticles , Allocator.Persistent );
-            m_positionArray = new Vector3[ m_actualNumParticles ];
-            m_velocityArray = new Vector3[ m_actualNumParticles ];
-            m_densityArray = new float[ m_actualNumParticles ];
+            m_positionArray = new Vector3[m_actualNumParticles];
+            m_velocityArray = new Vector3[m_actualNumParticles];
+            m_densityArray = new float[m_actualNumParticles];
 
             m_knnContainer = new KNN.KnnContainer( m_positionNative , true , Allocator.Persistent );
             m_rebuildJob = new KNN.Jobs.KnnRebuildJob( m_knnContainer );
             m_neighbourArray = new NativeArray<int>( m_actualNumParticles * m_neighbourCount , Allocator.Persistent );
 
-            m_collisionArray = new Collision[ m_actualNumParticles ];
+            m_collisionArray = new Collision[m_actualNumParticles];
 
             Vector3 b_min = m_boundingBox.min;
             Vector3 b_max = m_boundingBox.max;
 
             float random = Mathf.Clamp( randomness , 0f , 1f ) * m_particleStep;
             float posX = min.x;
-            for ( int i = 0; i < m_particleDimension.x; i++ )
+            for (int i = 0; i < m_particleDimension.x; i++)
             {
                 float posY = min.y;
-                for ( int j = 0; j < m_particleDimension.y; j++ )
+                for (int j = 0; j < m_particleDimension.y; j++)
                 {
                     float posZ = min.z;
-                    for ( int k = 0; k < m_particleDimension.z; k++ )
+                    for (int k = 0; k < m_particleDimension.z; k++)
                     {
                         int index = m_particleDimension.y * m_particleDimension.z * i + m_particleDimension.z * j + k;
-                        m_positionNative[ index ] = new float3(
+                        m_positionNative[index] = new float3(
                             posX + UnityEngine.Random.Range( -random , random ) ,
                             posY + UnityEngine.Random.Range( -random , random ) ,
                             posZ + UnityEngine.Random.Range( -random , random ) );
-                        m_positionArray[ index ] = m_positionNative[ index ];
+                        m_positionArray[index] = m_positionNative[index];
 
-                        Vector3 tem1 = new Vector3( b_min.x , m_positionArray[ index ].y , m_positionArray[ index ].z );
-                        Vector3 tem2 = new Vector3( b_max.x , m_positionArray[ index ].y , m_positionArray[ index ].z );
-                        Vector3 a1 = calculateForceAcc( ( m_positionArray[ index ] - tem1 ) , m_force1 );
-                        Vector3 a2 = calculateForceAcc( ( m_positionArray[ index ] - tem2 ) , m_force2 );
-                        m_velocityArray[ index ] = ( a1 + a2 ) * 0.01f;
+                        Vector3 tem1 = new Vector3( b_min.x , m_positionArray[index].y , m_positionArray[index].z );
+                        Vector3 tem2 = new Vector3( b_max.x , m_positionArray[index].y , m_positionArray[index].z );
+                        Vector3 a1 = calculateForceAcc( ( m_positionArray[index] - tem1 ) , m_force1 );
+                        Vector3 a2 = calculateForceAcc( ( m_positionArray[index] - tem2 ) , m_force2 );
+                        m_velocityArray[index] = ( a1 + a2 ) * 0.01f;
 
-                        m_densityArray[ index ] = INITIAL_DENSITY;
+                        m_densityArray[index] = INITIAL_DENSITY;
 
                         posZ += m_particleStep;
                     }
@@ -477,11 +477,11 @@ namespace SPHSimulator
             Vector3 grad;
             float sumDot = 0f; ;
             Kernels.WendlandQuinticC63D kernel = new Kernels.WendlandQuinticC63D( m_h );
-            for ( float x = -2f * m_h; x <= 2f * m_h; x += m_particleStep )
+            for (float x = -2f * m_h; x <= 2f * m_h; x += m_particleStep)
             {
-                for ( float y = -2f * m_h; y <= 2f * m_h; y += m_particleStep )
+                for (float y = -2f * m_h; y <= 2f * m_h; y += m_particleStep)
                 {
-                    for ( float z = -2f * m_h; z <= 2f * m_h; z += m_particleStep )
+                    for (float z = -2f * m_h; z <= 2f * m_h; z += m_particleStep)
                     {
                         Vector3 point = new Vector3( x , y , z );
                         grad = kernel.GradW( -point );
@@ -601,7 +601,7 @@ namespace SPHSimulator
 
             m_computePCISPH.Dispatch( m_initKernel , Mathf.CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
             int it = 0;
-            while ( it < m_iterations )
+            while (it < m_iterations)
             {
                 m_computePCISPH.Dispatch( m_predictKernel , Mathf.CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
                 m_computePCISPH.Dispatch( m_correctKernel , Mathf.CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
@@ -621,38 +621,38 @@ namespace SPHSimulator
 
             float N = Mathf.Sqrt( 1f / 3f );
 
-            for ( int i = 0; i < m_actualNumParticles; i++ )
+            for (int i = 0; i < m_actualNumParticles; i++)
             {
-                m_positionNative[ i ] = m_positionArray[ i ];
+                m_positionNative[i] = m_positionArray[i];
 
-                if ( m_collisionArray[ i ].gridIndex.x == -1 ) continue;
+                if (m_collisionArray[i].gridIndex.x == -1) continue;
 
-                float projection = Vector3.Dot( m_collisionArray[ i ].normal , -m_collisionArray[ i ].momentum );
+                float projection = Vector3.Dot( m_collisionArray[i].normal , -m_collisionArray[i].momentum );
                 float projection2 = projection * projection;
 
-                float dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , -N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex ] -= dot * m_erosion * projection2;
+                float dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( -N , -N , -N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex] -= dot * m_erosion * projection2;
 
-                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , -N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 0 ) ] -= dot * m_erosion * projection2;
+                dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( N , -N , -N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex + new Vector3Int( 1 , 0 , 0 )] -= dot * m_erosion * projection2;
 
-                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 0 ) ] -= dot * m_erosion * projection2;
+                dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( -N , N , -N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex + new Vector3Int( 0 , 1 , 0 )] -= dot * m_erosion * projection2;
 
-                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , -N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 0 , 1 ) ] -= dot * m_erosion * projection2;
+                dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( -N , -N , N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex + new Vector3Int( 0 , 0 , 1 )] -= dot * m_erosion * projection2;
 
-                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , N , -N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 0 ) ] -= dot * m_erosion * projection2;
+                dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( N , N , -N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex + new Vector3Int( 1 , 1 , 0 )] -= dot * m_erosion * projection2;
 
-                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , -N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 1 ) ] -= dot * m_erosion * projection2;
+                dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( N , -N , N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex + new Vector3Int( 1 , 0 , 1 )] -= dot * m_erosion * projection2;
 
-                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 1 ) ] -= dot * m_erosion * projection2;
+                dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( -N , N , N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex + new Vector3Int( 0 , 1 , 1 )] -= dot * m_erosion * projection2;
 
-                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , N , N ) );
-                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 1 ) ] -= dot * m_erosion * projection2;
+                dot = Vector3.Dot( -m_collisionArray[i].normal , new Vector3( N , N , N ) );
+                if (dot > 0) m_volume[m_collisionArray[i].gridIndex + new Vector3Int( 1 , 1 , 1 )] -= dot * m_erosion * projection2;
             }
         }
 
@@ -666,7 +666,7 @@ namespace SPHSimulator
 
         private float CalculateDelta ( float dt )
         {
-            return m_preDelta / dt;
+            return m_preDelta / dt / dt;
         }
 
         private void CalculateBoundary ( int particle )
@@ -676,41 +676,41 @@ namespace SPHSimulator
             float boundz = 1f;
             Vector3 min = m_boundingBox.min;
             Vector3 max = m_boundingBox.max;
-            Vector3 position = m_positionArray[ particle ];
-            Vector3 velocity = m_velocityArray[ particle ];
-            if ( position.y < min.y )
+            Vector3 position = m_positionArray[particle];
+            Vector3 velocity = m_velocityArray[particle];
+            if (position.y < min.y)
             {
-                if ( velocity.y < 0f ) boundy = -1f;
-                m_positionArray[ particle ].y = min.y;
+                if (velocity.y < 0f) boundy = -1f;
+                m_positionArray[particle].y = min.y;
             }
-            else if ( position.y > max.y )
+            else if (position.y > max.y)
             {
-                if ( velocity.y > 0f ) boundy = 1f;
-                m_positionArray[ particle ].y = max.y - Mathf.Epsilon;
+                if (velocity.y > 0f) boundy = 1f;
+                m_positionArray[particle].y = max.y - Mathf.Epsilon;
             }
-            if ( position.x < min.x )
+            if (position.x < min.x)
             {
-                if ( velocity.x < 0f ) boundx = 1f;
-                m_positionArray[ particle ].x = min.x;
+                if (velocity.x < 0f) boundx = 1f;
+                m_positionArray[particle].x = min.x;
             }
-            else if ( position.x > max.x )
+            else if (position.x > max.x)
             {
-                if ( velocity.x > 0f ) boundx = 1f;
-                m_positionArray[ particle ].x = max.x - Mathf.Epsilon;
+                if (velocity.x > 0f) boundx = 1f;
+                m_positionArray[particle].x = max.x - Mathf.Epsilon;
             }
-            if ( position.z < min.z )
+            if (position.z < min.z)
             {
-                if ( velocity.z < 0f ) boundz = 1f;
-                m_positionArray[ particle ].z = min.z;
+                if (velocity.z < 0f) boundz = 1f;
+                m_positionArray[particle].z = min.z;
             }
-            else if ( position.z > max.z )
+            else if (position.z > max.z)
             {
-                if ( velocity.z > 0f ) boundz = 1f;
-                m_positionArray[ particle ].z = max.z - Mathf.Epsilon;
+                if (velocity.z > 0f) boundz = 1f;
+                m_positionArray[particle].z = max.z - Mathf.Epsilon;
             }
-            m_velocityArray[ particle ].x = velocity.x * boundx;
-            m_velocityArray[ particle ].y = velocity.y * boundy;
-            m_velocityArray[ particle ].z = velocity.z * boundz;
+            m_velocityArray[particle].x = velocity.x * boundx;
+            m_velocityArray[particle].y = velocity.y * boundy;
+            m_velocityArray[particle].z = velocity.z * boundz;
         }
     }
 }

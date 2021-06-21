@@ -12,6 +12,7 @@ public class PerlinNoiseTerrainLayer
     public float centerHeight;
     public Vector3 noiseScale;
     public float weight;
+    public Vector3 offset;
 }
 
 public class NoiseTerrain : MonoBehaviour
@@ -46,7 +47,7 @@ public class NoiseTerrain : MonoBehaviour
 
     public void Initialize ()
     {
-        if ( m_initialized ) return;
+        if (m_initialized) return;
         Vector3 tem = boundingBox.bounds.size;
         m_gridDimension = new Vector3Int(
             Mathf.CeilToInt( tem.x / m_noiseStep ) ,
@@ -77,7 +78,7 @@ public class NoiseTerrain : MonoBehaviour
     public void Generate ()
     {
         computeNoise.Dispatch( m_clearKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
-        foreach ( PerlinNoiseTerrainLayer layer in m_noiseLayers )
+        foreach (PerlinNoiseTerrainLayer layer in m_noiseLayers)
         {
             computeNoise.SetFloat( "magnitude" , layer.magnitude );
             computeNoise.SetFloat( "centerHeight" , layer.centerHeight );
@@ -94,9 +95,9 @@ public class NoiseTerrain : MonoBehaviour
 
     private void Update ()
     {
-        if ( Input.GetKeyDown( KeyCode.Return ) )
+        if (Input.GetKeyDown( KeyCode.Return ))
         {
-            if ( !m_initialized ) Initialize();
+            if (!m_initialized) Initialize();
             Generate();
         }
     }
@@ -114,7 +115,7 @@ public class NoiseTerrain : MonoBehaviour
 
     private void OnDestroy ()
     {
-        if ( !m_initialized ) return;
+        if (!m_initialized) return;
         m_noiseBuffer.Release();
         m_noiseBuffer.Dispose();
         //m_renderer.Off();

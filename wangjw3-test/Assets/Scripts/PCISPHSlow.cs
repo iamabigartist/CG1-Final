@@ -1,4 +1,4 @@
-#define MeshR
+//#define MeshR
 #define ParticleR
 
 using System.Collections;
@@ -24,7 +24,6 @@ public class PCISPHSlow : MonoBehaviour
 
     public MeshFilter meshFilter;
     public ComputeShader computeSPH;
-    public ComputeShader computeNoise;
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
     public GameObject particleObject;
@@ -55,10 +54,9 @@ public class PCISPHSlow : MonoBehaviour
     private ComputeBuffer m_particleBuffer;
     public Particle[] m_particles;
 
-    //private Transform[] m_objects;
+    private Transform[] m_objects;
     private float m_massPerParticle;
 
-    private int m_noiseKernal;
     private int m_initVelocity;
     private int m_initKernel;
     private int m_predictKernel;
@@ -79,7 +77,7 @@ public class PCISPHSlow : MonoBehaviour
 
     private void Start ()
     {
-        m_initVelocity = computeSPH.FindKernel( "SetInitialVelocity" );
+        m_initVelocity = computeSPH.FindKernel("SetInitialVelocity");
         m_initKernel = computeSPH.FindKernel( "Initialize" );
         m_predictKernel = computeSPH.FindKernel( "Predict" );
         m_correctKernel = computeSPH.FindKernel( "Correct" );
@@ -87,8 +85,6 @@ public class PCISPHSlow : MonoBehaviour
         m_finalKernel = computeSPH.FindKernel( "Finalize" );
         m_generateBox = generateBox.bounds;
         m_boundingBox = boundingBox.bounds;
-
-        m_noiseKernal = computeNoise.FindKernel( "SetNoise" );
 
         CreateParticles();
         InitializeKernels();
@@ -137,7 +133,7 @@ public class PCISPHSlow : MonoBehaviour
         m_massPerParticle = ( m_initialDensity * m_generateBox.size.x * m_generateBox.size.y * m_generateBox.size.z ) / m_actualNumParticles;
 
         m_particles = new Particle[ m_actualNumParticles ];
-        //m_objects = new Transform[m_actualNumParticles];
+        m_objects = new Transform[m_actualNumParticles];
 
         float posX = min.x;
         for ( int i = 0; i < particleCount.x; i++ )
@@ -149,14 +145,14 @@ public class PCISPHSlow : MonoBehaviour
                 for ( int k = 0; k < particleCount.z; k++ )
                 {
                     int index = particleCount.y * particleCount.z * i + particleCount.z * j + k;
-                    //m_objects[index] = Instantiate(particleObject, transform).transform;
+                    m_objects[index] = Instantiate(particleObject, transform).transform;
                     m_particles[ index ].position.x = posX;
                     m_particles[ index ].position.y = posY;
                     m_particles[ index ].position.z = posZ;
                     if ( m_randomness ) m_particles[ index ].position += new Vector3( Random.Range( -0.02f , 0.02f ) , Random.Range( -0.02f , 0.02f ) , Random.Range( -0.02f , 0.02f ) );
                     m_particles[ index ].velocity = Vector3.zero;
                     m_particles[ index ].density = m_initialDensity;
-                    //m_objects[index].position = m_particles[index].position;
+                    m_objects[index].position = m_particles[index].position;
 
                     posZ += step;
                 }
@@ -185,7 +181,7 @@ public class PCISPHSlow : MonoBehaviour
                 }
             }
         }
-        computeSPH.Dispatch( m_initVelocity , Mathf.CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
+        //computeSPH.Dispatch( m_initVelocity , Mathf.CeilToInt( m_actualNumParticles / 8f ) , 1 , 1 );
         Debug.Log( "density = " + m_massPerParticle * density );
         Debug.Log( "Counted " + count + " neighbours" );
         Debug.Log( "sumGrad: " + sumGrad + ", sumDot: " + sumDot );
@@ -216,6 +212,7 @@ public class PCISPHSlow : MonoBehaviour
         computeSPH.SetFloats( "force2Position" , m_forcePosition2.x , m_forcePosition2.y , m_forcePosition2.z );
         computeSPH.SetFloats( "forcePlain2Normal" , m_forceDirection2.x , m_forceDirection2.y , m_forceDirection2.z );
         computeSPH.SetFloat( "force2Strength" , m_forceStrength2 );
+        computeSPH.SetInt("iterations", m_iterations);
     }
 
     private const float PI32 = 5.5683278f;
@@ -320,7 +317,7 @@ public class PCISPHSlow : MonoBehaviour
             }
         }
 
-        m_generator.Input( m_volume , 0.5f , Vector3.one );
+        m_generator.Input( m_volume , 0.5f, new Vector3(m_gridStep, m_gridStep) , boundingBox.bounds.min);
         m_generator.Output( out m_mesh );
         meshFilter.mesh = m_mesh;
 
@@ -329,6 +326,10 @@ public class PCISPHSlow : MonoBehaviour
 #endif
 
 #if ParticleR
+        for (int i = 0; i < m_actualNumParticles; i++)
+        {
+            m_objects[i].position = m_particles[i].position;
+        }
 
 #endif
     }
