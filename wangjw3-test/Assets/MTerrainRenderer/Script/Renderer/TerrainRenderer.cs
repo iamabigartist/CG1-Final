@@ -42,7 +42,7 @@ public class TerrainRenderer : MonoBehaviour
 
     public void ResetShader ()
     {
-        print( height0 );
+        //print( height0 );
         height0.Generate( out height_t0 , out height_w0 , weight_curve_h0 , color_curve_h0 );
         height1.Generate( out height_t1 , out height_w1 , weight_curve_h1 , color_curve_h1 );
         slope0.Generate( out slope_t0 , out slope_w0 , weight_curve_s0 , color_curve_s0 );

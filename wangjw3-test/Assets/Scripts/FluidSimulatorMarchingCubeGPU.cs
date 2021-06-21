@@ -6,6 +6,7 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
 {
     public BoxCollider generateBox;
     public BoxCollider boundingBox;
+    public Light sunLight;
 
     [SerializeField] private bool m_frameByFrame;
     [SerializeField] private int m_numParticles;
@@ -41,7 +42,7 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
         Visualise();
 
         m_cubeRenderer = new MarchingCubeRenderer();
-        m_cubeRenderer.On( m_converter.volume , Color.green , 1 , m_threshold , Vector3.one , FindObjectOfType<Light>() , zero_level );
+        m_cubeRenderer.On( m_converter.volume , Color.green , m_gridStep , m_threshold , boundingBox.bounds.min, sunLight , zero_level );
     }
 
     private void OnDestroy ()
@@ -80,6 +81,7 @@ public class FluidSimulatorMarchingCubeGPU : MonoBehaviour
 
     private void OnRenderObject ()
     {
+        m_cubeRenderer.Config(Color.green, m_gridStep, m_threshold, boundingBox.bounds.min, sunLight, zero_level);
         m_cubeRenderer.Draw();
     }
 }
