@@ -1,6 +1,6 @@
 
 实验与猜想：
-1. 使用physical based  的流体模拟， 有没有可能做出类似Height Map 的地形生成效果？
+1. 使用physical based  的流体模拟地壳碰撞， 有没有可能做出类似Height Map 的地形生成效果？
 2. 使用流体模拟并加以作用力， 有没有可能定制比画笔更加自然的地形， 以及非真实（科幻虚构）的地貌？
 3. 更加具体的即，流体等物理模拟有没有可能还原各种地理现象？
 
@@ -29,7 +29,7 @@
 		液体通过volume matrix 地形信息实时生成碰撞marching cube, 进行反弹
 		volume matrix 被液体经过， 根据液体位置速度法向量来加减值与变形.
 
-技术细节：
+最重要技术细节：
 marching cube render&generation
 SPH, PCISPH, KNN
 双向耦合：必讲，
