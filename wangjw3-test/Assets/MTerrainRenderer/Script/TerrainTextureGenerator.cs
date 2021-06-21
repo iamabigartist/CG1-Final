@@ -4,36 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class TerrainGradient
+public struct TerrainGradient
 {
-    //public enum Type
-    //{
-    //    /// <summary>
-    //    /// vertex.y
-    //    /// </summary>
-    //    Height,
-
-    //    /// <summary>
-    //    /// 1 - abs(normal.y)
-    //    /// </summary>
-    //    Slope,
-
-    //    /// <summary>
-    //    /// 1 + normal.y
-    //    /// </summary>
-    //    Surface
-    //}
-
-    public AnimationCurve weight_curve;
-    public Gradient color_curve;
+    private AnimationCurve _weight_curve;
+    private Gradient _color_curve;
 
     public float min;
     public float max;
 
     public int width;
 
-    public void Generate ( out Texture2D texture , out Texture2D weight )
+    public void Generate ( out Texture2D texture , out Texture2D weight , AnimationCurve weight_curve , Gradient color_curve )
     {
+        _weight_curve = weight_curve;
+        _color_curve = color_curve;
         if (color_curve != null)
         {
             Color[] colours = new Color[width];

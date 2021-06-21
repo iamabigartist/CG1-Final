@@ -60,7 +60,7 @@ public class NoiseTerrainWithRenderer : MonoBehaviour
         m_generator = new MarchingCube1.MarchingCubeCPUGenerator();
         m_generator.Input( m_volume , m_threshold , new Vector3( m_noiseStep , m_noiseStep , m_noiseStep ) , boundingBox.bounds.min );
 
-        terrainRenderer = new TerrainRenderer();
+        terrainRenderer = GetComponent<TerrainRenderer>();
 
         m_initialized = true;
     }
