@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.4430913, g: 0.49229932, b: 0.5720066, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -264,12 +264,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meshFilter: {fileID: 467138969}
   computeSPH: {fileID: 7200000, guid: 270ce82c2cff03f458becedca2d62f6e, type: 3}
-  computeNoise: {fileID: 0}
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
   particleObject: {fileID: 1411974829}
   m_frameByFrame: 0
-  m_numParticles: 10000
+  m_numParticles: 3375
   m_initialDensity: 1000
   m_h: 1
   m_iterations: 5
@@ -435,13 +434,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.49798986, y: -0, z: -0, w: 0.86718285}
   m_LocalPosition: {x: 0, y: 3.22, z: -1.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 59.734, y: 0, z: 0}
 --- !u!1 &948690974
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,7 +615,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1032736221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -891,7 +890,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
-  computeNoise: {fileID: 0}
   m_frameByFrame: 0
   m_numParticles: 10000
   m_h: 1
@@ -907,7 +905,6 @@ MonoBehaviour:
   m_neighbourCount: 50
   m_k: 50
   m_noiseStep: 0
-  m_noise: []
 --- !u!4 &1296219117
 Transform:
   m_ObjectHideFlags: 0
@@ -988,7 +985,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!199 &1411974830
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -5849,7 +5846,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1855795874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5864,17 +5861,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateBox: {fileID: 1176479947}
   boundingBox: {fileID: 2101007395}
+  sunLight: {fileID: 705507994}
   m_frameByFrame: 0
-  m_numParticles: 1000
-  m_h: 0.6
+  m_numParticles: 10000
+  m_h: 0.8
   m_iterations: 5
-  m_dt: 0.001
+  m_dt: 0.005
   m_randomness: 0.1
-  m_viscosity: 0
-  m_gridStep: 0.2
+  m_viscosity: 100
+  m_gridStep: 0.5
   m_smoothLength: 0.5
-  m_force1: 10000
-  m_force2: 10000
+  m_force1: 0
+  m_force2: 0
   m_threshold: 0.5
   m_neighbourCount: 50
   zero_level: 0

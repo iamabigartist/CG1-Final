@@ -13,7 +13,6 @@ public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
     [SerializeField] private float m_dt;
     [SerializeField, Range( 0f , 1f )] private float m_randomness;
     [SerializeField] private float m_viscosity;
-    [SerializeField] private float m_fluidThreshold;
     [SerializeField] private int m_visualizeStep;
     [SerializeField] private float m_damping;
     [SerializeField] private float m_erosion;
@@ -104,7 +103,7 @@ public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
             m_resets++;
             if ( m_resets % 5 == 1 )
             {
-                m_simulator.terrainVolume.SaveToFile( "C:\\Users\\DIV-4\\Desktop\\Temp\\test.bin" );
+                m_simulator.terrainVolume.SaveToFile( "C:\\Users\\wjw11\\Desktop\\Temp\\test.bin" );
             }
         }
     }

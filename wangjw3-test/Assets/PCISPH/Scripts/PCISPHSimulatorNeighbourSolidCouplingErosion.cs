@@ -666,7 +666,7 @@ namespace SPHSimulator
 
         private float CalculateDelta ( float dt )
         {
-            return m_preDelta / dt;
+            return m_preDelta / dt / dt;
         }
 
         private void CalculateBoundary ( int particle )
