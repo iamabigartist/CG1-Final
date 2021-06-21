@@ -34,6 +34,15 @@ namespace MarchingCube1
             }
         }
 
+        public float this[ Vector3Int idx ]
+        {
+            get => data[ idx.x + idx.y * size.x + idx.z * size.y * size.x ];
+            set
+            {
+                data[ idx.x + idx.y * size.x + idx.z * size.y * size.x ] = value;
+            }
+        }
+
         public int count => size.x * size.y * size.z;
 
         public int voxel_count => ( size.x - 1 ) * ( size.y - 1 ) * ( size.z - 1 );

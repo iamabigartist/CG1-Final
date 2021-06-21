@@ -15,6 +15,7 @@ public class FluidSimulatorTerrainCouplingParticleGPU : MonoBehaviour
     [SerializeField] private float m_dt;
     [SerializeField, Range( 0f , 1f )] private float m_randomness;
     [SerializeField] private float m_viscosity;
+    [SerializeField] private float m_damping;
 
     private SPHSimulator.PCISPHSimulatorNeighbourSolidCoupling m_simulator;
 
@@ -27,7 +28,7 @@ public class FluidSimulatorTerrainCouplingParticleGPU : MonoBehaviour
         terrain.Initialize();
         terrain.Generate();
         m_simulator = new SPHSimulator.PCISPHSimulatorNeighbourSolidCoupling(
-            m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds , terrain.volume.size , terrain.gridStep , terrain.threshold , 0f , 0f , 50 );
+            m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds , terrain.volume.size , terrain.gridStep , terrain.threshold , 0f , 0f , 50 , m_damping );
         m_simulator.SetVolumeData( terrain.volume.data );
 
         m_particle_renderer = new ParticleRenderer();

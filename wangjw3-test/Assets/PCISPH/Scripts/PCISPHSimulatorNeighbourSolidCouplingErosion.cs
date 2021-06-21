@@ -7,7 +7,14 @@ using Unity.Jobs;
 
 namespace SPHSimulator
 {
-    public class PCISPHSimulatorNeighbourTerrainCoupling
+    public struct Collision
+    {
+        public Vector3Int gridIndex;
+        public Vector3 momentum;
+        public Vector3 normal;
+    }
+
+    public class PCISPHSimulatorNeighbourSolidCouplingErosion
     {
         private readonly static int[] m_triangulation = {//256 16
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ,
@@ -279,6 +286,7 @@ namespace SPHSimulator
         private float m_force1;
         private float m_force2;
         private int m_neighbourCount;
+        private float m_erosion;
 
         private ComputeShader m_computePCISPH;
 
@@ -305,15 +313,20 @@ namespace SPHSimulator
         private ComputeBuffer m_densityBuffer;
         private float[] m_densityArray;
         private ComputeBuffer m_volumeBuffer;
+        private MarchingCube1.VolumeMatrix m_volume;
         private ComputeBuffer m_triangulationBuffer;
 
+        private ComputeBuffer m_collisionBuffer;
+        private Collision[] m_collisionArray;
+
         private ComputeBuffer m_neighbourBuffer;
+
         private NativeArray<int> m_neighbourArray;
 
         private KNN.KnnContainer m_knnContainer;
         private KNN.Jobs.KnnRebuildJob m_rebuildJob;
 
-        public PCISPHSimulatorNeighbourTerrainCoupling ( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds , Vector3Int dimension , float volumeStep , float isovalue , float force1 , float force2 , int neighbourCount )
+        public PCISPHSimulatorNeighbourSolidCouplingErosion ( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds , Vector3Int dimension , float volumeStep , float isovalue , float force1 , float force2 , int neighbourCount , MarchingCube1.VolumeMatrix volume , float damping = 1f , float erosion = 1f )
         {
             m_neighbourCount = neighbourCount;
             m_h = h;
@@ -321,9 +334,10 @@ namespace SPHSimulator
             m_viscosity = viscosity;
             m_generateBox = generate;
             m_boundingBox = bounds;
-            m_computePCISPH = Resources.Load<ComputeShader>( "Shaders/PCISPHNeighbourSolidCouplingComputeShader" );
+            m_computePCISPH = Resources.Load<ComputeShader>( "Shaders/PCISPHNeighbourSolidCouplingErosionComputeShader" );
             m_force1 = force1;
             m_force2 = force2;
+            m_erosion = erosion;
 
             m_initKernel = m_computePCISPH.FindKernel( "Initialize" );
             m_predictKernel = m_computePCISPH.FindKernel( "Predict" );
@@ -339,8 +353,11 @@ namespace SPHSimulator
             m_computePCISPH.SetFloat( "volumeStep" , volumeStep );
             m_computePCISPH.SetFloat( "volumeScale" , 1f / volumeStep );
             m_computePCISPH.SetFloat( "isovalue" , isovalue );
+            m_computePCISPH.SetFloat( "damping" , damping );
 
             m_volumeBuffer = new ComputeBuffer( dimension.x * dimension.y * dimension.z , sizeof( float ) );
+            m_volume = new MarchingCube1.VolumeMatrix( dimension );
+            m_volume.data = volume.data;
             m_computePCISPH.SetBuffer( m_finalKernel , "volume" , m_volumeBuffer );
             m_triangulationBuffer = new ComputeBuffer( 256 * 16 , sizeof( int ) );
             m_computePCISPH.SetBuffer( m_finalKernel , "triangulation" , m_triangulationBuffer );
@@ -380,9 +397,11 @@ namespace SPHSimulator
             m_velocityArray = new Vector3[ m_actualNumParticles ];
             m_densityArray = new float[ m_actualNumParticles ];
 
-            m_knnContainer = new KNN.KnnContainer( m_positionNative , false , Allocator.Persistent );
+            m_knnContainer = new KNN.KnnContainer( m_positionNative , true , Allocator.Persistent );
             m_rebuildJob = new KNN.Jobs.KnnRebuildJob( m_knnContainer );
             m_neighbourArray = new NativeArray<int>( m_actualNumParticles * m_neighbourCount , Allocator.Persistent );
+
+            m_collisionArray = new Collision[ m_actualNumParticles ];
 
             Vector3 b_min = m_boundingBox.min;
             Vector3 b_max = m_boundingBox.max;
@@ -448,6 +467,7 @@ namespace SPHSimulator
             m_pressureBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) );
             m_densityBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( float ) );
             m_neighbourBuffer = new ComputeBuffer( m_actualNumParticles * m_neighbourCount , sizeof( int ) );
+            m_collisionBuffer = new ComputeBuffer( m_actualNumParticles , sizeof( int ) * 3 + sizeof( float ) * 6 );
 
             m_computePCISPH.SetBuffer( m_initKernel , "position" , m_positionBuffer );
             m_computePCISPH.SetBuffer( m_initKernel , "velocity" , m_velocityBuffer );
@@ -479,6 +499,7 @@ namespace SPHSimulator
             m_computePCISPH.SetBuffer( m_finalKernel , "velocity" , m_velocityBuffer );
             m_computePCISPH.SetBuffer( m_finalKernel , "Aext" , m_accelerationExternalBuffer );
             m_computePCISPH.SetBuffer( m_finalKernel , "Ap" , m_accelerationPressureBuffer );
+            m_computePCISPH.SetBuffer( m_finalKernel , "collision" , m_collisionBuffer );
 
             m_computePCISPH.SetInt( "particleCount" , m_actualNumParticles );
             m_computePCISPH.SetFloats( "gravity" , 0f , -9.81f , 0f );
@@ -493,11 +514,6 @@ namespace SPHSimulator
         }
 
         #region Interface
-
-        public void SetVolumeData ( float[] volumeData )
-        {
-            m_volumeBuffer.SetData( volumeData );
-        }
 
         public void DisposeBuffer ()
         {
@@ -523,6 +539,8 @@ namespace SPHSimulator
             m_volumeBuffer.Dispose();
             m_triangulationBuffer.Release();
             m_triangulationBuffer.Dispose();
+            m_collisionBuffer.Release();
+            m_collisionBuffer.Dispose();
 
             m_positionNative.Dispose();
             m_knnContainer.Dispose();
@@ -536,10 +554,10 @@ namespace SPHSimulator
                 m_knnContainer , m_positionNative , m_neighbourArray );
             query.ScheduleBatch( m_positionNative.Length , m_positionNative.Length >> 5 ).Complete();
 
-            //int[] array = m_neighbourArray.ToArray();
             m_neighbourBuffer.SetData( m_neighbourArray );
             m_positionBuffer.SetData( m_positionArray );
             m_velocityBuffer.SetData( m_velocityArray );
+            m_volumeBuffer.SetData( m_volume.data );
             m_computePCISPH.SetFloat( "dt" , dt );
             m_computePCISPH.SetFloat( "delta" , CalculateDelta( dt ) );
 
@@ -556,21 +574,54 @@ namespace SPHSimulator
 
             m_positionBuffer.GetData( m_positionArray );
             m_velocityBuffer.GetData( m_velocityArray );
+            m_collisionBuffer.GetData( m_collisionArray );
 
             Parallel.For( 0 , m_actualNumParticles , i =>
             {
                 CalculateBoundary( i );
             } );
 
+            float N = Mathf.Sqrt( 1f / 3f );
+
             for ( int i = 0; i < m_actualNumParticles; i++ )
             {
                 m_positionNative[ i ] = m_positionArray[ i ];
+
+                if ( m_collisionArray[ i ].gridIndex.x == -1 ) continue;
+
+                float projection = Vector3.Dot( m_collisionArray[ i ].normal , -m_collisionArray[ i ].momentum );
+
+                float dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , -N , -N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex ] -= dot * m_erosion * projection;
+
+                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , -N , -N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 0 ) ] -= dot * m_erosion * projection;
+
+                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , N , -N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 0 ) ] -= dot * m_erosion * projection;
+
+                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , -N , N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 0 , 1 ) ] -= dot * m_erosion * projection;
+
+                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , N , -N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 0 ) ] -= dot * m_erosion * projection;
+
+                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , -N , N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 0 , 1 ) ] -= dot * m_erosion * projection;
+
+                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( -N , N , N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 0 , 1 , 1 ) ] -= dot * m_erosion * projection;
+
+                dot = Vector3.Dot( -m_collisionArray[ i ].normal , new Vector3( N , N , N ) );
+                if ( dot > 0 ) m_volume[ m_collisionArray[ i ].gridIndex + new Vector3Int( 1 , 1 , 1 ) ] -= dot * m_erosion * projection;
             }
         }
 
         public ref Vector3[] particlePositionArray => ref m_positionArray;
         public ComputeBuffer particle_position_buffer => m_positionBuffer;
         public KNN.KnnContainer KNNContainer => m_knnContainer;
+
+        public MarchingCube1.VolumeMatrix terrainVolume => m_volume;
 
         #endregion Interface
 

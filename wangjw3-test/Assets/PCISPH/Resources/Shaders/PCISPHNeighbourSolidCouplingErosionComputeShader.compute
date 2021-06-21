@@ -19,6 +19,13 @@ float volumeScale;
 float isovalue;
 float damping;
 
+struct Collision
+{
+    int3 gridIndex;
+    float3 momentum;
+    float3 normal;
+};
+
 float W ( float3 v )
 {
     float r = length( v );
@@ -74,6 +81,7 @@ RWStructuredBuffer<float> d;
 StructuredBuffer<int> neighbours;
 StructuredBuffer<float> volume;
 StructuredBuffer<int> triangulation;
+RWStructuredBuffer<Collision> collision;
 
 float Value ( int3 pos )
 {
@@ -154,6 +162,9 @@ void Finalize ( uint3 id : SV_DispatchThreadID )
     float3 origin = position [ id.x ];
     position [ id.x ] += displacement;
     float distance = length( displacement );
+
+    collision [ id.x ].gridIndex = int3( -1, -1, -1 );
+
     if ( distance < EPSILON )
         return;
     float3 direction = displacement / distance;
@@ -240,8 +251,14 @@ void Finalize ( uint3 id : SV_DispatchThreadID )
         float3 p = origin + d * direction;
 
         float3 outDirection = direction - 2 * dotND * normal;
+
+        collision [ id.x ].gridIndex = near;
+        collision [ id.x ].momentum = particleMass * velocity [ id.x ];
+        collision [ id.x ].normal = normal;
+
         velocity [ id.x ] = outDirection * distance / dt * damping;
         position [ id.x ] = p + outDirection * ( distance - d ) * damping;
+
         break;
     }
 }

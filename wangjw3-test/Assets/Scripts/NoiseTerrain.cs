@@ -20,7 +20,6 @@ public class NoiseTerrain : MonoBehaviour
 
     [SerializeField] private float m_noiseStep;
     [SerializeField] private PerlinNoiseTerrainLayer[] m_noiseLayers;
-    [SerializeField] private float m_levelHeight;
     [SerializeField] private float m_threshold;
 
     private int m_noiseKernel;
@@ -103,6 +102,7 @@ public class NoiseTerrain : MonoBehaviour
     public MarchingCube1.VolumeMatrix volume => m_volume;
     public float gridStep => m_noiseStep;
     public float threshold => m_threshold;
+    public Bounds bounds => boundingBox.bounds;
 
     private void OnDestroy ()
     {
