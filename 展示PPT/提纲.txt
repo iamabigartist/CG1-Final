@@ -1,0 +1,38 @@
+
+实验与猜想：
+1. 使用physical based  的流体模拟， 有没有可能做出类似Height Map 的地形生成效果？
+2. 使用流体模拟并加以作用力， 有没有可能定制比画笔更加自然的地形， 以及非真实（科幻虚构）的地貌？
+3. 更加具体的即，流体等物理模拟有没有可能还原各种地理现象？
+
+证明猜想前的基础准备：
+1.稳定，大量，实时的流体模拟 2. 将流体转换成地形渲染出来
+
+1. SPH->PCISPH->KNN_KDTREE
+2. particle cloud -> volume matrix -> marching cube mesh->standard renderer 最稳定，灵活
+    particle cloud -> particle renderer  方便实时观察
+    particle cloud -> volume matrix -> marching cube renderer 实时变化流体
+
+3. height map -> terrain mesh
+    volume matrix ->marching cube terrain mesh
+
+实验：
+4.液体液体碰撞 ?-> 地形？ 与单噪音地形类似，普通流体无法碰撞形成类似地形的mesh, 
+加大粘度与力（初速度很大）， 
+第二时刻粒子density 变化剧烈， PCI通过预测密度实现不可压缩性 -> 粒子受到巨大力而不稳定崩溃.
+
+5.液体地形碰撞 ?-> 侵蚀作用？
+	a. 3d perlion noise -> volume matrix
+	b. fluid particles -> volume matrix
+	   volume matrix ->marching cube terrain mesh
+	c. 重点实现： 液体与地形的双向耦合:
+	
+		液体通过volume matrix 地形信息实时生成碰撞marching cube, 进行反弹
+		volume matrix 被液体经过， 根据液体位置速度法向量来加减值与变形.
+
+技术细节：
+marching cube render&generation
+SPH, PCISPH, KNN
+双向耦合：必讲，
+提出假设：土被冲刷后减少，不会因为水中的土而增加， 水影响局部地形。
+拥有对应Volume Matrix的Mesh， 不需要建立kdtree, 
+可以直接通过matrix 和marching cube 来实现局部的粒子碰撞。
