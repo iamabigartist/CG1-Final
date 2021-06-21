@@ -27,7 +27,7 @@ Shader "Custom/MTerrain"
 		half _Glossiness;
 		half _Metallic;
 		sampler2D height_texture0; sampler2D height_weight0; float2 range_h0;
-		sampler2D height_texture1; sampler2D height_weight1 float2 range_h1;
+		sampler2D height_texture1; sampler2D height_weight1; float2 range_h1;
 		sampler2D slope_texture0; sampler2D slope_weight0; float2 range_s0;
 
 		void surf(Input IN, inout SurfaceOutputStandard o)
@@ -46,9 +46,10 @@ Shader "Custom/MTerrain"
 			float weight_s0 = tex2D(slope_weight0, float2(s0, .5));
 
 			o.Albedo =
-				color_h0 * weight_h0 +
-				color_h1 * weight_h1 +
-				color_s0 * weight_s0 + ;
+				color_h0 * weight_h0.x +
+				color_h1 * weight_h1.x +
+				color_s0 * weight_s0.x;
+
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;

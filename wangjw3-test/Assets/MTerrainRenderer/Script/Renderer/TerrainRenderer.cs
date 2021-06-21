@@ -13,7 +13,7 @@ public class TerrainRenderer : MonoBehaviour
     public float Glossiness;
     public float Metallic;
 
-    private TerrainGradient height0, height1, slope0;
+    public TerrainGradient height0, height1, slope0;
     private Texture2D height_t0, height_t1, slope_t0;
     private Texture2D height_w0, height_w1, slope_w0;
 
