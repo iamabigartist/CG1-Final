@@ -11,8 +11,6 @@ public class ParticleRenderer
     #region Config
 
     private Color _main_color;
-    private Color _outline_color;
-    private float _outline_size;
 
     #endregion Config
 
@@ -27,17 +25,15 @@ public class ParticleRenderer
     /// <summary>
     /// </summary>
     /// <param name="outline_size">The ouline paticle pos = outline_size * paticle pos</param>
-    public void On ( ComputeBuffer particle_buffer , Color main_color , Color outline_color , float outline_size )
+    public void On ( ComputeBuffer particle_buffer , Color main_color )
     {
         _particle_buffer = particle_buffer;
-        Config( main_color , outline_color , outline_size );
+        Config( main_color );
     }
 
-    public void Config ( Color main_color , Color outline_color , float outline_size )
+    public void Config ( Color main_color )
     {
         _main_color = main_color;
-        _outline_color = outline_color;
-        _outline_size = outline_size;
     }
 
     public void Off ()

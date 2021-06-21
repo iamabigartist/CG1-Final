@@ -326,13 +326,12 @@ namespace SPHSimulator
         private KNN.KnnContainer m_knnContainer;
         private KNN.Jobs.KnnRebuildJob m_rebuildJob;
 
-        public PCISPHSimulatorNeighbourSolidCouplingErosion ( int particleCount , float viscosity , float h , int iterations , float randomness , Bounds generate , Bounds bounds , Vector3Int dimension , float volumeStep , float isovalue , float force1 , float force2 , int neighbourCount , MarchingCube1.VolumeMatrix volume , float damping = 1f , float erosion = 1f )
+        public PCISPHSimulatorNeighbourSolidCouplingErosion ( float viscosity , float h , int iterations , Bounds bounds , Vector3Int dimension , float volumeStep , float isovalue , float force1 , float force2 , int neighbourCount , MarchingCube1.VolumeMatrix volume , float damping = 1f , float erosion = 1f )
         {
             m_neighbourCount = neighbourCount;
             m_h = h;
             m_iterations = iterations;
             m_viscosity = viscosity;
-            m_generateBox = generate;
             m_boundingBox = bounds;
             m_computePCISPH = Resources.Load<ComputeShader>( "Shaders/PCISPHNeighbourSolidCouplingErosionComputeShader" );
             m_force1 = force1;
@@ -345,8 +344,8 @@ namespace SPHSimulator
             m_forceKernel = m_computePCISPH.FindKernel( "Force" );
             m_finalKernel = m_computePCISPH.FindKernel( "Finalize" );
 
-            CreateParticles( particleCount , randomness );
-            InitializeKernels();
+            //CreateParticles( particleCount , randomness );
+            //InitializeKernels();
 
             m_computePCISPH.SetInts( "volumeDimension" , dimension.x , dimension.y , dimension.z );
             m_computePCISPH.SetFloats( "volumeOrigin" , bounds.min.x , bounds.min.y , bounds.min.z );
@@ -378,8 +377,9 @@ namespace SPHSimulator
             return a * d;
         }
 
-        private void CreateParticles ( int particleCount , float randomness )
+        public void CreateParticles ( int particleCount , float randomness , Bounds generate )
         {
+            m_generateBox = generate;
             Vector3 size = m_generateBox.size;
             Vector3 min = m_generateBox.min;
             float volume = size.x * size.y * size.z;
@@ -454,6 +454,8 @@ namespace SPHSimulator
                 }
             }
             m_preDelta = 1f / ( m_massPerParticle * m_massPerParticle * 2f / ( INITIAL_DENSITY * INITIAL_DENSITY ) * sumDot );
+
+            InitializeKernels();
         }
 
         private void InitializeKernels ()

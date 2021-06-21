@@ -33,7 +33,7 @@ public class FluidSimulatorTerrainCouplingParticleGPU : MonoBehaviour
 
         m_particle_renderer = new ParticleRenderer();
 
-        m_particle_renderer.On( m_simulator.particle_position_buffer , new Color( 0.2f , 0.6f , 0.0f ) , new Color( 1.0f , 1.0f , 0.8f ) , 5f );
+        m_particle_renderer.On( m_simulator.particle_position_buffer , new Color( 0.2f , 0.6f , 0.0f ) );
     }
 
     private void Update ()

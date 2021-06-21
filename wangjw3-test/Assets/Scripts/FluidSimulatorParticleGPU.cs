@@ -29,7 +29,7 @@ public class FluidSimulatorParticleGPU : MonoBehaviour
             m_numParticles , m_viscosity , m_h , m_iterations , m_randomness , generateBox.bounds , boundingBox.bounds , m_force1 , m_force2 , m_neighbourCount );
         m_particle_renderer = new ParticleRenderer();
 
-        m_particle_renderer.On( m_simulator.particle_position_buffer , new Color( 0.2f , 0.9f , 0.0f ) , new Color( 1.0f , 1.0f , 0.8f ) , 5f );
+        m_particle_renderer.On( m_simulator.particle_position_buffer , new Color( 0.2f , 0.9f , 0.0f ) );
     }
 
     private void Update ()

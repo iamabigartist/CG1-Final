@@ -46,7 +46,7 @@ public class NoiseTerrain : MonoBehaviour
 
     public void Initialize ()
     {
-        if (m_initialized) return;
+        if ( m_initialized ) return;
         Vector3 tem = boundingBox.bounds.size;
         m_gridDimension = new Vector3Int(
             Mathf.CeilToInt( tem.x / m_noiseStep ) ,
@@ -77,7 +77,7 @@ public class NoiseTerrain : MonoBehaviour
     public void Generate ()
     {
         computeNoise.Dispatch( m_clearKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
-        foreach (PerlinNoiseTerrainLayer layer in m_noiseLayers)
+        foreach ( PerlinNoiseTerrainLayer layer in m_noiseLayers )
         {
             computeNoise.SetFloat( "magnitude" , layer.magnitude );
             computeNoise.SetFloat( "centerHeight" , layer.centerHeight );
@@ -90,24 +90,13 @@ public class NoiseTerrain : MonoBehaviour
         m_noiseBuffer.GetData( m_volume.data );
         m_generator.Output( out m_mesh );
         m_meshFilter.mesh = m_mesh;
-        SetXY2UV();
-    }
-
-    private void SetXY2UV ()
-    {
-        Vector2[] m_uv = new Vector2[m_mesh.vertices.Length];
-        for (int i = 0; i < m_mesh.vertices.Length; i++)
-        {
-            m_uv[i] = new Vector2( m_mesh.vertices[i].x , m_mesh.vertices[i].y );
-        }
-        m_mesh.uv = m_uv;
     }
 
     private void Update ()
     {
-        if (Input.GetKeyDown( KeyCode.Return ))
+        if ( Input.GetKeyDown( KeyCode.Return ) )
         {
-            if (!m_initialized) Initialize();
+            if ( !m_initialized ) Initialize();
             Generate();
         }
     }
@@ -125,6 +114,7 @@ public class NoiseTerrain : MonoBehaviour
 
     private void OnDestroy ()
     {
+        if ( !m_initialized ) return;
         m_noiseBuffer.Release();
         m_noiseBuffer.Dispose();
         //m_renderer.Off();

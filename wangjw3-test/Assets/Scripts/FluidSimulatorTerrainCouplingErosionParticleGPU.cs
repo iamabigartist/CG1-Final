@@ -2,7 +2,7 @@ using System.Collections;
 
 using UnityEngine;
 
-public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
+public class FluidSimulatorTerrainCouplingErosionParticleGPU : MonoBehaviour
 {
     public BoxCollider generateBox;
     public MeshFilter terrainMeshFilter;
@@ -14,22 +14,17 @@ public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
     [SerializeField, Range( 0f , 1f )] private float m_randomness;
     [SerializeField] private float m_viscosity;
     [SerializeField] private float m_fluidThreshold;
-    [SerializeField] private float m_gridStep;
-    [SerializeField] private float m_smoothLength;
-    [SerializeField] private int m_k;
     [SerializeField] private int m_visualizeStep;
     [SerializeField] private float m_damping;
     [SerializeField] private float m_erosion;
 
     private SPHSimulator.PCISPHSimulatorNeighbourSolidCouplingErosion m_simulator;
 
-    private ParticleToVolumeFast m_converter;
     private NoiseTerrainModule m_terrain;
 
     private MarchingCube1.MarchingCubeCPUGenerator m_generator;
 
-    private MeshFilter m_meshFilter;
-    private Mesh m_mesh;
+    private ParticleRenderer m_renderer;
 
     private Mesh m_terrainMesh;
 
@@ -56,15 +51,8 @@ public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
     {
         m_simulator.CreateParticles( m_numParticles , m_randomness , generateBox.bounds );
 
-        m_converter = new ParticleToVolumeFast( m_gridStep , m_smoothLength , m_terrain.bounds , m_k );
-        m_converter.Compute( m_simulator.KNNContainer , m_simulator.particlePositionArray );
-
-        m_generator.Input( m_converter.volume , m_fluidThreshold , new Vector3( m_gridStep , m_gridStep , m_gridStep ) , m_terrain.bounds.min );
-        m_mesh = new Mesh();
-        m_meshFilter = GetComponent<MeshFilter>();
-
-        m_generator.Output( out m_mesh );
-        m_meshFilter.mesh = m_mesh;
+        m_renderer = new ParticleRenderer();
+        m_renderer.On( m_simulator.particle_position_buffer , Color.blue );
     }
 
     private void Update ()
@@ -82,8 +70,13 @@ public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
 
     private void OnDisable ()
     {
-        if ( m_converter != null ) m_converter.Dispose();
         m_simulator.DisposeBuffer();
+        if ( m_renderer != null ) m_renderer.Off();
+    }
+
+    private void OnRenderObject ()
+    {
+        if ( m_renderer != null ) m_renderer.Draw();
     }
 
     private void Step ()
@@ -93,12 +86,8 @@ public class FluidSimulatorTerrainCouplingErosionMarchingCubeCPU : MonoBehaviour
         m_stepCounter++;
         if ( m_stepCounter >= m_visualizeStep )
         {
-            m_converter.Compute( m_simulator.KNNContainer , m_simulator.particlePositionArray );
-            m_generator.Input( m_converter.volume , m_fluidThreshold , new Vector3( m_gridStep , m_gridStep , m_gridStep ) , m_terrain.bounds.min );
-            m_generator.Output( out m_mesh );
             m_generator.Input( m_simulator.terrainVolume , m_terrain.threshold , new Vector3( m_terrain.gridStep , m_terrain.gridStep , m_terrain.gridStep ) , m_terrain.bounds.min );
             m_generator.Output( out m_terrainMesh );
-            m_meshFilter.mesh = m_mesh;
             terrainMeshFilter.mesh = m_terrainMesh;
             m_stepCounter = 0;
         }
