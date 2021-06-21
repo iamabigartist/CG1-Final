@@ -160,23 +160,23 @@ MonoBehaviour:
   sunLight: {fileID: 923798475}
   m_noiseStep: 0.2
   m_noiseLayers:
-  - magnitude: 11.65
-    sharpness: 24.61
+  - magnitude: 11.98
+    sharpness: 26.1
     centerHeight: 2
     noiseScale: {x: 1, y: 1, z: 1}
-    weight: 1
+    weight: 0.7
   - magnitude: 6
     sharpness: 3
     centerHeight: 2
     noiseScale: {x: 5, y: 1000, z: 5}
-    weight: 10
-  - magnitude: 0.6
-    sharpness: 1
-    centerHeight: 2
-    noiseScale: {x: 3, y: 4.86, z: 3}
-    weight: 2
-  m_levelHeight: 1.2
-  m_threshold: 1
+    weight: 13.1
+  - magnitude: 34.24
+    sharpness: 1.4
+    centerHeight: 0.66
+    noiseScale: {x: 60, y: 30, z: 60}
+    weight: 43.6
+  m_levelHeight: 1.77
+  m_threshold: -12.4
 --- !u!4 &509763147
 Transform:
   m_ObjectHideFlags: 0

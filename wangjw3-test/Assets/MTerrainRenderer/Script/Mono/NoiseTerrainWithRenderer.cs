@@ -77,7 +77,7 @@ public class NoiseTerrainWithRenderer : MonoBehaviour
             computeNoise.SetFloat( "sharpness" , layer.sharpness );
             computeNoise.SetFloats( "noiseScale" , layer.noiseScale.x , layer.noiseScale.y , layer.noiseScale.z );
             computeNoise.SetFloat( "weight" , layer.weight );
-
+            computeNoise.SetFloats( "offset" , layer.offset.x , layer.offset.y , layer.offset.z );
             computeNoise.Dispatch( m_noiseKernel , Mathf.CeilToInt( m_gridDimension.x / 8f ) , Mathf.CeilToInt( m_gridDimension.y / 8f ) , Mathf.CeilToInt( m_gridDimension.z / 8f ) );
         }
         m_noiseBuffer.GetData( m_volume.data );
