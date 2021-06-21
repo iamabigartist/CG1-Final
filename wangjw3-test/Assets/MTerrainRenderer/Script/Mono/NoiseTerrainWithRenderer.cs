@@ -92,9 +92,14 @@ public class NoiseTerrainWithRenderer : MonoBehaviour
         Generate();
     }
 
-    private void Update ()
-    {
-    }
+    //private void Update ()
+    //{
+    //    if (Input.GetKeyDown( KeyCode.Return ))
+    //    {
+    //        if (!m_initialized) Initialize();
+    //        Generate();
+    //    }
+    //}
 
     //private void OnRenderObject ()
     //{
