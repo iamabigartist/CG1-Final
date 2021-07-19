@@ -8,7 +8,7 @@ namespace MarchingCube1
     /// <summary>
     /// This class generate a random <see cref="VolumeMatrix"/>.
     /// </summary>
-    public class RandomVolumeGenerator
+    public class RandomVolumeGenerator:MonoBehaviour
     {
         #region Input
 
