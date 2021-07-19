@@ -20,16 +20,17 @@ public class ParticleRenderer
 
     public ParticleRenderer ()
     {
+
         _particle_buffer = null;
         _cloud_render = new Material( Shader.Find( "Point Cloud" ) );
     }
 
     /// <summary>
     /// </summary>
-    /// <param name="outline_size">The outline particle pos = outline_size * particle pos</param>
     public void On ( ComputeBuffer particle_buffer, Color main_color )
     {
         _particle_buffer = particle_buffer;
+
         Config( main_color );
     }
 

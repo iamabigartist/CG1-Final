@@ -1,20 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-
 using UnityEngine;
 
 public class BigBallParticleShow : MonoBehaviour
 {
-    private ParticleRenderer particleRenderer;
-
     public Color main_color;
     public Color outline_color;
     public float oultine_size;
     public int particle_num;
 
-    private ComputeShader _random_move_shader;
-
     private ComputeBuffer _particle_cloud;
+
+    private ComputeShader _random_move_shader;
+    private ParticleRenderer particleRenderer;
 
     // Start is called before the first frame update
     private void Start ()
